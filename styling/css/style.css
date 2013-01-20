@@ -1,0 +1,454 @@
+@import url("base.css");
+@import url("skeleton.css");
+
+
+#header{
+padding:5px 3px 5px 3px;
+background-color:#9FC5EE;
+border-radius: 0 0 5px 5px;
+margin-bottom:20px;
+border:1px solid #87A8CC;
+border-top: 0;
+}
+#footer{
+padding:15px 3px 5px 3px;
+background-color:#9FC5EE;
+border-radius: 5px 5px 0 0;
+margin-top:40px;
+border:1px solid #87A8CC;
+border-bottom: 0;
+height:40px;
+clear:both;
+text-align:center;
+}
+
+#footer span{
+margin:0 20px;
+}
+#footer span a{
+color:#6898CC;
+}
+#header a{
+border-right:1px solid #87A8CC;
+color:#fff;
+font-weight:bold;
+text-decoration:none;
+text-shadow: 0 1px 2px rgba(0, 0, 0, .75);
+padding: 7px 20px;
+}
+#header a:hover {
+border-bottom:4px solid #87A8CC;
+}
+#header span{
+float:right;
+}
+#header span a{
+border-left:1px solid #87A8CC;
+border-right:0;
+}
+
+#edit_find_user,
+#list_add_user{
+text-align:center;
+background: url(../../icons/edit_find_user.png) no-repeat center top;
+padding-top:140px;
+}
+#list_add_user{
+background: url(../../icons/list_add_user.png) no-repeat center top;
+}
+#edit_find_user a,
+#list_add_user a {
+display: inline-block;
+width: 80%;
+}
+
+#edit_find_user,
+#list_add_user,
+fieldset{
+border: 1px solid #aaa;
+border-top: 1px solid #ccc;
+border-left: 1px solid #ccc;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+}
+
+#key{
+font-family:monospace;
+}
+table{
+margin-bottom: 20px;
+}
+th{
+font-weight:bold;
+}
+tr.clickable{
+cursor: pointer;
+}
+tr.clickable:hover{
+background:#9FC5EE;
+}
+td,
+th {
+padding: 2px 10px 2px 10px;
+text-align:left;
+}
+td:first-child,
+th:first-child {
+padding-left: 8px;
+-webkit-border-top-left-radius: 3px;
+-webkit-border-bottom-left-radius: 3px;
+-moz-border-radius-topleft: 3px;
+-moz-border-radius-bottomleft: 3px;
+border-top-left-radius: 3px;
+border-bottom-left-radius: 3px;
+}
+#all-swimmers-heading {
+float:left;
+margin-right: 30px;
+}
+#all-schwimmers {
+clear:left;
+margin-top: 20px;
+}
+.dataTables_filter {
+padding-left: 8px;
+}
+.dataTables_filter label {
+font-weight:normal;
+}
+.dataTables_filter input {
+width:150px;
+}
+td.notpaid, td.notdeliveried{
+background-color:#FFC0CB;
+width:20px;
+border-left:1px solid black;
+border-right:1px solid black;
+}
+td.paid, td.deliveried{
+background-color:#90EE90;
+width:20px;
+border-left:1px solid black;
+border-right:1px solid black;
+}
+table.table td,table.table th{
+border:1px solid #E5E5E5;
+padding:1px 10px;
+}
+table.table{
+font-size:1.1em;
+}
+.rightBox{
+border-radius:5px 5px 5px 5px;
+box-shadow:0 1px 10px #444444;
+padding:10px 30px;
+margin-bottom:20px;
+}
+.rightBox p{
+text-align:center;
+font-size:1.2em;
+font-weight:bold;
+}
+.fail{
+background-color: #FF8888;
+}
+.success{
+background-color: #90EE90;
+}
+fieldset{
+padding:20px;
+}
+legend{
+padding: 0 5px;
+margin-left:10px;
+}
+form td{
+vertical-align:middle;
+}
+input[type="text"]{
+margin-bottom:2px;
+}
+label, select, input[type="text"]{
+display:inline;
+margin-right:4px;
+}
+select.short{
+width:45px;
+}
+button:focus,
+input[type="text"]:focus,
+input:focus,
+select:focus,
+textarea:focus {
+box-shadow: #ADD8E6 0 0 7px 0;
+border-color: #ADD8E6;
+z-index: 1;
+outline: 0;
+}
+.label {
+width: 25%;
+}
+fieldset table {
+width: 100%;
+}
+fieldset td,
+fieldset th {
+/*vertical-align: top;*/
+padding-bottom: 5px;
+}
+button[disabled="disabled"]{
+background-color:black;
+}
+input[disabled="disabled"]{
+background-color:#E5E5E5;
+}
+select.WForm_Date{
+width:50px;
+}
+input.WForm_Date{
+width:100px;
+}
+#nextFooter{
+padding:5px 0 5px 3px;
+background-color:#9FC5EE;
+border-radius:5px 5px 0 0;
+margin:20px auto 0 auto;
+border:1px solid #87A8CC;
+border-bottom: 0;
+display:none;
+position:fixed;
+bottom:0px;
+width:50%;
+}
+#endOfPage{
+height:20px;
+}
+.centerbox{
+position:absolute;
+top:50px;
+left:50px;
+}
+
+.formbox{
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  margin-left: -200px;
+  width:400px;
+  border:1px solid #87A8CC;
+  border-radius:5px;
+  padding:15px;
+  background:#ADD8E6;
+  display:none;
+  z-index:105;
+}
+.formbox #recaptcha_widget_div table{
+margin: 5px auto;
+}
+.formbox br{
+clear:both;
+}
+.formbox input, .formbox select{
+float:right;
+}
+
+.darkroom{
+background: black;
+z-index: 100;
+height: 100%;
+width: 100%;
+margin: 0;
+padding: 5px 0 0 0;
+position: fixed;
+top: 0;
+left: 0;
+opacity: .3;
+display:none;
+}
+
+table#scores tr{
+cursor:pointer;
+}
+
+tr.correct{
+background: #90EE90;
+}
+tr.notcorrect{
+background:#FF9292;
+}
+
+.id-row{
+display:none;
+}
+
+div.datatable-button{}
+div.datatable-box{
+border:1px solid #87A8CC;
+padding:5px;
+padding-bottom:30px;
+}
+
+p.chart{
+text-align:center;
+min-height:200px;
+}
+table.chart-table{
+float:left;
+border:1px solid #D9ECFF;
+max-width:210px;
+}
+
+.competition-box{
+padding-top:10px;
+clear:both;
+}
+
+.toc{
+border:1px solid #ADD8E6;
+background:#F3FDFF;
+border-radius:3px;
+padding:3px;
+margin:5px 15px 13px 15px;
+width:205px;
+}
+.toc.right{
+float:right;
+}
+.toc h5{
+text-align:center;
+font-size:10px;
+text-decoration:underline;
+}
+.toc ol{
+margin-bottom:10px;
+}
+.toc li{
+margin-bottom:2px;
+}
+
+.team-corner li.team{
+border-radius:5px;
+height:100px;
+margin:10px;
+width:100px;
+float:left;
+box-shadow:5px 5px 5px  #CCC;
+padding:0;
+}
+.team-corner li.team img{
+margin:0;
+border-radius:5px;
+}
+.team-corner li.team p{
+margin:10px;
+text-align:center;
+}
+span.bt{
+height:16px;
+width:16px;
+cursor:pointer;
+background:no-repeat center center;
+float:right;
+margin:-1px;
+margin-left:2px;
+}
+span.bt:hover{
+outline:dotted 1px grey;
+}
+span.bt.user-group-new{
+background-image:url(../images/user-group-new.png);
+}
+span.bt.user-group-properties{
+background-image:url(../images/user-properties.png);
+}
+span.bt.user-group-delete{
+background-image:url(../images/user-group-delete.png);
+}
+span.bt.applications-internet-add{
+background-image:url(../images/applications-internet-add.png);
+}
+
+.not-found{
+background:url(../images/dialog-warning.png) no-repeat center center;
+height:300px;
+}
+
+.team-listing .team{
+border-top:1px solid #ADD8E6;
+margin:0 10px 0 0;
+clear:both;
+min-height:105px;
+}
+.team-listing div.logo{
+float:left;
+height:100px;
+width:100px;
+margin:2px 10px;
+padding:0;
+}
+.team-listing div.logo p{
+border:1px solid grey;
+text-align:center;
+font-weight:bold;
+overflow:hidden;
+height:100px;
+width:100px;
+}
+.team-listing .actions{
+float:right;
+}
+.tooltip {
+position:absolute;
+margin:0;
+border:1px solid #ADD8E6;
+background:#F3FDFF;
+border-radius:3px;
+padding:5px;
+width:250px;
+}
+.helpinfo{
+background:url(../images/system-help.png) no-repeat top;
+padding-right:16px;
+margin-left:3px;
+margin-right:3px;
+cursor:help;
+height:16px;
+text-decoration:none;
+}
+
+.bottom-navi{
+clear:both;
+margin-top:20px;
+border-top:2px dotted #ADD8E6;
+padding-top:20px;
+}
+
+.bottom-navi a{
+padding:4px;
+border: dotted 1px grey;
+}
+.bottom-navi p{
+text-align:center;
+width:50%;
+margin:0 auto;
+}
+.bottom-navi a.next{
+float:right;
+}
+.bottom-navi a.prev{
+float:left;
+}
+
+.score-members select{
+width:90px;
+}
+
+.excel-box{
+padding:5px;
+border-radius:3px;
+margin:10px;
+cursor:pointer;
+border: 1px solid green;
+min-height:70px;
+}

@@ -1,0 +1,14 @@
+
+# backups
+tools/Ergebnisse/*
+tools/Daten/*
+
+# files
+files/*
+
+# config
+lib/config.php
+
+
+# cache
+lib/vendor/pChart/cache/*

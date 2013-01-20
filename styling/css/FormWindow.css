@@ -1,0 +1,68 @@
+.FormWindow{
+font-size:12px;
+position:absolute;
+top:10px;
+left:20px;
+border-radius:5px;
+border:3px solid #47A5FF;
+background:#73BAFF;
+background:-moz-linear-gradient(135deg, #73BAFF, #B8DCFF);
+background:-webkit-linear-gradient(135deg, #73BAFF, #B8DCFF);
+background:linear-gradient(135deg, #73BAFF, #B8DCFF);
+max-width:950px;
+min-width:200px;
+z-index:101;
+box-shadow: 5px 5px 10px;
+}
+.FormWindow button{
+min-width:80px;
+}
+.FormWindowWait{
+background:center center url(../images/wait.gif) no-repeat;
+min-height:200px;
+min-width:300px;
+}
+.FormWindowWarning{
+background:center center url(../images/warning.png) no-repeat;
+min-height:64px;
+min-width:64px;
+}
+.FormWindowTitle{
+font-weight:bold;
+height:20px;
+background:#47A5FF;
+text-align:center;
+}
+.FormWindow hr{
+margin:0;
+padding:0;
+background:#47A5FF;
+height:2px;
+border:0;
+}
+.FormElement{
+margin:3px;
+}
+.FormElementLabel{
+}
+.FormElementDescription{
+font-size:0.9em;
+}
+.FormWindowFooter{
+margin:15px 3px 3px 3px;
+text-align:center;
+}
+.FormWindowDarkroom {
+background: none repeat scroll 0 0 black;
+height: 100%;
+left: 0;
+margin: 0;
+opacity: 0.3;
+padding: 5px 0 0;
+position: fixed;
+top: 0;
+width: 100%;
+z-index: 100;
+}
+
+
