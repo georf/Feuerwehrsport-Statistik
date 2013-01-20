@@ -48,7 +48,7 @@ class Log
         switch ($this->type) {
 
             case 'add-link':
-                $this->description = 'Link hinzugefügt<br/>';
+                $this->description = "Link hinzugefügt\n";
 
                 if ($this->raw['for'] == 'competition') {
                     $this->description .= 'für Wettkampf';
@@ -148,7 +148,7 @@ class Log
 
 
             case 'set-score-wk':
-                $this->description = 'Wettkämpfer geändert<br/>'.
+                $this->description = "Wettkämpfer geändert\n".
                     FSS::dis2name($this->raw['key']);
 
                 $competition = $this->raw['competition'];
@@ -176,8 +176,16 @@ class Log
         return date('d.m.Y H:i', $this->inserted);
     }
 
+    public function time() {
+        return $this->inserted;
+    }
+
     public function description() {
         return $this->description;
+    }
+
+    public function descriptionHtml() {
+        return nl2br($this->description);
     }
 
     public function content() {

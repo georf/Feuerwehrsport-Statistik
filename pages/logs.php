@@ -1,27 +1,32 @@
-<h1>Logs</h1>
-
-
-<table class="table" style="width:99%;">
 <?php
 
-$logs = $db->getRows("
-    SELECT *
-    FROM `logs`
-    ORDER BY `inserted` DESC
-    LIMIT 500;
-");
 
-foreach($logs as $log) {
-    $log = Log::getByRow($log);
+$cache = Cache::get();
+if ($cache) {
+    echo $cache;
+} else {
+    ob_start();
 
-    echo '<tr style="border-top:22px solid #E5E5E5;">';
-    echo '<td>'.$log->datetime().'</td>';
-    echo '<td>'.$log->description().'</td>';
-    echo '<td>'.$log->content().'</td>';
+    echo '<h1>Logs</h1><table class="table" style="width:99%;">';
 
+    $logs = $db->getRows("
+        SELECT *
+        FROM `logs`
+        ORDER BY `inserted` DESC
+        LIMIT 500;
+    ");
+
+    foreach($logs as $log) {
+        $log = Log::getByRow($log);
+
+        echo '<tr style="border-top:22px solid #E5E5E5;" id="logId'.$log->id.'">';
+        echo '<td>'.$log->datetime().'</td>';
+        echo '<td>'.$log->descriptionHtml().'</td>';
+        echo '<td>'.$log->content().'</td>';
+
+    }
+
+    echo '</table>';
+
+    Cache::put(ob_get_flush());
 }
-
-
-
-?>
-</table>

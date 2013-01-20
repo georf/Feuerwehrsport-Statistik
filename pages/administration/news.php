@@ -3,24 +3,24 @@
 if (Check::post('title', 'id', 'date', 'content')) {
     if (Check::isIn($_POST['id'], 'news')) {
         $db->updateRow('news', $_POST['id'], array(
-            'title' => htmlspecialchars($_POST['title']),
-            'content' => htmlspecialchars($_POST['content']),
+            'title' => $_POST['title'],
+            'content' => $_POST['content'],
             'date' => $_POST['date'],
         ));
-        
+
         echo '---SUCCESS---';
         exit();
     } elseif ($_POST['id'] == 'new') {
         $db->insertRow('news', array(
-            'title' => htmlspecialchars($_POST['title']),
-            'content' => htmlspecialchars($_POST['content']),
+            'title' => $_POST['title'],
+            'content' => $_POST['content'],
             'date' => $_POST['date'],
         ));
-        
+
         echo '---SUCCESS---';
         exit();
     }
-    
+
     echo '---FAIL---';
     exit();
 }
@@ -72,7 +72,7 @@ if (Check::post('title', 'id', 'date', 'content')) {
                 var content = $('#dialog-content-'+id).find('textarea').html();
                 var title = $('#dialog-content-'+id).find('input[name="title"]').val();
                 var date = $('#dialog-content-'+id).find('input[name="date"]').val();
-               
+
                 $.post('?page=administration&admin=news', {
                     content: content,
                     title: title,
@@ -85,10 +85,10 @@ if (Check::post('title', 'id', 'date', 'content')) {
                         alert('FAIL');
                     }
                 });
-            
+
            });
        });
-       
+
 
    });
 </script>
@@ -109,9 +109,9 @@ echo '<table class="table">';
 foreach ($news as $new) {
     echo '<tr>';
     echo '<td>'.gDate($new['date']).'</td>';
-    echo '<td>'.$new['title'].'</td>';
+    echo '<td>'.htmlspecialchars($new['title']).'</td>';
     echo '<td><button class="dialog-open" data-id="'.$new['id'].'">Bearbeiten</button></td>';
-    echo '<td>'.substr(strip_tags(htmlspecialchars_decode($new['content'])),0,300).'</td>';
+    echo '<td>'.htmlspecialchars(substr(strip_tags($new['content']),0,300)).'</td>';
     echo '</tr>';
 }
 echo '</table>';
@@ -119,10 +119,10 @@ echo '</table>';
 $news[] = array('id' => 'new', 'title' => 'Titel', 'date' => date('Y-m-d'), 'content' => '<br/>');
 
 foreach ($news as $new) {
-    echo '<div id="dialog-content-'.$new['id'].'" title="'.$new['title'].'" style="display: none" class="jarea-dialog">';
+    echo '<div id="dialog-content-'.$new['id'].'" title="'.htmlspecialchars($new['title']).'" style="display: none" class="jarea-dialog">';
     echo '<input type="text" value="'.$new['date'].'" name="date" style="width:100px">';
     echo '<input type="text" value="'.$new['title'].'" name="title" style="width:300px">';
-    echo '<textarea style="width:90%;height:450px;" id="news-content-'.$new['id'].'">'.$new['content'].'</textarea>';
+    echo '<textarea style="width:90%;height:450px;" id="news-content-'.$new['id'].'">'.htmlspecialchars($new['content']).'</textarea>';
     echo '<button>Speichern</button>';
     echo '</div>';
 }

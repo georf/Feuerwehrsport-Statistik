@@ -6,39 +6,82 @@ try {
     die($e->getMessage());
 }
 
+
 $link_news = 'http://statistik.feuerwehrsport-teammv.de/?page=news&id=';
+$link_logs = 'http://statistik.feuerwehrsport-teammv.de/?page=logs#logId';
 
 new FeedLoader();
 
-if (isset($_GET['type']) && $_GET['type'] == 'news') {
-      
-    //Creating an instance of RSS2FeedWriter class. 
-    $TestFeed = new RSS2FeedWriter();
 
-    //Setting the channel elements
-    //Use wrapper functions for common channel elements
-    $TestFeed->setTitle('Feuerwehrsport - Statistiken - Neuigkeiten');
-    $TestFeed->setLink('http://statistik.feuerwehrsport-teammv.de');
-    $TestFeed->setDescription('Neuigkeiten über die Statistiken vom Feuerwehrsport');
 
-    $news = $db->getRows("
-        SELECT *
-        FROM `news`
-        ORDER BY `date` DESC
-        LIMIT 10;
-    ");
+new RSS2FeedWriter();
+new ATOMFeedWriter();
 
-    foreach ($news as $new) {
-        
-        $item = $TestFeed->createNewItem();
+if (!isset($_GET['type']) || !in_array($_GET['type'], array('news', 'logs'))) exit();
 
-        $item->setTitle(htmlspecialchars_decode($new['title']));
-        $item->setLink($link_news.$new['id']);
-        $item->setDate(strtotime($new['date']));
-        $item->setDescription(htmlspecialchars_decode($new['content']));
+$feed = Cache::get();
+if (!$feed) {
 
-        $TestFeed->addItem($item);
+    $feed = new RSS2FeedWriter();
+    if (isset($_GET['v']) && $_GET['v'] == 'atom') $feed = new ATOMFeedWriter();
+
+    $feed->setLink('http://statistik.feuerwehrsport-teammv.de');
+    switch ($_GET['type']) {
+        case 'news':
+
+            $feed->setTitle('Feuerwehrsport - Statistiken - Neuigkeiten');
+            $feed->setDescription('Neuigkeiten über die Statistiken vom Feuerwehrsport');
+
+            $news = $db->getRows("
+                SELECT *
+                FROM `news`
+                ORDER BY `date` DESC
+                LIMIT 10;
+            ");
+
+            foreach ($news as $new) {
+
+                $item = $feed->createNewItem();
+
+                $item->setTitle($new['title']);
+                $item->setLink($link_news.$new['id']);
+                $item->setDate(strtotime($new['date']));
+                $item->setDescription($new['content']);
+
+                $feed->addItem($item);
+            }
+        break;
+
+
+        case 'logs':
+
+            $feed->setTitle('Feuerwehrsport - Statistiken - Veränderungen');
+            $feed->setDescription('Veränderungen der Statistiken vom Feuerwehrsport');
+
+            $logs = $db->getRows("
+                SELECT *
+                FROM `logs`
+                ORDER BY `inserted` DESC
+                LIMIT 100;
+            ");
+
+            foreach ($logs as $log) {
+                $log = Log::getByRow($log);
+
+                $item = $feed->createNewItem();
+
+                $item->setTitle($log->description());
+                $item->setLink($link_logs.$log->id);
+                $item->setDate($log->time());
+                $item->setDescription($log->content());
+
+                $feed->addItem($item);
+            }
+        break;
+
     }
-    
-    $TestFeed->generateFeed();
+
+    Cache::put($feed);
 }
+
+$feed->generateFeed();

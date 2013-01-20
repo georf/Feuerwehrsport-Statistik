@@ -64,7 +64,7 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'news')) {
         echo '</tr>';
         echo '<tr>';
         echo '<td></td>';
-        echo '<td style="padding-bottom:30px;">'.substr(strip_tags($new['content']),0,300).' <a href="?page=news&amp;id='.$new['id'].'">[...]</a></td>';
+        echo '<td style="padding-bottom:30px;">'.htmlspecialchars(substr(strip_tags($new['content']),0,300)).' <a href="?page=news&amp;id='.$new['id'].'">[...]</a></td>';
         echo '</tr>';
     }
 
