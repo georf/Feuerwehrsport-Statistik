@@ -23,4 +23,4 @@ $result = $db->insertRow('links', array(
 $output['success'] = true;
 
 // generate log
-Log::insert('add-link', FSS::tableRow('links', FSS::tableRow('links', $result)));
+Log::insert('add-link', FSS::tableRow('links', $result));
