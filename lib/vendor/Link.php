@@ -3,37 +3,42 @@
 class Link
 {
     public static function competition($id, $text = 'ⓘ', $title = 'Details zu diesem Wettkampf anzeigen') {
-        return '<a href="?page=competition&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
+        global $config;
+        return '<a href="'.$config['url'].'?page=competition&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
     }
 
 
     public static function place($id, $name = false, $title = 'Details zu diesem Wettkampfort anzeigen') {
+        global $config;
         if ($name === false) {
             $place = FSS::tableRow('places', $id);
             $name = $place['name'];
         }
-        return '<a href="?page=place&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
+        return '<a href="'.$config['url'].'?page=place&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
     }
 
 
     public static function event($id, $name = false, $title = 'Details zu diesem Wettkampftyp anzeigen') {
+        global $config;
         if ($name === false) {
             $event = FSS::tableRow('events', $id);
             $name = $event['name'];
         }
-        return '<a href="?page=event&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
+        return '<a href="'.$config['url'].'?page=event&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
     }
 
     public static function team($id, $name = false, $title = 'Details zu diesem Team anzeigen') {
+        global $config;
         if ($name === false) {
             $team = FSS::tableRow('teams', $id);
             $name = $team['name'];
         }
-        return '<a href="?page=team&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
+        return '<a href="'.$config['url'].'?page=team&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
     }
 
 
     public static function person($id, $text = 'Details', $name = false, $firstname = false, $title = false) {
+        global $config;
         if ($name === false || $firstname === false) {
             $person = FSS::tableRow('persons', $id);
             $name = $person['name'];
@@ -49,7 +54,7 @@ class Link
             $text = $firstname.' '.$name;
         }
 
-        return '<a href="?page=person&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
+        return '<a href="'.$config['url'].'?page=person&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
     }
 
     public static function subPerson($id, $name = false, $firstname = false, $title = false) {
