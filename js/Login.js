@@ -688,6 +688,46 @@
             return false;
         });
 
+        $('img.big').click(function() {
+            var $img = $(this);
+            var newSrc = $img.attr('src') + '&amp;big=1';
+            var $big = $('<img src="' + newSrc + '" alt=""/>');
+
+            var os = $img.offset();
+            var left = os.left + $img.width()/2;
+            var top = os.top + $img.height()/2;
+
+            $big.load(function() {
+                var w = $big.get(0).width;
+                var h = $big.get(0).height;
+
+                $big.css({
+                    position: 'absolute',
+                    top: os.top,
+                    left: os.left,
+                    width: $img.width(),
+                    height: $img.height()
+                }).fadeIn(100, function() {
+                    $(this).animate({
+                        top: top - h/2,
+                        left: left - w/2,
+                        width: w,
+                        height: h
+                    }).click(function() {
+                        $(this).animate({
+                            top: os.top,
+                            left: os.left,
+                            width: $img.width(),
+                            height: $img.height()
+                        }, function() {
+                            $(this).remove();
+                        });
+                    });
+                });
+            });
+            $('body').append($big.css('display', 'none'));
+        });
+
     });
 
     window.sortTable = function(selector, sort, direction, not, count) {

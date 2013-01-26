@@ -666,7 +666,7 @@ if ($cache) {
             echo '<tr><td style="text-align:center;" colspan="2"><img src="chart.php?type=competition_bad_good"></td></tr>';
 
             echo '</table>';
-            echo '<p class="chart"><img class="infochart" data-file="competition_platzierung" src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$id.'" style="width:700px;height:230px"/></p>';
+            echo '<p class="chart"><img class="infochart big" data-file="competition_platzierung" src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$id.'" style="width:700px;height:230px"/></p>';
 
             echo
               '<table class="datatable sc_'.$key;
@@ -857,7 +857,7 @@ if ($cache) {
                     '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
                     '<tr><td style="text-align:center;" colspan="2"><img src="chart.php?type=competition_bad_good&amp;discipline=gruppenstafette&amp;sex=female&amp;id='.$id.'"/></td></tr>',
                   '</table>';
-            echo '<p class="chart"><img src="chart.php?type=competition-gruppenstafette&id='.$_id.'" style="width:700px;height:230px"/></p>';
+            echo '<p class="chart"><img src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
 
             echo '<table class="datatable sc_'.$key.'"><thead><tr>',
                     '<th style="width:14%">Team</th>',
