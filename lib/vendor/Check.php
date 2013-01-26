@@ -16,6 +16,20 @@ class Check
         return true;
     }
 
+    public static function get()
+    {
+        $arguments = func_get_args();
+        for ($i = 0, $l = count($arguments); $i < $l; $i++) {
+            if (!isset($_GET[$arguments[$i]])) {
+                return false;
+            }
+            if ($_GET[$arguments[$i]] === '') {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static function date()
     {
         $arguments = func_get_args();

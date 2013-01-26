@@ -1,170 +1,324 @@
 <?php
 
-$_discipline = 1;
-$_sex = 'male';
-$_id = 0;
+if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
+if (!Check::isIn($_GET['id'], 'competitions')) throw new Exception('bad competition');
+$id = intval($_GET['id']);
 
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-  $_id = $_GET['id'];
-} else {
-  exit();
+$keys = explode('-', $_GET['key']);
+$key = $keys[0];
+
+$sex = false;
+$final = false;
+if (count($keys) > 1) {
+    if (!empty($keys[1])) $sex = $keys[1];
+    if (count($keys) > 2) {
+        $final = true;
+    }
 }
 
-if (isset($_GET['discipline'])) {
-  $_discipline = $_GET['discipline'];
+if ($sex && !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
+
+$scores = array();
+$title  = '';
+
+switch ($key) {
+    case 'gs':
+
+        $scores = $db->getRows("
+            SELECT `best`.`time`
+            FROM (
+                SELECT *
+                FROM (
+                    SELECT `team_id`,`team_number`,`time`
+                    FROM `scores_gruppenstafette`
+                    WHERE `time` IS NOT NULL
+                    AND `competition_id` = '".$id."'
+                    ORDER BY `time`
+                ) `all`
+                GROUP BY `team_id`,`team_number`
+            ) `best`
+            ORDER BY `time`
+        ");
+        $title = FSS::dis2name($key);
+        break;
+
+    case 'la':
+        if (!$sex) throw new Exception('sex not defined');
+
+        $scores = $db->getRows("
+            SELECT `best`.`time`
+            FROM (
+                SELECT *
+                FROM (
+                    SELECT `team_id`,`team_number`,`time`
+                    FROM `scores_loeschangriff`
+                    WHERE `time` IS NOT NULL
+                    AND `sex` = '".$sex."'
+                    AND `competition_id` = '".$id."'
+                    ORDER BY `time`
+                ) `all`
+                GROUP BY `team_id`,`team_number`
+            ) `best`
+            ORDER BY `time`
+        ");
+        $title = FSS::dis2name($key).' '.FSS::sex($sex);
+        break;
+
+    case 'fs':
+        if (!$sex) throw new Exception('sex not defined');
+
+        $scores = $db->getRows("
+            SELECT `best`.`time`
+            FROM (
+                SELECT *
+                FROM (
+                    SELECT `team_id`,`team_number`,`time`
+                    FROM `scores_stafette`
+                    WHERE `time` IS NOT NULL
+                    AND `sex` = '".$sex."'
+                    AND `competition_id` = '".$id."'
+                    ORDER BY `time`
+                ) `all`
+                GROUP BY `team_id`,`team_number`
+            ) `best`
+            ORDER BY `time`
+        ");
+        $title = FSS::dis2name($key).' '.FSS::sex($sex);
+        break;
+
+    case 'hb':
+        if (!$sex) throw new Exception('sex not defined');
+
+        if (!$final) {
+            $scores = $db->getRows("
+                SELECT `best`.`time`
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT `person_id`, `time`
+                        FROM `scores`
+                        WHERE `time` IS NOT NULL
+                        AND `competition_id` = '".$id."'
+                        AND `discipline` = 'HB'
+                        AND `team_number` != -2
+                        ORDER BY `time`
+                    ) `all`
+                    GROUP BY `person_id`
+                ) `best`
+                INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
+                WHERE `sex` = '".$sex."'
+                ORDER BY `time`
+            ");
+            $title = FSS::dis2name($key).' '.FSS::sex($sex);
+        } else {
+            $scores = $db->getRows("
+                SELECT `best`.`time`
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT `person_id`, `time`
+                        FROM `scores`
+                        WHERE `time` IS NOT NULL
+                        AND `competition_id` = '".$id."'
+                        AND `discipline` = 'HB'
+                        AND `team_number` = -2
+                        ORDER BY `time`
+                    ) `all`
+                    GROUP BY `person_id`
+                ) `best`
+                INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
+                WHERE `sex` = '".$sex."'
+                ORDER BY `time`
+            ");
+            $title = FSS::dis2name($key).' '.FSS::sex($sex).' - Finale';
+        }
+        break;
+
+    case 'hl':
+
+        if (!$final) {
+            $scores = $db->getRows("
+                SELECT `best`.`time`
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT `person_id`, `time`
+                        FROM `scores`
+                        WHERE `time` IS NOT NULL
+                        AND `competition_id` = '".$id."'
+                        AND `discipline` = 'HL'
+                        AND `team_number` != -2
+                        ORDER BY `time`
+                    ) `all`
+                    GROUP BY `person_id`
+                ) `best`
+                ORDER BY `time`
+            ");
+            $title = FSS::dis2name($key);
+        } else {
+            $scores = $db->getRows("
+                SELECT `best`.`time`
+                FROM (
+                    SELECT *
+                    FROM (
+                        SELECT `person_id`, `time`
+                        FROM `scores`
+                        WHERE `time` IS NOT NULL
+                        AND `competition_id` = '".$id."'
+                        AND `discipline` = 'HL'
+                        AND `team_number` = -2
+                        ORDER BY `time`
+                    ) `all`
+                    GROUP BY `person_id`
+                ) `best`
+                ORDER BY `time`
+            ");
+            $title = FSS::dis2name($key).' - Finale';
+        }
+        break;
+
+    case 'zk':
+
+        $scores = $db->getRows("
+            SELECT
+                `hb`.`time` AS `hb`,
+                `hl`.`time` AS `hl`,
+                `hb`.`time` + `hl`.`time` AS `time`
+            FROM (
+                SELECT `person_id`,`time`
+                FROM `scores`
+                WHERE `time` IS NOT NULL
+                AND `competition_id` = '".$id."'
+                AND `discipline` = 'HL'
+                AND `team_number` != -2
+                ORDER BY `time`
+            ) `hl`
+            INNER JOIN (
+                SELECT `person_id`,`time`
+                FROM `scores`
+                WHERE `time` IS NOT NULL
+                AND `competition_id` = '".$id."'
+                AND `discipline` = 'HB'
+                AND `team_number` != -2
+                ORDER BY `time`
+            ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
+            GROUP BY `hl`.`person_id`
+            ORDER BY `time`
+        ");
+        $title = FSS::dis2name($key);
+        break;
+
+    default:
+        throw new Exception('bad key');
+        break;
 }
 
-if (isset($_GET['sex'])) {
-  $_sex = $_GET['sex'];
+$points = array();
+$labels = array();
+$i = 1;
+foreach ($scores as $score) {
+  $points[] = intval($score['time'])/100;
+  $labels[] = $i.'.';
+  $i++;
 }
 
+$MyData = new pData();
+$MyData->addPoints($points, "time");
 
-$MyData = Cache::get();
-
-if (!$MyData) {
-
-
-    $competition = $db->getFirstRow("
-      SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`
-      FROM `competitions` `c`
-      INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-      INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-      WHERE `c`.`id` = '".$db->escape($_GET['id'])."'
-      LIMIT 1;");
-
-    $scores = $db->getRows("
-      SELECT `time`
-      FROM (
-        SELECT `s`.*
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
-        WHERE `s`.`competition_id` = '".$db->escape($_id)."'
-        AND `s`.`discipline_id` = '".$db->escape($_discipline)."'
-        AND `p`.`sex` = '".$db->escape($_sex)."'
-        AND `s`.`time` IS NOT NULL
-        ORDER BY `s`.`time`) `i`
-      GROUP BY `i`.`person_id`;
-    ");
-
-    $points = array();
-    $labels = array();
-    $i = 1;
+if ($key == 'zk') {
+    $hl = array();
+    $hb = array();
     foreach ($scores as $score) {
-      $points[] = intval($score['time'])/100;
-      $labels[] = $i.'.';
-      $i++;
+        $hl[] = intval($score['hl'])/100;
+        $hb[] = intval($score['hb'])/100;
     }
-
-    sort($points);
-
-    $MyData = new pData();
-    $MyData->addPoints($points, "time");
-    $MyData->addPoints($labels, "Platzierung");
-    $MyData->setAbscissa("Platzierung");
-
-
-    Cache::put($MyData);
+    $MyData->addPoints($hl, "HL");
+    $MyData->addPoints($hl, "HB");
 }
 
-/* Create the cache object */
-$MyCache = new pCache();
+$MyData->addPoints($labels, "Platzierung");
+$MyData->setAbscissa("Platzierung");
+$MyData->setSerieDescription("time", 'Zeit - Platzierung');
 
-/* Compute the hash linked to the chart data */
-$ChartHash = $MyCache->getHash($MyData);
+$w = 700;
+$h = 230;
+$myPicture = Chart::create($w, $h, $MyData);
 
-/* Test if we got this hash in our cache already */
-if ( $MyCache->isInCache($ChartHash)) {
+/* Turn of Antialiasing */
+$myPicture->Antialias = FALSE;
 
-    /* If we have it, get the picture from the cache! */
-    $MyCache->strokeFromCache($ChartHash);
-} else {
+/* Draw the background #9FC5EE */
+$myPicture->drawFilledRectangle(0, 0, Chart::size($w), Chart::size($h), array(
+    "R" => 169,
+    "G" => 217,
+    "B" => 238
+));
 
+$myPicture->drawGradientArea(0, 0, Chart::size($w), Chart::size(20), DIRECTION_VERTICAL, array(
+  "StartR"=>159, "StartG"=>197, "StartB"=>238,
+  "EndR"=>133, "EndG"=>184, "EndB"=>238,
+  "Alpha"=>80
+));
 
-    $w = 700;
-    $h = 230;
-    $title = 'Zeit - Platzierung';
-    $legend = 'Hakenleitersteigen';
-    if ($_discipline != 1) {
-      if ($_sex == 'male') {
-        $legend = 'Hindernisbahn - Männer';
-      } else {
-        $legend = 'Hindernisbahn - Frauen';
-      }
-    }
-    $MyData->setSerieDescription("time", $legend);
+/* Add a border to the picture #87A8CC*/
+$myPicture->drawRectangle(0, 0, Chart::size($w-1), Chart::size($h-1), array(
+    "R"=>135,
+    "G"=>168,
+    "B"=>204
+));
 
-    /* Create the pChart object */
-    $myPicture = new pImage($w, $h, $MyData);
+/* Write the chart title */
+$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/calibri.ttf","FontSize"=>Chart::size(8),"R"=>255,"G"=>255,"B"=>255));
+$myPicture->drawText(Chart::size(10), Chart::size(18), $title, array("FontSize"=>Chart::size(11),"Align"=>TEXT_ALIGN_BOTTOMLEFT));
 
-    /* Turn of Antialiasing */
-    $myPicture->Antialias = FALSE;
+/* Set the default font */
+$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(7),"R"=>0,"G"=>0,"B"=>0));
 
-    /* Draw the background #9FC5EE */
-    $Settings = array("R"=>169, "G"=>217, "B"=>238);
-    $myPicture->drawFilledRectangle(0, 0, $w, $h, $Settings);
+/* Define the chart area */
+$myPicture->setGraphArea(Chart::size(40),Chart::size(30),Chart::size(660),Chart::size(200));
 
-    $Settings = array(
-      "StartR"=>159, "StartG"=>197, "StartB"=>238,
-      "EndR"=>133, "EndG"=>184, "EndB"=>238,
-      "Alpha"=>80
-    );
-    $myPicture->drawGradientArea(0, 0, $w, 20,DIRECTION_VERTICAL, $Settings);
+/* Draw the scale */
+$scaleSettings = array(
+  "XMargin"=>Chart::size(10),
+  "YMargin"=>Chart::size(10),
+  "Floating"=>TRUE,
+  "GridR"=>200,
+  "GridG"=>200,
+  "GridB"=>200,
+  "DrawSubTicks"=>TRUE,
+  "CycleBackground"=>TRUE,
+  "LabelSkip"=>4
+);
+$myPicture->drawScale($scaleSettings);
 
-    /* Add a border to the picture #87A8CC*/
-    $myPicture->drawRectangle(0, 0, $w-1, $h-1,array("R"=>135, "G"=>168, "B"=>204));
+/* Turn on Antialiasing */
+$myPicture->Antialias = TRUE;
 
-    /* Write the chart title */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/calibri.ttf","FontSize"=>8,"R"=>255,"G"=>255,"B"=>255));
-    $myPicture->drawText(10, 18, $title,array("FontSize"=>11,"Align"=>TEXT_ALIGN_BOTTOMLEFT));
+/* Enable shadow computing */
+$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
-    /* Set the default font */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>7,"R"=>0,"G"=>0,"B"=>0));
+/* Draw the line chart */
+$myPicture->drawLineChart();
+$myPicture->drawPlotChart(array("PlotSize"=>1,"DisplayValues"=>FALSE,"PlotBorder"=>TRUE,"BorderSize"=>1,"Surrounding"=>-50,"BorderAlpha"=>80));
 
-    /* Define the chart area */
-    $myPicture->setGraphArea(40,30,660,200);
-
-    /* Draw the scale */
-    $scaleSettings = array(
-      "XMargin"=>10,
-      "YMargin"=>10,
-      "Floating"=>TRUE,
-      "GridR"=>200,
-      "GridG"=>200,
-      "GridB"=>200,
-      "DrawSubTicks"=>TRUE,
-      "CycleBackground"=>TRUE,
-      "LabelSkip"=>4
-    );
-    $myPicture->drawScale($scaleSettings);
-
-    /* Turn on Antialiasing */
-    $myPicture->Antialias = TRUE;
-
-    /* Enable shadow computing */
-    $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
-
-    /* Draw the line chart */
-    $myPicture->drawLineChart();
-    $myPicture->drawPlotChart(array("PlotSize"=>1,"DisplayValues"=>FALSE,"PlotBorder"=>TRUE,"BorderSize"=>1,"Surrounding"=>-50,"BorderAlpha"=>80));
-
-    /* Write the chart legend */
-    $myPicture->drawLegend(500,10,array(
-      "Style"=>LEGEND_NOBORDER,
-      "Mode"=>LEGEND_HORIZONTAL,
-      "FontR"=>255,"FontG"=>255,"FontB"=>255,
-      "FontName"=>PCHARTDIR."fonts/calibri.ttf",
-      "FontSize"=>10
-    ));
+/* Write the chart legend */
+$myPicture->drawLegend(Chart::size(500),Chart::size(10),array(
+  "Style"=>LEGEND_NOBORDER,
+  "Mode"=>LEGEND_HORIZONTAL,
+  "FontR"=>255,"FontG"=>255,"FontB"=>255,
+  "FontName"=>PCHARTDIR."fonts/calibri.ttf",
+  "FontSize"=>Chart::size(10)
+));
 
 
-    /* Draw the standard mean and the geometric one */
-    $Mean = $MyData->getSerieAverage("time");
-    $myPicture->drawThreshold($Mean,array("WriteCaption"=>TRUE,"Caption"=>"Durchscnnitt","CaptionAlign"=>CAPTION_RIGHT_BOTTOM));
+/* Draw the standard mean and the geometric one */
+$Mean = $MyData->getSerieAverage("time");
+$myPicture->drawThreshold($Mean,array("WriteCaption"=>TRUE,"Caption"=>"Durchscnnitt","CaptionAlign"=>CAPTION_RIGHT_BOTTOM));
 
 
-    /* Push the rendered picture to the cache */
-    $MyCache->writeToCache($ChartHash, $myPicture);
+/* Push the rendered picture to the cache */
+//$MyCache->writeToCache($ChartHash, $myPicture);
 
-    /* Render the picture */
-    $myPicture->stroke();
-}
+/* Render the picture */
+$myPicture->stroke();
+

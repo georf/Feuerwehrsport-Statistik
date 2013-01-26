@@ -170,9 +170,6 @@ if ($cache) {
 
 
 
-
-    $zweikampf = array();
-
     $gs = $db->getRows("
         SELECT `best`.*,
             `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
@@ -446,6 +443,7 @@ if ($cache) {
 
     $zk = $db->getRows("
         SELECT
+            0 AS `id`,
             `hl`.`person_id`,`p`.`name` AS `name`,`p`.`firstname` AS `firstname`,
             `hb`.`time` AS `hb`,
             `hl`.`time` AS `hl`,
@@ -668,7 +666,7 @@ if ($cache) {
             echo '<tr><td style="text-align:center;" colspan="2"><img src="chart.php?type=competition_bad_good"></td></tr>';
 
             echo '</table>';
-            echo '<p class="chart"><img class="infochart" data-file="competition_platzierung" src="chart.php?type=competition" style="width:700px;height:230px"/></p>';
+            echo '<p class="chart"><img class="infochart" data-file="competition_platzierung" src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$id.'" style="width:700px;height:230px"/></p>';
 
             echo
               '<table class="datatable sc_'.$key;
