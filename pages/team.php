@@ -11,7 +11,7 @@ if (!isset($_GET['id']) || !Check::isIn($_GET['id'], 'teams')) throw new PageNot
 $_id = $_GET['id'];
 
 $cache = Cache::get();
-if ($cache) {
+if (false && $cache) {
     echo $cache;
 } else {
     ob_start();
@@ -199,6 +199,7 @@ if ($cache) {
                 `c`.`id` AS `c_id`,`c`.`date` AS `c_date`,
                 `e`.`id` AS `e_id`,`e`.`name` AS `e_name`,
                 `p`.`id` AS `p_id`,`p`.`name` AS `p_name`,
+                `c`.`fs` AS `type`,
                 `p1`.`name` AS `name1`,`p1`.`firstname` AS `firstname1`,
                 `p2`.`name` AS `name2`,`p2`.`firstname` AS `firstname2`,
                 `p3`.`name` AS `name3`,`p3`.`firstname` AS `firstname3`,
@@ -245,6 +246,7 @@ if ($cache) {
                 `c`.`id` AS `c_id`,`c`.`date` AS `c_date`,
                 `e`.`id` AS `e_id`,`e`.`name` AS `e_name`,
                 `p`.`id` AS `p_id`,`p`.`name` AS `p_name`,
+                `c`.`la` AS `type`,
                 `p1`.`name` AS `name1`,`p1`.`firstname` AS `firstname1`,
                 `p2`.`name` AS `name2`,`p2`.`firstname` AS `firstname2`,
                 `p3`.`name` AS `name3`,`p3`.`firstname` AS `firstname3`,
@@ -354,6 +356,31 @@ if ($cache) {
 
     if (count($sc_gs)) {
         echo '<h2 id="toc-sc_gs">Gruppenstafette</h2>';
+
+
+            $sum = 0;
+            $best = PHP_INT_MAX;
+            $i = 0;
+            foreach ($sc_gs as $score) {
+                if (FSS::isInvalid($score['time'])) continue;
+                $sum += $score['time'];
+                if ($score['time'] < $best) $best = $score['time'];
+                $i++;
+            }
+            $ave = $sum/$i;
+
+            echo  '<table class="chart-table">';
+
+            if ($best != PHP_INT_MAX) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>';
+
+            echo
+                    '<tr><th>Zeiten:</th><td>',count($sc_gs),'</td></tr>',
+                    '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
+                    '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=team_scores_bad_good&amp;key=gs&amp;id='.$_id.'"/></td></tr>',
+                  '</table>';
+            echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=gs&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+
+
         echo '<table class="datatable datatable-sort-gs sc_gs"><thead><tr>',
                 '<th style="width:10%">Typ</th>',
                 '<th style="width:14%">Ort</th>',
@@ -398,6 +425,36 @@ if ($cache) {
     foreach ($sc_fs as $sex => $content) {
         if (count($content['scores'])) {
             echo '<h2 id="toc-fs-'.$sex.'">Feuerwehrstafette '.$content['name'].'</h2>';
+
+
+            $sum = 0;
+            $bestFeuer = PHP_INT_MAX;
+            $bestAbstellen = PHP_INT_MAX;
+            $i = 0;
+            foreach ($content['scores'] as $score) {
+                if (FSS::isInvalid($score['time'])) continue;
+                $sum += $score['time'];
+                if ($score['type'] == 'feuer' && $score['time'] < $bestFeuer) $bestFeuer = $score['time'];
+                if ($score['type'] == 'abstellen' && $score['time'] < $bestAbstellen) $bestAbstellen = $score['time'];
+
+                $i++;
+            }
+            $ave = $sum/$i;
+
+            echo  '<table class="chart-table">';
+
+            if ($bestAbstellen != PHP_INT_MAX) echo '<tr><th>Bestzeit (Abstellen):</th><td>',FSS::time($bestAbstellen),'</td></tr>';
+            if ($bestFeuer != PHP_INT_MAX) echo '<tr><th>Bestzeit (Feuer):</th><td>',FSS::time($bestFeuer),'</td></tr>';
+
+            echo
+                    '<tr><th>Zeiten:</th><td>',count($content['scores']),'</td></tr>',
+                    '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
+                    '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=team_scores_bad_good&amp;key=fs-'.$sex.'&amp;id='.$_id.'"/></td></tr>',
+                  '</table>';
+            echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=fs-'.$sex.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+
+
+
             echo '<table class="datatable datatable-sort-fs sc_fs"><thead><tr>',
                     '<th style="width:9%">Typ</th>',
                     '<th style="width:9%">Ort</th>',
@@ -439,6 +496,41 @@ if ($cache) {
     foreach ($sc_la as $sex => $content) {
         if (count($content['scores'])) {
             echo '<h2 id="toc-la-'.$sex.'">Löschangriff '.$content['name'].'</h2>';
+
+
+            $sum = 0;
+            $best2005 = PHP_INT_MAX;
+            $best2012 = PHP_INT_MAX;
+            $bestCTIF = PHP_INT_MAX;
+            $bestISFFR = PHP_INT_MAX;
+            $i = 0;
+            foreach ($content['scores'] as $score) {
+                if (FSS::isInvalid($score['time'])) continue;
+                $sum += $score['time'];
+                if ($score['type'] == 'wko2005' && $score['time'] < $best2005) $best2005 = $score['time'];
+                if ($score['type'] == 'wko2012' && $score['time'] < $best2012) $best2012 = $score['time'];
+                if ($score['type'] == 'CTIF' && $score['time'] < $bestCTIF) $bestCTIF = $score['time'];
+                if ($score['type'] == 'ISFFR' && $score['time'] < $bestISFFR) $bestISFFR = $score['time'];
+
+                $i++;
+            }
+            $ave = $sum/$i;
+
+            echo  '<table class="chart-table">';
+
+            if ($best2005 != PHP_INT_MAX) echo '<tr><th>Bestzeit (WKO 2005):</th><td>',FSS::time($best2005),'</td></tr>';
+            if ($best2012 != PHP_INT_MAX) echo '<tr><th>Bestzeit (WKO 2012):</th><td>',FSS::time($best2012),'</td></tr>';
+            if ($bestCTIF != PHP_INT_MAX) echo '<tr><th>Bestzeit (CTIF):</th><td>',FSS::time($bestCTIF),'</td></tr>';
+            if ($bestISFFR != PHP_INT_MAX) echo '<tr><th>Bestzeit (ISFFR):</th><td>',FSS::time($bestISFFR),'</td></tr>';
+
+            echo
+                    '<tr><th>Zeiten:</th><td>',count($content['scores']),'</td></tr>',
+                    '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
+                    '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=team_scores_bad_good&amp;key=la-'.$sex.'&amp;id='.$_id.'"/></td></tr>',
+                  '</table>';
+            echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=la-'.$sex.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big" /></p>';
+
+
             echo '<table class="datatable datatable-sort-la sc_la"><thead><tr>',
                     '<th style="width:4%">Typ</th>',
                     '<th style="width:4%">Ort</th>',

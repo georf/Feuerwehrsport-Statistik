@@ -850,7 +850,7 @@ if ($cache) {
             $sum = 0;
             $i = 0;
             foreach ($scores as $score) {
-                if (FSS::isInvalid($time)) continue;
+                if (FSS::isInvalid($score['time'])) continue;
                 $sum += $score['time'];
                 $i++;
             }
