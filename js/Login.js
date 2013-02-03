@@ -404,42 +404,43 @@
 
         if ($('.infochart,.helpinfo').length) {
             var tooltip = $('<div class="tooltip"></div>').hide().appendTo('body');
-            $(document).mousemove(function(e){
-                tooltip.css({
-                   left:  e.pageX + 10,
-                   top:   e.pageY + 10
-                });
-            });
 
-            $('.infochart, .helpinfo').each(function(i, elem) {
+            $('.infochart, .helpinfo').each(function() {
                 var isIn = false;
                 var text = null;
+                
+                var $self = $(this);
 
                 var show = function() {
+                    var os = $self.offset();
+                    var left = os.left + $self.width()/2;
+                    var top = os.top + $self.height()+10;
+                    
                     if (isIn) {
                         if (!text) {
-                            $.get('info/' + elem.data('file') + '.info', function(t){
+                            $.get('info/' + $self.data('file') + '.info', function(t){
                                 text = t;
-                                elem.mouseenter();
+                                show();
                             }, 'text');
                             return;
                         }
+                        tooltip.css({
+                            left: left,
+                            top: top
+                        });
                         tooltip.html(text).show();
-                        elem.css('outline', 'dotted 1px #E5E5E5');
+                    } else {
+                        tooltip.hide();
                     }
                 };
 
-                elem = $(elem);
-                elem.mouseenter(function() {
+                $self.mouseenter(function() {
                     isIn = true;
                     show();
                 });
-                elem.mouseleave(function() {
-                    if (isIn) {
-                        isIn = false;
-                        tooltip.hide();
-                        elem.css('outline', '0');
-                    }
+                $self.mouseleave(function() {
+                    isIn = false;
+                    show();
                 });
             });
         }
@@ -688,11 +689,17 @@
             return false;
         });
 
+        $('img.big').each(function() {
+            $(this).attr('title', 'Klicken zum Vergrößern').css('cursor','pointer');
+        });
+
         $('img.big').click(function() {
             var $img = $(this);
             var newSrc = $img.attr('src') + '&amp;big=1';
             var $big = $('<img src="' + newSrc + '" alt=""/>');
 
+            $img.css('cursor','wait');
+    
             var os = $img.offset();
             var left = os.left + $img.width()/2;
             var top = os.top + $img.height()/2;
@@ -700,6 +707,10 @@
             $big.load(function() {
                 var w = $big.get(0).width;
                 var h = $big.get(0).height;
+                
+                $img.css('cursor','pointer');
+                
+                $big.attr('title', 'Klicken zum Schließen');
 
                 $big.css({
                     position: 'absolute',

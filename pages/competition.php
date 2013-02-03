@@ -583,6 +583,11 @@ if ($cache) {
 
     echo '</table></div>';
 
+
+    echo '<div class="four columns"><h4>Fehlversuche</h4>';
+    echo '<img alt="" class="big" src="chart.php?type=competition_bad_good&amp;key=full&amp;id='.$id.'">';
+    echo '</div>';
+
     echo '<div class="four columns" style="'.getMissedColor($competition['missed']).';padding:5px;border-radius:2px;"><h4>Status</h4>';
 
     $arr = explode(',', $competition['missed']);
@@ -663,7 +668,7 @@ if ($cache) {
 
             if ($i5 == 5) echo '<tr title="Durchschnitt der besten Fünf"><th>Beste 5:</th><td>',FSS::time($ave5),'</td></tr>';
             if ($i10 == 10) echo '<tr title="Durchschnitt der besten Zehn"><th>Beste 10:</th><td>',FSS::time($ave10),'</td></tr>';
-            echo '<tr><td style="text-align:center;" colspan="2"><img src="chart.php?type=competition_bad_good"></td></tr>';
+            if ($key != 'zk') echo '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=competition_bad_good&amp;key='.$fullKey.'&amp;id='.$id.'"></td></tr>';
 
             echo '</table>';
             echo '<p class="chart"><img class="infochart big" data-file="competition_platzierung" src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$id.'" style="width:700px;height:230px"/></p>';
@@ -855,9 +860,9 @@ if ($cache) {
                     '<tr><th>Bestzeit:</th><td>',FSS::time($scores[0]['time']),'</td></tr>',
                     '<tr><th>Mannschaften:</th><td>',count($scores),'</td></tr>',
                     '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
-                    '<tr><td style="text-align:center;" colspan="2"><img src="chart.php?type=competition_bad_good&amp;discipline=gruppenstafette&amp;sex=female&amp;id='.$id.'"/></td></tr>',
+                    '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=competition_bad_good&amp;key='.$fullKey.'&amp;id='.$_id.'"/></td></tr>',
                   '</table>';
-            echo '<p class="chart"><img src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+            echo '<p class="chart"><img src="chart.php?type=competition&amp;key='.$fullKey.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big infochart" data-file="competition_platzierung" /></p>';
 
             echo '<table class="datatable sc_'.$key.'"><thead><tr>',
                     '<th style="width:14%">Team</th>',
