@@ -531,6 +531,7 @@ if ($cache) {
 
     // Mannschaftswertung
     foreach ($team_scores as $fullKey => $tscores) {
+        if (!count($tscores)) continue;
 
         $keys = explode('-', $fullKey);
         $key = $keys[0];
@@ -567,6 +568,7 @@ if ($cache) {
         echo  '<table class="chart-table">';
 
         foreach ($all as $score => $b) {
+            if (!count($b)) continue;
             echo '<tr><th colspan="2">'.$score.' Wertungen ('.count($b).' Zeiten)</th></td></tr>';
             echo '<tr><th>Bestzeit:</th><td>',FSS::time(min($b)),'</td></tr>';
             echo '<tr><th>Durchschnitt:</th><td>',FSS::time(array_sum($b)/count($b)),'</td></tr>';
