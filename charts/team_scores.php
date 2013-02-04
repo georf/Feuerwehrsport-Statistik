@@ -3,7 +3,7 @@
 
 $fullData = Cache::get();
 
-if (true || !$fullData) {
+if (!$fullData) {
     if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
     if (!Check::isIn($_GET['id'], 'competitions')) throw new Exception('bad competition');
     $id = intval($_GET['id']);
@@ -140,7 +140,7 @@ $ChartHash = $MyCache->getHash($MyData, Cache::getId());
 
 
 /* Test if we got this hash in our cache already */
-if (false && $MyCache->isInCache($ChartHash)) {
+if ($MyCache->isInCache($ChartHash)) {
 
     /* If we have it, get the picture from the cache! */
     $MyCache->strokeFromCache($ChartHash);

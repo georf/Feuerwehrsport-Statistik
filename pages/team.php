@@ -290,6 +290,181 @@ if (false && $cache) {
     }
 
 
+    // Mannschaftswertung
+    $team_scores = array(
+        'hb-female' => array(),
+        'hb-male' => array(),
+        'hl' => array(),
+    );
+
+    $competitions = $db->getRows("
+        SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
+            `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
+        FROM `competitions` `c`
+        INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
+        INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
+        LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
+        WHERE `c`.`score_type_id` != 0
+        ORDER BY `c`.`date` DESC
+    ");
+
+    foreach ($competitions as $c_id => $competition) {
+        $single_scores = array();
+        foreach (array('female', 'male') as $sex) {
+
+            $single_scores['hb-'.$sex] = $db->getRows("
+                SELECT `best`.*,
+                    `p`.`name` AS `name`,`p`.`firstname` AS `firstname`
+                FROM (
+                    SELECT *
+                    FROM (
+                        (
+                            SELECT `id`,`team_number`,
+                            `person_id`,
+                            `time`
+                            FROM `scores`
+                            WHERE `time` IS NOT NULL
+                            AND `competition_id` = '".$competition['id']."'
+                            AND `discipline` = 'HB'
+                            AND `team_number` != -2
+                            AND `team_id` = '".$id."'
+                        ) UNION (
+                            SELECT `id`,`team_number`,
+                            `person_id`,
+                            ".FSS::INVALID." AS `time`
+                            FROM `scores`
+                            WHERE `time` IS NULL
+                            AND `competition_id` = '".$competition['id']."'
+                            AND `discipline` = 'HB'
+                            AND `team_number` != -2
+                            AND `team_id` = '".$id."'
+                        ) ORDER BY `time`
+                    ) `all`
+                    GROUP BY `person_id`
+                ) `best`
+                INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
+                WHERE `sex` = '".$sex."'
+                ORDER BY `time`
+            ");
+        }
+
+        $single_scores['hl'] = $db->getRows("
+            SELECT `best`.*,
+                `p`.`name` AS `name`,`p`.`firstname` AS `firstname`
+            FROM (
+                SELECT *
+                FROM (
+                    (
+                        SELECT `id`,`team_number`,
+                        `person_id`,
+                        `time`
+                        FROM `scores`
+                        WHERE `time` IS NOT NULL
+                        AND `competition_id` = '".$competition['id']."'
+                        AND `discipline` = 'HL'
+                        AND `team_number` != -2
+                        AND `team_id` = '".$id."'
+                    ) UNION (
+                        SELECT `id`,`team_number`,
+                        `person_id`,
+                        ".FSS::INVALID." AS `time`
+                        FROM `scores`
+                        WHERE `time` IS NULL
+                        AND `competition_id` = '".$competition['id']."'
+                        AND `discipline` = 'HL'
+                        AND `team_number` != -2
+                        AND `team_id` = '".$id."'
+                    ) ORDER BY `time`
+                ) `all`
+                GROUP BY `person_id`
+            ) `best`
+            INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
+            ORDER BY `time`
+        ");
+
+        foreach ($single_scores as $key => $dis) {
+            if (!count($dis)) continue;
+
+            // Bereche die Wertung
+            $teams = array();
+            foreach ($dis as $score) {
+                if ($score['team_number'] < 0) continue;
+
+
+                $uniqTeam = $score['team_number'];
+                if (!isset($teams[$uniqTeam])) {
+                    $teams[$uniqTeam] = array(
+                        'number' => $score['team_number'],
+                        'scores' => array(),
+                        'time' => FSS::INVALID,
+                        'time68' => -1
+                    );
+                }
+
+                $teams[$uniqTeam]['scores'][] = $score;
+            }
+
+            // sort every persons in teams
+            foreach ($teams as $uniqTeam => $t) {
+                $time = 0;
+                $time68 = 0;
+
+                usort($t['scores'], function($a, $b) {
+                    if ($a['time'] == $b['time']) return 0;
+                    elseif ($a['time'] > $b['time']) return 1;
+                    else return -1;
+                });
+
+                if (count($t['scores']) < $competition['score']) {
+
+                    $teams[$uniqTeam]['time'] = FSS::INVALID;
+                    $teams[$uniqTeam]['time68'] = FSS::INVALID;
+
+                    continue;
+                }
+
+                for($i = 0; $i < $competition['score']; $i++) {
+                    if ($t['scores'][$i]['time'] == FSS::INVALID) {
+                        $teams[$uniqTeam]['time'] = FSS::INVALID;
+                        $teams[$uniqTeam]['time68'] = FSS::INVALID;
+                        continue 2;
+                    }
+                    $time += $t['scores'][$i]['time'];
+                }
+
+                if (count($t['scores']) < 6) {
+                        $teams[$uniqTeam]['time68'] = FSS::INVALID;
+                } else {
+                    for($i = 0; $i < 6; $i++) {
+                        if ($t['scores'][$i]['time'] == FSS::INVALID) {
+                            $teams[$uniqTeam]['time68'] = FSS::INVALID;
+                            break;
+                        }
+                        $time68 += $t['scores'][$i]['time'];
+                    }
+
+                    if ($teams[$uniqTeam]['time68'] == -1) {
+                        $teams[$uniqTeam]['time68'] = $time68;
+                    }
+                }
+                $teams[$uniqTeam]['time'] = $time;
+            }
+
+            // Sortiere Teams nach Zeit
+            uasort($teams, function ($a, $b) {
+                if ($a['time'] == $b['time']) return 0;
+                elseif ($a['time'] > $b['time']) return 1;
+                else return -1;
+            });
+
+            $team_scores[$key][] = array(
+                'competition' => $competition,
+                'teams' => $teams,
+            );
+        }
+
+    }
+
     // Team - Logo
     if ($team['logo']) {
         echo '<p style="float:left;margin-right:20px;"><img src="'.$config['logo-path'].$team['logo'].'" alt="'.htmlspecialchars($team['short']).'"/></p>';
@@ -354,31 +529,122 @@ if (false && $cache) {
     echo '</tbody></table>';
 
 
+    // Mannschaftswertung
+    foreach ($team_scores as $fullKey => $tscores) {
+
+        $keys = explode('-', $fullKey);
+        $key = $keys[0];
+        $sex = false;
+        if (count($keys) > 1) {
+            $sex = $keys[1];
+        }
+
+        echo '<h2 id="dis-'.$fullKey.'-mannschaft">',FSS::dis2name($key);
+        if ($sex) echo ' '.FSS::sex($sex);
+        echo ' - Mannschaftswertung</h2>';
+
+
+
+        $all = array(
+            '2' => array(),
+            '4' => array(),
+            '6' => array(),
+        );
+        $best68 = PHP_INT_MAX;
+
+        foreach ($tscores as $tscore) {
+            $competition = $tscore['competition'];
+            if (!isset($all[$competition['score']])) $all[$competition['score']] = array();
+
+            foreach ($tscore['teams'] as $t) {
+                if (FSS::isInvalid($t['time'])) continue;
+                $all[$competition['score']][] = $t['time'];
+
+                if (!FSS::isInvalid($t['time68']) && $t['time68'] < $best68) $best68 = $t['time68'];
+            }
+        }
+
+        echo  '<table class="chart-table">';
+
+        foreach ($all as $score => $b) {
+            echo '<tr><th colspan="2">'.$score.' Wertungen ('.count($b).' Zeiten)</th></td></tr>';
+            echo '<tr><th>Bestzeit:</th><td>',FSS::time(min($b)),'</td></tr>';
+            echo '<tr><th>Durchschnitt:</th><td>',FSS::time(array_sum($b)/count($b)),'</td></tr>';
+        }
+        if ($best68 != PHP_INT_MAX) echo '<tr><th>Bei 6 Läufern:</th><td>',FSS::time($best68),'</td></tr>';
+
+        echo '</table>';
+        //echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=gs&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+
+
+
+
+
+        echo
+          '<table class="datatable datatable-sort-team-scores"><thead><tr>',
+            '<th style="width:10%">Event</th>',
+            '<th style="width:5%">Zeit</th>',
+            '<th style="width:5%">bei 6</th>',
+            '<th style="width:40%">Wertung</th>',
+            '<th style="width:36%">Außerhalb</th>',
+            '<th style="width:4%"></th>',
+          '</tr></thead>',
+          '<tbody>';
+
+        foreach ($tscores as $tscore) {
+            $competition = $tscore['competition'];
+            foreach ($tscore['teams'] as $t) {
+                echo '<tr>';
+                echo '<td>'.$competition['date'].'<br/>'.Link::competition($competition['id'], $competition['event'], $competition['place']).'</td>';
+                echo '<td>'.FSS::time($t['time']).'</td>';
+                echo '<td>'.FSS::time($t['time68']).'</td>';
+
+                $inScore = array();
+                $outScore = array();
+                $i = 0;
+                foreach ($t['scores'] as $score) {
+                    $link = Link::person($score['person_id'], 'sub', $score['name'], $score['firstname'], FSS::time($score['time']));
+                    if ($i < $competition['score']) $inScore[] = $link;
+                    else $outScore[] = $link;
+                    $i++;
+                }
+
+                echo '<td style="font-size:0.7em">'.implode(', ', $inScore).'</td>';
+                echo '<td style="font-size:0.7em">'.implode(', ', $outScore).'</td>';
+                echo '<td>',$competition['score'],'</td>';
+                echo '</tr>';
+            }
+        }
+        echo '</tbody></table>';
+    }
+
+
+
     if (count($sc_gs)) {
         echo '<h2 id="toc-sc_gs">Gruppenstafette</h2>';
 
 
-            $sum = 0;
-            $best = PHP_INT_MAX;
-            $i = 0;
-            foreach ($sc_gs as $score) {
-                if (FSS::isInvalid($score['time'])) continue;
-                $sum += $score['time'];
-                if ($score['time'] < $best) $best = $score['time'];
-                $i++;
-            }
-            $ave = $sum/$i;
+        $sum = 0;
+        $best = PHP_INT_MAX;
+        $i = 0;
+        foreach ($sc_gs as $score) {
+            if (FSS::isInvalid($score['time'])) continue;
+            $sum += $score['time'];
+            if ($score['time'] < $best) $best = $score['time'];
+            $i++;
+        }
+        $ave = $sum/$i;
 
-            echo  '<table class="chart-table">';
+        echo  '<table class="chart-table">';
 
-            if ($best != PHP_INT_MAX) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>';
+        if ($best != PHP_INT_MAX) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>';
 
-            echo
-                    '<tr><th>Zeiten:</th><td>',count($sc_gs),'</td></tr>',
-                    '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
-                    '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=team_scores_bad_good&amp;key=gs&amp;id='.$_id.'"/></td></tr>',
-                  '</table>';
-            echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=gs&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+        echo
+                '<tr><th>Zeiten:</th><td>',count($sc_gs),'</td></tr>',
+                '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
+                '<tr><td style="text-align:center;" colspan="2"><img alt="" class="big" src="chart.php?type=team_scores_bad_good&amp;key=gs&amp;id='.$_id.'"/></td></tr>',
+              '</table>';
+        echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=gs&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
 
 
         echo '<table class="datatable datatable-sort-gs sc_gs"><thead><tr>',

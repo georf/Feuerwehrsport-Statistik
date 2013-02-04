@@ -4,6 +4,9 @@ $(function() {
     // Mitglieder
     sortTable('.datatable-sort-members', 0, 'asc', 8);
 
+    // Mannschaftswertung
+    sortTable('.datatable-sort-team-scores', 0, 'desc', [3,4]);
+
     // Gruppenstafette
     sortTable('.datatable-sort-gs', 2, 'desc', 11);
 

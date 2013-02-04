@@ -774,13 +774,13 @@ if ($cache) {
 
                     if (count($team['scores']) < $competition['score']) {
 
-                        $teams[$key]['time'] = FSS::INVALID;
+                        $teams[$uniqTeam]['time'] = FSS::INVALID;
                         continue;
                     }
 
                     for($i = 0; $i < $competition['score']; $i++) {
                         if ($team['scores'][$i]['time'] == FSS::INVALID) {
-                            $teams[$key]['time'] = FSS::INVALID;
+                            $teams[$uniqTeam]['time'] = FSS::INVALID;
                             continue 2;
                         }
                         $time += $team['scores'][$i]['time'];
@@ -806,7 +806,7 @@ if ($cache) {
                     $outScore = array();
                     $i = 0;
                     foreach ($team['scores'] as $score) {
-                        $link = Link::person($score['id'], 'sub', $score['name'], $score['firstname'], FSS::time($score['time']));
+                        $link = Link::person($score['person_id'], 'sub', $score['name'], $score['firstname'], FSS::time($score['time']));
                         if ($i < $competition['score']) $inScore[] = $link;
                         else $outScore[] = $link;
                         $i++;
