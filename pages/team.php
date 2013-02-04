@@ -11,7 +11,7 @@ if (!isset($_GET['id']) || !Check::isIn($_GET['id'], 'teams')) throw new PageNot
 $_id = $_GET['id'];
 
 $cache = Cache::get();
-if (false && $cache) {
+if ($cache) {
     echo $cache;
 } else {
     ob_start();

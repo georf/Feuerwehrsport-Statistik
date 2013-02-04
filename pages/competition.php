@@ -995,5 +995,7 @@ if ($cache) {
         </form>
     </div>
     ';
+
+    Cache::put(ob_get_flush());
 }
 
