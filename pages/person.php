@@ -304,9 +304,9 @@ if ($cache) {
 
         echo
               '<tr><td colspan="2">Die Ergebnisse beziehen sich nur auf die hier gespeicherten Daten.</td></tr>',
-              '<tr><td colspan="2" style="text-align:center;"><img src="chart.php?type=person_bad_good&amp;discipline=',$key,'&amp;id=',$_id,'" alt=""/></td></tr>',
+              '<tr><td colspan="2" style="text-align:center;"><img class="big" src="chart.php?type=person_bad_good&amp;key=',$key,'&amp;id=',$_id,'" alt=""/></td></tr>',
               '</table>';
-        echo '<p class="chart"><img src="chart.php?type=person&amp;discipline=',$key,'&amp;id=',$_id,'" style="width:700px;height:300px" alt=""/></p>';
+        echo '<p class="chart"><img class="big" src="chart.php?type=person&amp;key=',$key,'&amp;id=',$_id,'" style="width:700px;height:300px" alt=""/></p>';
 
 
 

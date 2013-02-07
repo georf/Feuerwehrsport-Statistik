@@ -1,60 +1,249 @@
 <?php
 
-$_discipline = 1;
-$_id = 0;
 
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-  $_id = $_GET['id'];
-} else {
-  exit();
-}
+$fullData = Cache::get();
 
-if (isset($_GET['discipline'])) {
-  $_discipline = $_GET['discipline'];
-}
+if (!$fullData) {
+    if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
+    if (!Check::isIn($_GET['id'], 'persons')) throw new Exception('bad person');
+    $id = intval($_GET['id']);
+    $key = $_GET['key'];
 
+    switch ($key) {
 
-$MyData = Cache::get();
+        case 'full':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM (
+                    SELECT `id`
+                    FROM `scores_gruppenstafette`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    AND `time` IS NOT NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores_loeschangriff`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    OR `person_7` = '".$id."'
+                    AND `time` IS NOT NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores_stafette`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    AND `time` IS NOT NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores`
+                    WHERE `time` IS NOT NULL
+                    AND `person_id` = '".$id."'
+                ) `i`
+            ", 'good');
 
-if (!$MyData) {
-    $person = $db->getFirstRow("
-        SELECT *
-        FROM `persons`
-        WHERE `id` = '".$db->escape($_id)."'
-      ");
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM (
+                    SELECT `id`
+                    FROM `scores_gruppenstafette`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    AND `time` IS NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores_loeschangriff`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    OR `person_7` = '".$id."'
+                    AND `time` IS NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores_stafette`
+                    WHERE `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    AND `time` IS NULL
+                UNION
+                    SELECT `id`
+                    FROM `scores`
+                    WHERE `time` IS NULL
+                    AND `person_id` = '".$id."'
+                ) `i`
+            ", 'bad');
+            $title = 'Ganzer Wettkampf';
 
-    if (!$person) exit();
+            break;
 
+        case 'gs':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM `scores_gruppenstafette`
+                WHERE `time` IS NOT NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                )
+            ", 'good');
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM `scores_gruppenstafette`
+                WHERE `time` IS NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                )
+            ", 'bad');
+            $title = FSS::dis2name($key);
+            break;
 
-    $good = $db->getFirstRow("
-          SELECT COUNT(*) AS `good`
-          FROM `scores`
-          WHERE `person_id` = '".$db->escape($_id)."'
-          AND `discipline_id` = '".$db->escape($_discipline)."'
-          AND `time` IS NOT NULL
-    ", 'good');
-    $bad = $db->getFirstRow("
-          SELECT COUNT(*) AS `bad`
-          FROM `scores`
-          WHERE `person_id` = '".$db->escape($_id)."'
-          AND `discipline_id` = '".$db->escape($_discipline)."'
-          AND `time` IS NULL
-    ", 'bad');
+        case 'la':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM `scores_loeschangriff`
+                WHERE `time` IS NOT NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    OR `person_7` = '".$id."'
+                )
+            ", 'good');
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM `scores_loeschangriff`
+                WHERE `time` IS NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                    OR `person_5` = '".$id."'
+                    OR `person_6` = '".$id."'
+                    OR `person_7` = '".$id."'
+                )
+            ", 'bad');
+            $title = FSS::dis2name($key);
+            break;
 
+        case 'fs':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM `scores_stafette`
+                WHERE `time` IS NOT NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                )
+            ", 'good');
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM `scores_stafette`
+                WHERE `time` IS NULL
+                AND (
+                    `person_1` = '".$id."'
+                    OR `person_2` = '".$id."'
+                    OR `person_3` = '".$id."'
+                    OR `person_4` = '".$id."'
+                )
+            ", 'bad');
+            $title = FSS::dis2name($key);
+            break;
+
+        case 'hb':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM `scores`
+                WHERE `time` IS NOT NULL
+                AND `person_id` = '".$id."'
+                AND `discipline` = 'HB'
+            ", 'good');
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM `scores`
+                WHERE `time` IS NULL
+                AND `person_id` = '".$id."'
+                AND `discipline` = 'HB'
+            ", 'bad');
+            $title = FSS::dis2name($key);
+            break;
+
+        case 'hl':
+            $good = $db->getFirstRow("
+                SELECT COUNT(*) AS `good`
+                FROM `scores`
+                WHERE `time` IS NOT NULL
+                AND `person_id` = '".$id."'
+                AND `discipline` = 'HL'
+            ", 'good');
+            $bad = $db->getFirstRow("
+                SELECT COUNT(*) AS `bad`
+                FROM `scores`
+                WHERE `time` IS NULL
+                AND `person_id` = '".$id."'
+                AND `discipline` = 'HL'
+            ", 'bad');
+            $title = FSS::dis2name($key);
+            break;
+
+        default:
+            throw new Exception('bad key');
+            break;
+    }
 
     $MyData = new pData();
     $MyData->addPoints(array($good, $bad), "time");
     $MyData->addPoints(array('Gültig', 'Ungültig'), "Platzierung");
     $MyData->setAbscissa("Platzierung");
 
-    Cache::put($MyData);
+    $fullData = array(
+        'title' => $title,
+        'myData' => $MyData
+    );
+    Cache::put($fullData);
 }
+
+$MyData = $fullData['myData'];
+$title = $fullData['title'];
+
 
 /* Create the cache object */
 $MyCache = new pCache();
 
 /* Compute the hash linked to the chart data */
-$ChartHash = $MyCache->getHash($MyData);
+$ChartHash = $MyCache->getHash($MyData, Cache::getId());
+
 
 /* Test if we got this hash in our cache already */
 if ( $MyCache->isInCache($ChartHash)) {
@@ -64,26 +253,28 @@ if ( $MyCache->isInCache($ChartHash)) {
 } else {
 
 
+
     $w = 140;
     $h = 65;
-    $title = '';
+    $myPicture = Chart::create($w, $h, $MyData);
 
-
-
-    /* Create the pChart object */
-    $myPicture = new pImage($w, $h, $MyData, TRUE);
-
-    /* Turn on Antialiasing */
+    /* Turn of Antialiasing */
     $myPicture->Antialias = TRUE;
 
     /* Set the default font */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>9,"R"=>0,"G"=>0,"B"=>0));
+    $myPicture->setFontProperties(array(
+        "FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf",
+        "FontSize"=>Chart::size(9),
+        "R"=>0,
+        "G"=>0,
+        "B"=>0
+    ));
 
     /* Create the pPie object */
-    $PieChart = new pPie($myPicture,$MyData);
+    $PieChart = new pPie($myPicture, $MyData);
 
     /* Draw a simple pie chart */
-    $PieChart->draw2DPie(30,30,array(
+    $PieChart->draw2DPie(Chart::size(30),Chart::size(30), array(
         "WriteValues"=>PIE_VALUE_PERCENTAGE,
         "ValueR"=>50,
         "ValueG"=>50,
@@ -92,10 +283,12 @@ if ( $MyCache->isInCache($ChartHash)) {
         "Border"=>TRUE,
         "ValuePosition"=>PIE_VALUE_INSIDE,
         "SkewFactor"=>0.5,
-        "Radius"=>30,
-        "ValuePadding"=>"15"));
+        "Radius"=>Chart::size(30),
+        "ValuePadding"=>Chart::size(15),
+        "LabelStacked"=>true
+    ));
 
-    $PieChart->drawPieLegend(68,17);
+    $PieChart->drawPieLegend(Chart::size(68),Chart::size(17));
 
     /* Push the rendered picture to the cache */
     $MyCache->writeToCache($ChartHash, $myPicture);
