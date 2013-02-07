@@ -576,7 +576,7 @@ if ($cache) {
         if ($best68 != PHP_INT_MAX) echo '<tr><th>Bei 6 Läufern:</th><td>',FSS::time($best68),'</td></tr>';
 
         echo '</table>';
-        //echo '<p class="chart"><img src="chart.php?type=team_scores&amp;key=gs&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
+        echo '<p class="chart"><img src="chart.php?type=team_scores_team&amp;key='.$fullKey.'&amp;id='.$_id.'" style="width:700px;height:230px" class="big"/></p>';
 
 
 
