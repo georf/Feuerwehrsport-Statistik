@@ -5,6 +5,7 @@ tools/Daten/*
 
 # files
 files/*
+styling/logos/*
 
 # config
 lib/config.php

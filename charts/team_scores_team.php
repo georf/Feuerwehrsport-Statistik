@@ -5,7 +5,7 @@ $fullData = Cache::get();
 
 if (!$fullData) {
     if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
-    if (!Check::isIn($_GET['id'], 'competitions')) throw new Exception('bad competition');
+    if (!Check::isIn($_GET['id'], 'teams')) throw new Exception('bad team');
     $id = intval($_GET['id']);
 
     $keys = explode('-', $_GET['key']);
@@ -251,6 +251,10 @@ if (!$fullData) {
         $MyData->setSerieDescription("time68", '6 Berechnet');
     }
 
+    if (!count($labels)) {
+        throw new Exception("Keine Daten");
+    }
+
     $MyData->addPoints($labels, "Daten");
     $MyData->setAbscissa("Daten");
 
@@ -264,7 +268,6 @@ if (!$fullData) {
 
 $MyData = $fullData['myData'];
 $title = $fullData['title'];
-
 
 /* Create the cache object */
 $MyCache = new pCache();

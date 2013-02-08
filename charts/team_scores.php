@@ -5,7 +5,7 @@ $fullData = Cache::get();
 
 if (!$fullData) {
     if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
-    if (!Check::isIn($_GET['id'], 'competitions')) throw new Exception('bad competition');
+    if (!Check::isIn($_GET['id'], 'teams')) throw new Exception('bad team');
     $id = intval($_GET['id']);
 
     $keys = explode('-', $_GET['key']);

@@ -303,10 +303,13 @@ if ($cache) {
         if ($i > 0) echo '<tr><th>Durchschnitt:</th><td>',FSS::time($sum/$i),'</td></tr>';
 
         echo
-              '<tr><td colspan="2">Die Ergebnisse beziehen sich nur auf die hier gespeicherten Daten.</td></tr>',
-              '<tr><td colspan="2" style="text-align:center;"><img class="big" src="chart.php?type=person_bad_good&amp;key=',$key,'&amp;id=',$_id,'" alt=""/></td></tr>',
+              '<tr><td colspan="2">Die Ergebnisse beziehen sich nur auf die hier gespeicherten Daten.</td></tr>';
+
+        if ($key != 'zk') echo '<tr><td colspan="2" style="text-align:center;"><img class="big" src="chart.php?type=person_bad_good&amp;key=',$key,'&amp;id=',$_id,'" alt=""/></td></tr>';
+
+        echo
               '</table>';
-        echo '<p class="chart"><img class="big" src="chart.php?type=person&amp;key=',$key,'&amp;id=',$_id,'" style="width:700px;height:300px" alt=""/></p>';
+        echo '<p class="chart"><img class="big" src="chart.php?type=person&amp;key=',$key,'&amp;id=',$_id,'" style="width:700px;height:280px" alt=""/></p>';
 
 
 
@@ -460,8 +463,23 @@ if ($cache) {
 
             echo '</td></tr>';
 
-            if ($team['website']) {
-                echo '<tr><th>Webseite:</th><td><a href="',htmlspecialchars($team['website']),'">',htmlspecialchars($team['website']),'</a></td></tr>';
+            $links = $db->getRows("
+              SELECT *
+              FROM `links`
+              WHERE `for_id` = '".$team['id']."'
+              AND `for` = 'team'
+            ");
+
+            if (count($links)) {
+                echo '<tr><th>Webseite:</th><td>';
+
+                $l = array();
+                foreach ($links as $link) {
+                    $l[] = '<a href="'.htmlspecialchars($link['url']).'">'.htmlspecialchars($link['name']).'</a>';
+                }
+                echo implode('<br/>', $l);
+
+                echo '</td></tr>';
             }
 
             echo
