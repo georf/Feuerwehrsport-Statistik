@@ -578,7 +578,7 @@ if ($cache) {
         echo '<tr title="Feuerwehrstafette"><th>FS:</th><td>',count($fs['female']),'</td><td>',count($fs['male']),'</td></tr>';
 
     if (count($la['female']) || count($la['male']))
-        echo '<tr title="Löschangriff"><th>HB:</th><td>',count($la['female']),'</td><td>',count($la['male']),'</td></tr>';
+        echo '<tr title="Löschangriff"><th>LA:</th><td>',count($la['female']),'</td><td>',count($la['male']),'</td></tr>';
 
 
     echo '</table></div>';
