@@ -62,18 +62,24 @@ foreach ($missed as $m) {
 
 ?>
 
+
+<div class="four columns">
+    <img src="styling/images/statistiken-logo.png" alt="Logo" />
+</div>
+<div class="twelve columns">
+
 <div class="toc right"><h5>Inhaltsverzeichnis</h5><ol>
     <li class="toc-placeholder">&nbsp;</li>
 </ol></div>
-
-<h1>Feuerwehrsport - die große Auswertung</h1>
-<p>Diese Website dient der Auswertung des Feuerwehrsports in Deutschland
-über den Zeitraum der letzten Jahre. Dabei werden die Disziplinen
-<a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Männer),
-<a href="http://de.wikipedia.org/wiki/100-Meter-Hindernislauf">100-Meter-Hindernisbahn</a> (Frauen und Männer),
-<a href="http://de.wikipedia.org/wiki/Gruppenstafette">Gruppenstafette</a> (Frauen),
-<a href="http://de.wikipedia.org/wiki/Feuerwehrstafette">4x100-Meter-Feuerwehrstafette</a> (Frauen und Männer) und
-<a href="http://de.wikipedia.org/wiki/Löschangriff_Nass">Löschangriff Nass</a> (Frauen und Männer) ausgewertet.</p>
+    <h1>Feuerwehrsport - die große Auswertung</h1>
+    <p>Diese Website dient der Auswertung des Feuerwehrsports in Deutschland
+    über den Zeitraum der letzten Jahre. Dabei werden die Disziplinen
+    <a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Männer),
+    <a href="http://de.wikipedia.org/wiki/100-Meter-Hindernislauf">100-Meter-Hindernisbahn</a> (Frauen und Männer),
+    <a href="http://de.wikipedia.org/wiki/Gruppenstafette">Gruppenstafette</a> (Frauen),
+    <a href="http://de.wikipedia.org/wiki/Feuerwehrstafette">4x100-Meter-Feuerwehrstafette</a> (Frauen und Männer) und
+    <a href="http://de.wikipedia.org/wiki/Löschangriff_Nass">Löschangriff Nass</a> (Frauen und Männer) ausgewertet.</p>
+</div>
 <h2 class="toToc">Überblick</h2>
 <div class="sixteen columns clearfix">
     <div class="eight columns">
