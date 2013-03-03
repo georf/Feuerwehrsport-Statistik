@@ -331,7 +331,7 @@ if ($cache) {
                 ) `all`
                 GROUP BY `person_id`
             ) `best`
-            INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+            LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
             INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
             WHERE `sex` = '".$sex."'
             ORDER BY `time`
@@ -366,7 +366,7 @@ if ($cache) {
                 ) `all`
                 GROUP BY `person_id`
             ) `best`
-            INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+            LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
             INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
             WHERE `sex` = '".$sex."'
             ORDER BY `time`
@@ -402,7 +402,7 @@ if ($cache) {
             ) `all`
             GROUP BY `person_id`
         ) `best`
-        INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+        LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
         INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
         ORDER BY `time`
     ");
@@ -436,7 +436,7 @@ if ($cache) {
             ) `all`
             GROUP BY `person_id`
         ) `best`
-        INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+        LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
         INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
         ORDER BY `time`
     ");
