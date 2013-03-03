@@ -1036,7 +1036,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
         setExcelBold($worksheet, 'A3', 14);
         setExcelHCenter($worksheet, 'A3');
 
-        $worksheet->setCellValue('A5', "Diese Datei enthält berechnete Ergebnisse von diesem Wettkampf. Es sind nicht die offiziellen Ergebnisse des Veranstalters. Die Daten wurden auf statistik.feuerwehrsport-teammv.de gesammelt. Bei Fehlern oder Anmerkungen bitte auf der Webseite melden.");
+        $worksheet->setCellValue('A5', "Diese Datei enthält berechnete Ergebnisse von diesem Wettkampf. Es sind nicht die offiziellen Ergebnisse des Veranstalters. Die Daten wurden auf www.feuerwehrsport-statistik.de gesammelt. Bei Fehlern oder Anmerkungen bitte auf der Webseite melden.");
         $worksheet->mergeCells('A5:B9');
         $worksheet->getStyle('A5')->getAlignment()->setWrapText(true);
         setExcelHCenter($worksheet, 'A5');

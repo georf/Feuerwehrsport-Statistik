@@ -69,10 +69,10 @@ foreach ($missed as $m) {
 <h1>Feuerwehrsport - die große Auswertung</h1>
 <p>Diese Website dient der Auswertung des Feuerwehrsports in Deutschland
 über den Zeitraum der letzten Jahre. Dabei werden die Disziplinen
-<a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Männer), 
-<a href="http://de.wikipedia.org/wiki/100-Meter-Hindernislauf">100-Meter-Hindernisbahn</a> (Frauen und Männer), 
+<a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Männer),
+<a href="http://de.wikipedia.org/wiki/100-Meter-Hindernislauf">100-Meter-Hindernisbahn</a> (Frauen und Männer),
 <a href="http://de.wikipedia.org/wiki/Gruppenstafette">Gruppenstafette</a> (Frauen),
-<a href="http://de.wikipedia.org/wiki/Feuerwehrstafette">4x100-Meter-Feuerwehrstafette</a> (Frauen und Männer) und 
+<a href="http://de.wikipedia.org/wiki/Feuerwehrstafette">4x100-Meter-Feuerwehrstafette</a> (Frauen und Männer) und
 <a href="http://de.wikipedia.org/wiki/Löschangriff_Nass">Löschangriff Nass</a> (Frauen und Männer) ausgewertet.</p>
 <h2 class="toToc">Überblick</h2>
 <div class="sixteen columns clearfix">
@@ -148,7 +148,7 @@ foreach ($missed as $m) {
 <div class="sixteen columns clearfix">
     <div class="nine columns">
         <p>Die Daten für diese statistische Auswertung stammen von verschiedenen Quellen. Ein großer Teil wurde mir von Daniel Grosche zur Verfügung gestellt. Diese Daten lagen sogar im Excel-Format vor, wodurch die Daten schnell importiert werden konnten. Weitere Ergebnisse wurden aus PDFs extrahiert. Dabei ist neben der Seite vom Team MV die Seite des LFV BB und der Feuerwehr Cottbus zu nennen, die viele Ergebnisse bereitstellen.</p>
-        <p>Ein großer Dank geht auch an <a href="http://statistik.feuerwehrsport-teammv.de/?page=person&id=302">Florian Müller</a>. Er hat vielen Zeiten Mannschaften zugeordnet und mehrere Wettkämpfe digitalisiert.</p>
+        <p>Ein großer Dank geht auch an <a href="http://www.feuerwehrsport-statistik.de/?page=person&id=302">Florian Müller</a>. Er hat vielen Zeiten Mannschaften zugeordnet und mehrere Wettkämpfe digitalisiert.</p>
         <p>Sollte sich jemand durch die Verwendung der Daten in seinem Urheberrecht verletzt fühlen, bitte nicht sofort abmahnen. Über <a href="#kontakt">E-Mail</a> bin ich immer relativ schnell erreichbar. Das gleiche gilt auch für <a href="#fehler">Fehler in den Daten</a>.</p>
         <p>Falls auch ein Informatiker unter den Lesern sein sollte: Ich stelle natürlich die Datensammlung auch gerne zur Verfügung, falls jemand selber damit rumprobieren will. Der Quelltext für die Programmierung ist noch nicht öffentlich einsehbar. Sobald ich diesen aufgeräumt habe, wird er bei Github zur Verfügung gestellt.</p>
     </div>

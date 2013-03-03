@@ -7,8 +7,8 @@ try {
 }
 
 
-$link_news = 'http://statistik.feuerwehrsport-teammv.de/?page=news&id=';
-$link_logs = 'http://statistik.feuerwehrsport-teammv.de/?page=logs#logId';
+$link_news = 'http://www.feuerwehrsport-statistik.de/?page=news&id=';
+$link_logs = 'http://www.feuerwehrsport-statistik.de/?page=logs#logId';
 
 new FeedLoader();
 
@@ -25,7 +25,7 @@ if (!$feed) {
     $feed = new RSS2FeedWriter();
     if (isset($_GET['v']) && $_GET['v'] == 'atom') $feed = new ATOMFeedWriter();
 
-    $feed->setLink('http://statistik.feuerwehrsport-teammv.de');
+    $feed->setLink('http://www.feuerwehrsport-statistik.de');
     switch ($_GET['type']) {
         case 'news':
 
