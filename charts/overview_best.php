@@ -12,17 +12,17 @@ if (!$MyData) {
 
     $diss = array(array(
             'name' => 'HL',
-            'dis' => 1,
+            'dis' => 'HL',
             'sex' => 'male',
             'avgs' => array()
         ), array(
             'name' => 'HB männlich',
-            'dis' => 2,
+            'dis' => 'HB',
             'sex' => 'male',
             'avgs' => array()
         ), array(
             'name' => 'HB weiblich',
-            'dis' => 2,
+            'dis' => 'HB',
             'sex' => 'female',
             'avgs' => array()
         )
@@ -53,13 +53,13 @@ if (!$MyData) {
                         FROM `scores` `s`
                         INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
                         WHERE `s`.`competition_id` = '".$competition['id']."'
-                        AND `s`.`discipline_id` = '".$db->escape($dis['dis'])."'
+                        AND `s`.`discipline` = '".$db->escape($dis['dis'])."'
                         AND `p`.`sex` = '".$db->escape($dis['sex'])."'
                         AND `s`.`time` IS NOT NULL
                         ORDER BY `s`.`time`) `i`
                     GROUP BY `i`.`person_id`
                 ");
-                if (count($count) < 20) {
+                if (count($count) < 25) {
                     continue;
                 }
 
@@ -75,7 +75,7 @@ if (!$MyData) {
                             FROM `scores` `s`
                             INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
                             WHERE `s`.`competition_id` = '".$competition['id']."'
-                            AND `s`.`discipline_id` = '".$db->escape($dis['dis'])."'
+                            AND `s`.`discipline` = '".$db->escape($dis['dis'])."'
                             AND `p`.`sex` = '".$db->escape($dis['sex'])."'
                             AND `s`.`time` IS NOT NULL
                             ORDER BY `s`.`time`) `i`
@@ -131,16 +131,16 @@ if ( $MyCache->isInCache($ChartHash)) {
     $h = 150;
 
     /* Create the pChart object */
-    $myPicture = new pImage($w, $h, $MyData, TRUE);
+    $myPicture = Chart::create($w, $h, $MyData);
 
     /* Turn on Antialiasing */
     $myPicture->Antialias = TRUE;
 
     /* Set the default font */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>8,"R"=>0,"G"=>0,"B"=>0));
+    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(8),"R"=>0,"G"=>0,"B"=>0));
 
     /* Define the chart area */
-    $myPicture->setGraphArea(25,15,200,135);
+    $myPicture->setGraphArea(Chart::size(25),Chart::size(15),Chart::size(200),Chart::size(135));
 
     /* Draw the scale */
     $scaleSettings = array(
@@ -156,18 +156,18 @@ if ( $MyCache->isInCache($ChartHash)) {
     $myPicture->drawScale($scaleSettings);
 
     /* Enable shadow computing */
-    $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+    $myPicture->setShadow(TRUE,array("X"=>Chart::size(1),"Y"=>Chart::size(1),"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
     /* Draw the line chart */
     $myPicture->drawLineChart();
 
     /* Write the chart legend */
-    $myPicture->drawLegend(5,1,array(
+    $myPicture->drawLegend(Chart::size(5),Chart::size(1),array(
       "Style"=>LEGEND_NOBORDER,
       "Mode"=>LEGEND_HORIZONTAL,
       "FontR"=>0,"FontG"=>0,"FontB"=>0,
       "FontName"=>PCHARTDIR."fonts/calibri.ttf",
-      "FontSize"=>10
+      "FontSize"=>Chart::size(10)
     ));
 
     /* Push the rendered picture to the cache */

@@ -6,8 +6,10 @@
 	<title>Statistik</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
 	<meta name="generator" content="Geany 0.20"/>
-    <link rel="alternate" type="application/rss+xml" href="http://www.feuerwehrsport-statistik.de/feed.php?type=news" title="Neuigkeiten bei Feuerwehrsport-Statistiken"/>
+    <link rel="alternate" type="application/rss+xml" href="http://www.feuerwehrsport-statistik.de/feed.php?v=rss2&type=news" title="Neuigkeiten bei Feuerwehrsport-Statistiken"/>
+    <link rel="alternate" type="application/rss+xml" href="http://www.feuerwehrsport-statistik.de/feed.php?v=rss2&type=logs" title="Veränderungen bei Feuerwehrsport-Statistiken"/>
 	<script type="text/javascript" src="js/jquery.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" href="styling/css/style.css"/>
 	<link rel="stylesheet" type="text/css" href="styling/css/jquery.dataTables.css" />
 	<link rel="stylesheet" type="text/css" href="styling/css/FormWindow.css" />

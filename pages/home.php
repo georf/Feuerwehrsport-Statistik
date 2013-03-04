@@ -102,12 +102,12 @@ foreach ($missed as $m) {
     </div>
     <div class="three columns">
         <h4>Verteilung der Zeiten</h4>
-        <img src="chart.php?type=disciplines" alt="" class="infochart" data-file="count"/>
+        <img src="chart.php?type=disciplines" alt="" class="big infochart" data-file="count"/>
         <h4 style="margin-top:15px">Ø Beste 5 pro Wettkampf</h4>
-        <img src="chart.php?type=overview_best" alt="" class="infochart" data-file="overview_best"/>
+        <img src="chart.php?type=overview_best" alt="" class="big infochart" data-file="overview_best"/>
     </div>
     <div class="sixteen columns">
-        <img src="chart.php?type=count" alt="" class="infochart" data-file="anzahlwettkampf"/>
+        <img src="chart.php?type=count" alt="" class="big infochart" data-file="anzahlwettkampf"/>
     </div>
     <div class="sixteen columns">
         <h4>Status des Imports</h4>

@@ -10,60 +10,77 @@ if (!$MyData) {
       ORDER BY `c`.`date`;
     ");
 
-    $diss = array(array(
-            'name' => 'HL',
-            'dis' => 1,
-            'sex' => 'male',
-            'counter' => array()
-        ), array(
-            'name' => 'HB männlich',
-            'dis' => 2,
-            'sex' => 'male',
-            'counter' => array()
-        ), array(
-            'name' => 'HB weiblich',
-            'dis' => 2,
-            'sex' => 'female',
-            'counter' => array()
-        )
-    );
+    $females = array();
+    $males   = array();
+    $teams   = array();
 
     $labels = array();
 
     foreach ($competitions as $competition) {
         $labels[] = mb_substr($competition['place'], 0, 6,'UTF-8').' '.date('y',strtotime($competition['date']));
 
-        foreach ($diss as $key => $dis) {
-            $scores = $db->getRows("
-              SELECT `time`
-              FROM (
-                SELECT `s`.*
+        $count = $db->getFirstRow("
+            SELECT COUNT(*) AS `count`
+            FROM (
+                SELECT `person_id`
                 FROM `scores` `s`
                 INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
                 WHERE `s`.`competition_id` = '".$competition['id']."'
-                AND `s`.`discipline_id` = '".$db->escape($dis['dis'])."'
-                AND `p`.`sex` = '".$db->escape($dis['sex'])."'
-                ORDER BY `s`.`time`) `i`
-              GROUP BY `i`.`person_id`
-            ");
+                AND `p`.`sex` = 'female'
+                GROUP BY `s`.`person_id`
+            ) `i`
+        ", 'count');
+        $females[] = ($count <= 0)? VOID : $count;
 
-            if (!$scores || count($scores) <= 0) {
-                $dis['counter'][] = VOID;
-            } else {
-                $dis['counter'][] = count($scores);
-            }
-            $diss[$key] = $dis;
-        }
+        $count = $db->getFirstRow("
+            SELECT COUNT(*) AS `count`
+            FROM (
+                SELECT `person_id`
+                FROM `scores` `s`
+                INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+                WHERE `s`.`competition_id` = '".$competition['id']."'
+                AND `p`.`sex` = 'male'
+                GROUP BY `s`.`person_id`
+            ) `i`
+        ", 'count');
+        $males[] = ($count <= 0)? VOID : $count;
+
+        $count = $db->getFirstRow("
+            SELECT COUNT(*) AS `count`
+            FROM (
+                SELECT `team`
+                FROM (
+                    SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
+                    FROM `scores_loeschangriff`
+                    WHERE `competition_id` = '".$competition['id']."'
+                UNION
+                    SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
+                    FROM `scores_stafette`
+                    WHERE `competition_id` = '".$competition['id']."'
+                UNION
+                    SELECT CONCAT(CAST(`team_id` AS CHAR),'female',CAST(`team_number` AS CHAR)) AS `team`
+                    FROM `scores_gruppenstafette`
+                    WHERE `competition_id` = '".$competition['id']."'
+                UNION
+                    SELECT CONCAT(CAST(`team_id` AS CHAR),`pi`.`sex`,CAST(`team_number` AS CHAR)) AS `team`
+                    FROM `scores` `si`
+                    INNER JOIN `persons` `pi` ON `si`.`person_id` = `pi`.`id`
+                    WHERE `si`.`competition_id` = '".$competition['id']."'
+                ) `i`
+                GROUP BY `i`.`team`
+            ) `i2`
+        ", 'count');
+        $teams[] = ($count <= 0)? VOID : $count;
     }
-
 
     $MyData = new pData();
     $MyData->addPoints($labels, 'Labels');
     $MyData->setAbscissa('Labels');
 
-    foreach ($diss as $key => $dis) {
-        $MyData->addPoints($dis['counter'], $dis['name']);
-    }
+    $MyData->addPoints($females, 'weiblich');
+    $MyData->addPoints($males, 'männlich');
+    $MyData->addPoints($teams, 'Mannschaften');
+
 
     Cache::put($MyData);
 }
@@ -75,7 +92,7 @@ $MyCache = new pCache();
 $ChartHash = $MyCache->getHash($MyData);
 
 /* Test if we got this hash in our cache already */
-if ( $MyCache->isInCache($ChartHash)) {
+if ($MyCache->isInCache($ChartHash)) {
 
     /* If we have it, get the picture from the cache! */
     $MyCache->strokeFromCache($ChartHash);
@@ -87,25 +104,25 @@ if ( $MyCache->isInCache($ChartHash)) {
     $h = 265;
     $title = 'Anzahl der Zeiten pro Wettkampf';
     /* Create the pChart object */
-    $myPicture = new pImage($w, $h, $MyData, FALSE);
+    $myPicture = Chart::create($w, $h, $MyData);
 
     /* Turn on Antialiasing */
     $myPicture->Antialias = TRUE;
 
     /* Write the chart title */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/DejaVuSerifCondensed.ttf","FontSize"=>8,"R"=>0,"G"=>0,"B"=>0));
-    $myPicture->drawText(10, 18, 'Anzahl der Teilnehmer pro Wettkampf',array("FontSize"=>11,"Align"=>TEXT_ALIGN_BOTTOMLEFT));
+    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/DejaVuSerifCondensed.ttf","FontSize"=>Chart::size(8),"R"=>0,"G"=>0,"B"=>0));
+    $myPicture->drawText(Chart::size(10), Chart::size(18), 'Anzahl der Teilnehmer pro Wettkampf',array("FontSize"=>Chart::size(11),"Align"=>TEXT_ALIGN_BOTTOMLEFT));
 
     /* Set the default font */
-    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>8,"R"=>0,"G"=>0,"B"=>0));
+    $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(8),"R"=>0,"G"=>0,"B"=>0));
 
     /* Define the chart area */
-    $myPicture->setGraphArea(20,18,915,200);
+    $myPicture->setGraphArea(Chart::size(20),Chart::size(18),Chart::size(915),Chart::size(200));
 
     /* Draw the scale */
     $scaleSettings = array(
-      "XMargin"=>10,
-      "YMargin"=>10,
+      "XMargin"=>Chart::size(10),
+      "YMargin"=>Chart::size(10),
       "Floating"=>TRUE,
       "GridR"=>200,
       "GridG"=>200,
@@ -119,7 +136,7 @@ if ( $MyCache->isInCache($ChartHash)) {
 
 
     /* Enable shadow computing */
-    $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+    $myPicture->setShadow(TRUE,array("X"=>Chart::size(1),"Y"=>Chart::size(1),"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
     /* Draw the line chart */
     //$myPicture->drawLineChart();
@@ -127,12 +144,12 @@ if ( $MyCache->isInCache($ChartHash)) {
     $myPicture->drawBarChart();
 
     /* Write the chart legend */
-    $myPicture->drawLegend(700,9,array(
+    $myPicture->drawLegend(Chart::size(700),Chart::size(9),array(
       "Style"=>LEGEND_NOBORDER,
       "Mode"=>LEGEND_HORIZONTAL,
       "FontR"=>0,"FontG"=>0,"FontB"=>0,
       "FontName"=>PCHARTDIR."fonts/DejaVuSerifCondensed.ttf",
-      "FontSize"=>9
+      "FontSize"=>Chart::size(9)
     ));
 
     /* Push the rendered picture to the cache */
