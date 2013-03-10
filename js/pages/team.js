@@ -58,14 +58,11 @@ $(function() {
                     wPost('get-teams', {}, function( data ) {
                         var teams = data.teams;
                         var i,l, pid = global('team-id');
-                        var options = []
+                        var options = [];
 
                         for (i=0, l=teams.length; i<l; i++) {
-                            if (teams[i].value != pid) continue;
-                            options.push({
-                                value: teams[i].id,
-                                display: teams[i].name
-                            });
+                            if (teams[i].value == pid) continue;
+                            options.push(teams[i]);
                         }
 
                         FormWindow.create([
