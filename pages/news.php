@@ -9,6 +9,9 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'news')) {
 
     echo '<p style="float:right;">'.gDate($news['date']).'</p>';
     echo '<h1>Neuigkeiten - '.htmlspecialchars($news['title']).'</h1>';
+
+    Title::set('Neuigkeiten - '.htmlspecialchars($news['title']));
+
     echo $news['content'];
 
     echo '<div class="bottom-navi">';
@@ -44,6 +47,7 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'news')) {
     echo '</div>';
 
 } else {
+    Title::set('Neuigkeiten');
 
     echo '<h1>Neuigkeiten</h1>';
     echo '<p>Hier werden alle Neuigkeiten zu dieser Feuerwehrsport-Statistik aufgelistet.</p>';

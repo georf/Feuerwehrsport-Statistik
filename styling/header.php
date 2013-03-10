@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-	<title>Statistik</title>
+	<title>{[PAGE_TITLE]}</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
 	<meta name="generator" content="Geany 0.20"/>
     <link rel="alternate" type="application/rss+xml" href="http://www.feuerwehrsport-statistik.de/feed.php?v=rss2&type=news" title="Neuigkeiten bei Feuerwehrsport-Statistiken"/>

@@ -14,130 +14,124 @@
     <tbody>
 <?php
 
+Title::set('Mannschaften');
 
-$cache = Cache::get();
-if ($cache) {
-    echo $cache;
-} else {
-    ob_start();
 
-    $teams = $db->getRows("
-        SELECT *
-        FROM `teams`
-        ORDER BY `name`
+$teams = $db->getRows("
+    SELECT *
+    FROM `teams`
+    ORDER BY `name`
+");
+
+foreach ($teams as $team) {
+    $members = array();
+
+    $scores = $db->getRows("
+        SELECT `person_id`
+        FROM `scores`
+        WHERE `team_id` = '".$team['id']."'
+        GROUP BY `person_id`
     ");
-
-    foreach ($teams as $team) {
-        $members = array();
-
-        $scores = $db->getRows("
-            SELECT `person_id`
-            FROM `scores`
-            WHERE `team_id` = '".$team['id']."'
-            GROUP BY `person_id`
-        ");
-        foreach ($scores as $score) {
-            $pid = $score['person_id'];
-            if (!isset($members[$pid])) $members[$pid] = true;
-        }
-
-        // Gruppenstafette
-        $scores = $db->getRows("
-            SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`
-            FROM `scores_gruppenstafette`
-            WHERE `team_id` = '".$team['id']."'
-        ");
-        foreach ($scores as $score) {
-            for($i = 1; $i <= 6; $i++) {
-                if (empty($score['person_'.$i])) continue;
-
-                $pid = $score['person_'.$i];
-                if (!isset($members[$pid])) $members[$pid] = true;
-            }
-        }
-
-        // Löschangriff
-        $scores = $db->getRows("
-            SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-            FROM `scores_loeschangriff`
-            WHERE `team_id` = '".$team['id']."'
-        ");
-        foreach ($scores as $score) {
-            for($i = 1; $i <= 7; $i++) {
-                if (empty($score['person_'.$i])) continue;
-
-                $pid = $score['person_'.$i];
-                if (!isset($members[$pid])) $members[$pid] = true;
-            }
-        }
-
-        // Feuerwehrstafette
-        $scores = $db->getRows("
-            SELECT `person_1`,`person_2`,`person_3`,`person_4`
-            FROM `scores_stafette`
-            WHERE `team_id` = '".$team['id']."'
-        ");
-        foreach ($scores as $score) {
-            for($i = 1; $i <= 7; $i++) {
-                if (empty($score['person_'.$i])) continue;
-
-                $pid = $score['person_'.$i];
-                if (!isset($members[$pid])) $members[$pid] = true;
-            }
-        }
-
-
-
-        $competitions = $db->getRows("
-            SELECT `competition_id`
-            FROM (
-                SELECT `competition_id`
-                FROM `scores`
-                WHERE `team_id` = '".$team['id']."'
-                GROUP BY `competition_id`
-            UNION
-                SELECT `competition_id`
-                FROM `scores_gruppenstafette`
-                WHERE `team_id` = '".$team['id']."'
-                GROUP BY `competition_id`
-            UNION
-                SELECT `competition_id`
-                FROM `scores_loeschangriff`
-                WHERE `team_id` = '".$team['id']."'
-                GROUP BY `competition_id`
-            UNION
-                SELECT `competition_id`
-                FROM `scores_stafette`
-                WHERE `team_id` = '".$team['id']."'
-                GROUP BY `competition_id`
-            ) `i`
-            GROUP BY `competition_id`
-        ");
-
-
-        echo
-        '<tr><td>',Link::team($team['id'], $team['name']),
-        '</td><td>',htmlspecialchars($team['short']),'</td><td>',$team['type'],
-        '</td><td>',count($members),'</td><td>',count($competitions),
-        '</td><td style="padding:0">';
-
-        if ($team['logo']) {
-            if (!is_file($config['logo-path-mini'].$team['id'].'.png')) {
-                $imageOutput = new Imagick($config['logo-path'].$team['logo']); // This will hold the resized image
-                $imageOutput->cropThumbnailImage(24,24);
-                $imageOutput->setImageFormat('png');
-                $imageOutput->writeImage($config['logo-path-mini'].$team['id'].'.png'); // Write it to disk
-                $imageOutput->clear();
-                $imageOutput->destroy();
-            }
-            echo '<img src="'.$config['logo-path-mini'].$team['id'].'.png" alt=""/>';
-        }
-
-        echo '</td></tr>';
+    foreach ($scores as $score) {
+        $pid = $score['person_id'];
+        if (!isset($members[$pid])) $members[$pid] = true;
     }
 
-    Cache::put(ob_get_flush());
+    // Gruppenstafette
+    $scores = $db->getRows("
+        SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`
+        FROM `scores_gruppenstafette`
+        WHERE `team_id` = '".$team['id']."'
+    ");
+    foreach ($scores as $score) {
+        for($i = 1; $i <= 6; $i++) {
+            if (empty($score['person_'.$i])) continue;
+
+            $pid = $score['person_'.$i];
+            if (!isset($members[$pid])) $members[$pid] = true;
+        }
+    }
+
+    // Löschangriff
+    $scores = $db->getRows("
+        SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
+        FROM `scores_loeschangriff`
+        WHERE `team_id` = '".$team['id']."'
+    ");
+    foreach ($scores as $score) {
+        for($i = 1; $i <= 7; $i++) {
+            if (empty($score['person_'.$i])) continue;
+
+            $pid = $score['person_'.$i];
+            if (!isset($members[$pid])) $members[$pid] = true;
+        }
+    }
+
+    // Feuerwehrstafette
+    $scores = $db->getRows("
+        SELECT `person_1`,`person_2`,`person_3`,`person_4`
+        FROM `scores_stafette`
+        WHERE `team_id` = '".$team['id']."'
+    ");
+    foreach ($scores as $score) {
+        for($i = 1; $i <= 7; $i++) {
+            if (empty($score['person_'.$i])) continue;
+
+            $pid = $score['person_'.$i];
+            if (!isset($members[$pid])) $members[$pid] = true;
+        }
+    }
+
+
+
+    $competitions = $db->getRows("
+        SELECT `competition_id`
+        FROM (
+            SELECT `competition_id`
+            FROM `scores`
+            WHERE `team_id` = '".$team['id']."'
+            GROUP BY `competition_id`
+        UNION
+            SELECT `competition_id`
+            FROM `scores_gruppenstafette`
+            WHERE `team_id` = '".$team['id']."'
+            GROUP BY `competition_id`
+        UNION
+            SELECT `competition_id`
+            FROM `scores_loeschangriff`
+            WHERE `team_id` = '".$team['id']."'
+            GROUP BY `competition_id`
+        UNION
+            SELECT `competition_id`
+            FROM `scores_stafette`
+            WHERE `team_id` = '".$team['id']."'
+            GROUP BY `competition_id`
+        ) `i`
+        GROUP BY `competition_id`
+    ");
+
+
+    echo
+    '<tr><td>',Link::team($team['id'], $team['name']),
+    '</td><td>',htmlspecialchars($team['short']),'</td><td>',$team['type'],
+    '</td><td>',count($members),'</td><td>',count($competitions),
+    '</td><td style="padding:0">';
+
+    if ($team['logo']) {
+        if (!is_file($config['logo-path-mini'].$team['id'].'.png')) {
+            $imageOutput = new Imagick($config['logo-path'].$team['logo']); // This will hold the resized image
+            $imageOutput->cropThumbnailImage(24,24);
+            $imageOutput->setImageFormat('png');
+            $imageOutput->writeImage($config['logo-path-mini'].$team['id'].'.png'); // Write it to disk
+            $imageOutput->clear();
+            $imageOutput->destroy();
+        }
+        echo '<img src="'.$config['logo-path-mini'].$team['id'].'.png" alt=""/>';
+    }
+
+    echo '</td></tr>';
 }
+
 
 ?></tbody>
 </table>

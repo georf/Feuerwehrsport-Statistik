@@ -408,14 +408,14 @@
             $('.infochart, .helpinfo').each(function() {
                 var isIn = false;
                 var text = null;
-                
+
                 var $self = $(this);
 
                 var show = function() {
                     var os = $self.offset();
                     var left = os.left + $self.width()/2;
                     var top = os.top + $self.height()+10;
-                    
+
                     if (isIn) {
                         if (!text) {
                             $.get('info/' + $self.data('file') + '.info', function(t){
@@ -466,12 +466,6 @@
         });
 
         $('.toc-placeholder').remove();
-
-
-        $('h1').each(function() {
-            var t = $(this).text();
-            document.title += ' » ' + t;
-        });
 
 
         // generate edit buttons for group scores
@@ -699,7 +693,7 @@
             var $big = $('<img src="' + newSrc + '" alt=""/>');
 
             $img.css('cursor','wait');
-    
+
             var os = $img.offset();
             var left = os.left + $img.width()/2;
             var top = os.top + $img.height()/2;
@@ -707,9 +701,9 @@
             $big.load(function() {
                 var w = $big.get(0).width;
                 var h = $big.get(0).height;
-                
+
                 $img.css('cursor','pointer');
-                
+
                 $big.attr('title', 'Klicken zum Schließen');
 
                 $big.css({

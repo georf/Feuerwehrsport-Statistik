@@ -1,4 +1,7 @@
+<?php
 
+Title::set('Import - Hilfe');
+?>
 
 <div id="form-box">
 

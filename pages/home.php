@@ -1,5 +1,5 @@
 <?php
-
+Title::set('Überblick');
 
 $persons = $db->getFirstRow("
     SELECT COUNT(*) AS `count`

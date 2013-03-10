@@ -1,4 +1,5 @@
 <?php
+Title::set('PDF - Upload');
 
 if (!Login::check() || !Check::isIn($_POST['id'], 'competitions') || !isset($_FILES)) throw new PageNotFound();
 

@@ -15,6 +15,7 @@ function __autoload($className)
 }
 
 
+
 function laType($key) {
     global $config;
     return (isset($config['la'][$key])) ?  $config['la'][$key] : '';

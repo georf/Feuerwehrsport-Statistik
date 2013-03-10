@@ -1,3 +1,6 @@
+<?php
+Title::set('RSS-Feeds');
+?>
 <h1>RSS-Feeds</h1>
 <p>Diese Website stellt mehrere Feeds zur Verfügung. Dabei sind alle Feeds in mehreren Formaten verfügbar.</p>
 <table>
