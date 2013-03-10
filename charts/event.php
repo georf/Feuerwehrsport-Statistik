@@ -140,7 +140,7 @@ if (!$MyData) {
 $MyCache = new pCache();
 
 /* Compute the hash linked to the chart data */
-$ChartHash = $MyCache->getHash($MyData);
+$ChartHash = $MyCache->getHash($MyData, Cache::getId());
 
 /* Test if we got this hash in our cache already */
 if ( $MyCache->isInCache($ChartHash)) {
