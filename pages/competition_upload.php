@@ -18,8 +18,8 @@ for ($i = 0; $i < 100; $i++) {
         echo '<p class="error">Die Datei »'.htmlspecialchars($_FILES['result_'.$i]['name']).'« wurde nicht gespeichert. Sie weißt einen nicht erlaubten Typ auf: »'.htmlspecialchars($_FILES['result_'.$i]['type']).'«</p>';
         continue;
     }
-    if (strlen($name) < 5 || substr(strtolower($name), 0, -4) !== '.pdf') {
-        echo '<p class="error">Die Datei »'.htmlspecialchars($_FILES['result_'.$i]['name']).'« wurde nicht gespeichert. Sie weißt einen nicht erlaubten Typ auf: »'.htmlspecialchars(substr(strtolower($name), 0, -3)).'«</p>';
+    if (strlen($name) < 5 || substr(strtolower($name), -4) !== '.pdf') {
+        echo '<p class="error">Die Datei »'.htmlspecialchars($_FILES['result_'.$i]['name']).'« wurde nicht gespeichert. Sie weißt einen nicht erlaubten Typ auf: »'.htmlspecialchars(substr(strtolower($name), -3)).'«</p>';
         continue;
     }
 
@@ -43,7 +43,7 @@ for ($i = 0; $i < 100; $i++) {
     }
 
     $insert = array(
-        'competition' => FSS::competition($_POST['id']),
+        'competition_id' => $_POST['id'],
         'name' => $name,
         'content' => implode(',', $content)
     );

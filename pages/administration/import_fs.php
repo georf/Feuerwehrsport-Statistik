@@ -2,7 +2,7 @@
 <?php
 if (isset($_POST['step']) && $_POST['step'] == 'save') {
     $lines = array();
-    
+
     $scores = explode("\n", $_POST['csv-data']);
     $seperator = "\t";
 
@@ -13,13 +13,13 @@ if (isset($_POST['step']) && $_POST['step'] == 'save') {
         $cols = str_getcsv($score, $seperator);
 
         if (count($cols) >= 4) {
-            
-            
+
+
             if ($cols[3] == 'NULL' || $cols[3] == 'D' || $cols[3] == 'N') {
                 $cols[3] = NULL;
             }
-            
-            
+
+
             $db->insertRow('scores_stafette', array(
                 'team_id' => $cols[0],
                 'team_number' => intval($cols[2])-1,
@@ -31,7 +31,7 @@ if (isset($_POST['step']) && $_POST['step'] == 'save') {
               ));
         }
     }
-    
+
     print_r($lines);
 
     echo 'SUCCESS ---- SUCCESS';
@@ -109,10 +109,10 @@ $(function() {
         $('#form-box').hide();
 
         checkLogin(function() {
-            wPost('teams', {} , function( data ) {
-                
+            wPost('get-teams', {} , function( data ) {
+
                 $('#hidden-sex').val(sex);
-                
+
                 var teams = data.teams;
                 new NewRow(teams);
             });
@@ -132,7 +132,7 @@ var TeamInput = function(rowHandler) {
 
 
         checkLogin(function() {
-            wPost('teams', {personId: personId}, function( data ) {
+            wPost('get-teams', {personId: personId}, function( data ) {
                 var i, l,
                     teams = data.teams;
                 var teamOption = true;
@@ -219,7 +219,7 @@ var NewRow = function(teams) {
     var $select = $('<select></select>');
     var $staffel = $('<select></select>');
     var $time = $('<input type="text"/>');
-    
+
     var $headRow = $('<tr><th>Team</th><th>Staffel</th><th>Zeit</th></tr>').appendTo($table);
     var $inputRow = $('<tr></tr>').append($('<td></td>').append($select)).append($('<td></td>').append($staffel)).appendTo($table);
     $inputRow.append($('<td></td>').append($time));
@@ -236,34 +236,34 @@ var NewRow = function(teams) {
         var person;
 
         if (e.keyCode == 9) {
-                
+
             for (i = 0; i < teams.length; i++) {
                 if (teams[i].value == $select.val()) {
                     if (!teams[i].A1)
                         $staffel.append('<option value="A1">A1</option>');
-                        
+
                     if (!teams[i].B1)
                         $staffel.append('<option value="B1">B1</option>');
-                        
+
                     if (!teams[i].A2)
                         $staffel.append('<option value="A2">A2</option>');
-                        
+
                     if (!teams[i].B2)
                         $staffel.append('<option value="B2">B2</option>');
-                    
+
                     break;
                 }
             }
-            
+
             $staffel.focus();
             $select.attr('disabled',true);
-            
+
             $staffel.keyup(function(e) {
                 if (e.keyCode == 9) {
                     new TimeInput(self, $time);
                 }
             });
-                
+
             return false;
         }
     });
@@ -281,20 +281,20 @@ var NewRow = function(teams) {
         var content = $('#result-textarea').val();
 
         var cols = [];
-        
-        
-        
-        
+
+
+
+
         for (i = 0; i < teams.length; i++) {
             if (teams[i].value == $select.val()) {
                 cols.push(teams[i].value);
                 teams[i][staffel] = true;
                 break;
-                
+
             }
         }
-        
-        
+
+
         cols.push(staffel.replace(/[0-9]/,''));
         cols.push(staffel.replace(/[a-zA-Z]/,''));
         cols.push(time);
