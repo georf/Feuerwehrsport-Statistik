@@ -1,12 +1,12 @@
 
 # backups
-tools/Ergebnisse/*
-tools/Daten/*
-tools/Logos/*
+tools/Ergebnisse/
+tools/Daten/
+tools/Logos/
 
 # files
-files/*
-styling/logos/*
+files/
+styling/logos/
 
 # config
 lib/config.php
