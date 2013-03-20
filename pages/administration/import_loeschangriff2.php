@@ -8,6 +8,7 @@ if (isset($_POST['step'])) {
     for ($i=0; $i < count($_POST['teams']); $i++) {
       $persons[$i] = array(
         'team' => $_POST['teams'][$i],
+        'number' => strval(intval($_POST['numbers'][$i]) -1),
         'time0' => $_POST['times0'][$i],
         'time1' => $_POST['times1'][$i],
         'time2' => $_POST['times2'][$i],
@@ -38,7 +39,8 @@ if (isset($_POST['step'])) {
                 'competition_id' => $_POST['competition'],
                 'sex' => $_POST['sex'],
                 'time' => $person['time'.$i],
-                'team_id' => $person['team']
+                'team_id' => $person['team'],
+                'team_number' => $person['number'],
               ));
           }
 
@@ -65,7 +67,7 @@ if (isset($_POST['step'])) {
     echo '<h3>Geschlecht: '.$_POST['sex'].'</h3>';
     echo '<ul class="disc" id="add-team"></ul>';
 
-    echo '<table id="scores" class="table"><tr><th>Team</th><th>Zeit</th><th>Zeit2</th><th>Zeit3</th><th>Old</th><th>Eingabe</th></tr>';
+    echo '<table id="scores" class="table"><tr><th>Team</th><th>Zeit</th><th>Zeit2</th><th>Zeit3</th><th>Num</th><th>Old</th><th>Eingabe</th></tr>';
     $scores = explode("\n", $_POST['scores']);
 
 
@@ -98,9 +100,11 @@ if (isset($_POST['step'])) {
             $firstname = '';
             $time = '0';
             $team = '';
+            $number = '1';
             $oldteam = '';
             $correct = false;
         } else {
+            $number = '1';
 
             for ($i = 0; $i < count($ths); $i++) {
                 $cols[$i] = trim($cols[$i]);
@@ -163,6 +167,16 @@ if (isset($_POST['step'])) {
                     case 'team':
                         $team = trim($cols[$i]);
                         $oldteam = $team;
+
+
+                        if (preg_match('/ 1$/', $team) || preg_match('/ I$/', $team)) {
+                            $number = 1;
+                        } elseif (preg_match('/ 2$/', $team) || preg_match('/ II$/', $team)) {
+                            $number = 2;
+                        } elseif (preg_match('/ 3$/', $team) || preg_match('/ III$/', $team)) {
+                            $number = 3;
+                        }
+
 
                         if (is_numeric($team)) {
                             $team_db = $db->getFirstRow("
@@ -354,8 +368,10 @@ if (isset($_POST['step'])) {
             if (isset($times[$i])) echo '<td class="time'.$i.'">'.$times[$i].'</td>';
             else echo '<td class="time'.$i.'">-1</td>';
         }
+        echo '<td style="font-size:0.8em" class="number">'.$number.'</td>';
 
         echo '<td style="font-size:0.8em" class="oldteam">'.$oldteam.'</td>';
+
 
         echo '<td style="font-size:0.8em">'.$score.'</td>';
         echo '</tr>';
@@ -383,6 +399,7 @@ $(function(){
           var li = $('<li>' + name + '</li>');
           li.click(function() {
                 checkLogin(function() {
+                    name = name.replace(/ II?$/, '');
                     var longname = name;
 
                     var options = [
@@ -420,12 +437,14 @@ $(function(){
       times0 = [],
       times1 = [],
       times2 = [],
+      numbers = [],
       teams = [];
 
     $('tr.correct').each(function(i, elem) {
       times0.push($(this).find('.time0').text());
       times1.push($(this).find('.time1').text());
       times2.push($(this).find('.time2').text());
+      numbers.push($(this).find('.number').text());
       teams.push($(this).find('.team').data('id'));
     });
 
@@ -436,7 +455,8 @@ $(function(){
       'times0[]': times0,
       'times1[]': times1,
       'times2[]': times2,
-      'teams[]': teams
+      'teams[]': teams,
+      'numbers[]': numbers
     }, function(data) {
         if (data.indexOf('SUCCESS ---- SUCCESS') > 0) {
             window.location = '?page=administration&admin=import_loeschangriff2'
