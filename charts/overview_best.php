@@ -89,10 +89,13 @@ if (!$MyData) {
                 if (is_numeric($avg)) $avgs[] = $avg;
             }
 
-            $sum = 0;
-            foreach ($avgs as $avg) $sum += $avg;
-            $diss[$key]['avgs'][] = c2s($sum/count($avgs));
-
+            if (count($avgs) === 0) {
+                $diss[$key]['avgs'][] = VOID;
+            } else {
+                $sum = 0;
+                foreach ($avgs as $avg) $sum += $avg;
+                $diss[$key]['avgs'][] = c2s($sum/count($avgs));
+            }
         }
     }
 
