@@ -339,7 +339,7 @@
                         };
                         var i;
                         for (i = 0; i < data.fs_score.length; i++) {
-                            data.la_score[i].key = 'fs';
+                            data.fs_score[i].key = 'fs';
                             wPost('set-score-wk', data.fs_score[i], function(data) {
                                 checkReady();
                             });
