@@ -34,7 +34,7 @@ try {
 
                 ob_start();
                 include(__DIR__.'/'.$path.'administration/pages/'.$file);
-                $content = ob_get_contents();
+                $header .= ob_get_contents();
                 ob_end_clean();
             }
 
@@ -89,10 +89,10 @@ try {
     closedir($vz);
 } catch (PageNotFound $e) {
     ob_end_clean();
+    $e->sendHeader();
 
     echo Title::replace($header, '404 - Seite nicht gefunden');
 
-    $e->sendHeader();
     echo $e->getMessage();
 } catch (Exception $e) {
 
