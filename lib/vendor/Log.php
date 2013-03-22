@@ -65,7 +65,7 @@ class Log
             case 'add-file':
                 $this->description = 'Datei hinzugefügt';
 
-                $competition = $this->raw['competition_id'];
+                $competition = FSS::competition($this->raw['competition_id']);
 
                 $this->content = 'Wettkampf: '.
                     Link::event($competition['event_id'], $competition['event']).', '.
