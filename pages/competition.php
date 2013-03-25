@@ -140,7 +140,7 @@ foreach ($sexes as $sex) {
                 (
                     SELECT `id`,`team_id`,`team_number`,
                     `person_1`,`person_2`,`person_3`,`person_4`,
-                    `time`
+                    `time`,`run`
                     FROM `scores_stafette`
                     WHERE `time` IS NOT NULL
                     AND `sex` = '".$sex."'
@@ -148,14 +148,14 @@ foreach ($sexes as $sex) {
                 ) UNION (
                     SELECT `id`,`team_id`,`team_number`,
                     `person_1`,`person_2`,`person_3`,`person_4`,
-                    ".FSS::INVALID." AS `time`
+                    ".FSS::INVALID." AS `time`,`run`
                     FROM `scores_stafette`
                     WHERE `time` IS NULL
                     AND `sex` = '".$sex."'
                     AND `competition_id` = '".$id."'
                 ) ORDER BY `time`
             ) `all`
-            GROUP BY `team_id`,`team_number`
+            GROUP BY `team_id`,`team_number`,`run`
         ) `best`
 
         INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
@@ -747,9 +747,15 @@ foreach ($dis as $fullKey => $scores) {
         echo '</tr></thead><tbody>';
 
         foreach ($scores as $score) {
+            if (array_key_exists('run', $score)) {
+                $run = ' '.$score['run'];
+            } else {
+                $run = '';
+            }
+
             echo
                 '<tr data-id="',$score['id'],'">',
-                    '<td>'.Link::team($score['team_id'], $score['shortteam'].' '.FSS::teamNumber($score['team_number']), 'Details zu '.$score['team'].' anzeigen'),'</td>',
+                    '<td>'.Link::team($score['team_id'], $score['shortteam'].' '.FSS::teamNumber($score['team_number']).$run, 'Details zu '.$score['team'].' anzeigen'),'</td>',
                     '<td>',FSS::time($score['time']),'</td>';
 
             for ($wk = 1; $wk < 8; $wk++) {
