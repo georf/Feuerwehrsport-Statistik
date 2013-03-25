@@ -10,7 +10,10 @@ if (isset($_POST['step'])) {
         'name' => $_POST['names'][$i],
         'firstname' => $_POST['firstnames'][$i],
         'team' => $_POST['teams'][$i],
-        'time' => $_POST['times'][$i],
+        'time0' => $_POST['times0'][$i],
+        'time1' => $_POST['times1'][$i],
+        'time2' => $_POST['times2'][$i],
+        'number' => strval(intval($_POST['numbers'][$i]) -1),
         'id' => null
       );
     }
@@ -37,22 +40,30 @@ if (isset($_POST['step'])) {
       }
 
 
-        if ($person['time'] == 'NULL') {
-            $person['time'] = NULL;
-        }
-
         if ($person['team'] == -1) {
             $person['team'] = NULL;
         }
 
-      // insert score
-      $db->insertRow('scores', array(
-        'person_id' => $person['id'],
-        'competition_id' => $_POST['competition'],
-        'discipline' => $_POST['discipline'],
-        'time' => $person['time'],
-        'team_id' => $person['team']
-      ));
+
+        for($i = 0; $i < 3; $i++) {
+            if ($person['time'.$i] == 'NULL') {
+                $person['time'.$i] = NULL;
+            } elseif ($person['time'.$i] == '-1') {
+                continue;
+            }
+
+            // insert score
+              $db->insertRow('scores', array(
+                'person_id' => $person['id'],
+                'competition_id' => $_POST['competition'],
+                'discipline' => $_POST['discipline'],
+                'time' => $person['time'.$i],
+                'team_number' => $person['number'],
+                'team_id' => $person['team']
+              ));
+          }
+
+
 
     }
 
@@ -95,12 +106,14 @@ if (isset($_POST['step'])) {
 
         $cols = str_getcsv($score, $seperator);
 
+        $times = array();
         $name = '';
         $firstname = '';
         $time = '0';
         $team = '';
         $team_id = '-1';
         $oldteam = '';
+        $number = '1';
 
         if (count($cols) < count($ths)) {
             $name = '';
@@ -113,7 +126,7 @@ if (isset($_POST['step'])) {
 
             for ($i = 0; $i < count($ths); $i++) {
                 $cols[$i] = trim($cols[$i]);
-                switch ($ths[$i]) {
+                switch (trim($ths[$i])) {
                     case 'name':
                         $name = preg_replace('|,$|','',preg_replace('|^,|','',trim($cols[$i])));
                         break;
@@ -123,6 +136,10 @@ if (isset($_POST['step'])) {
                         break;
 
                     case 'time':
+                    case 'time2':
+                    case 'time3':
+                    case 'time4':
+                    case 'time5':
                         if (!preg_match('|^[\d,:;.]+$|', trim($cols[$i]))) {
                             $correct = false;
                         }
@@ -160,6 +177,8 @@ if (isset($_POST['step'])) {
                             $time = 'NULL';
                         }
 
+                        $times[] = $time;
+                        $time = '0';
 
                         break;
 
@@ -174,6 +193,14 @@ if (isset($_POST['step'])) {
                                 WHERE `id` = '".$db->escape($team)."'
                                 LIMIT 1;");
                         } else {
+
+                            if (preg_match('/ 1$/', $team) || preg_match('/ I$/', $team)) {
+                                $number = 1;
+                            } elseif (preg_match('/ 2$/', $team) || preg_match('/ II$/', $team)) {
+                                $number = 2;
+                            } elseif (preg_match('/ 3$/', $team) || preg_match('/ III$/', $team)) {
+                                $number = 3;
+                            }
 
                             $team_db = $db->getFirstRow("
                                 SELECT *
@@ -339,10 +366,33 @@ if (isset($_POST['step'])) {
         if ($correct) echo 'correct';
         else echo 'notcorrect';
 
+        // search person
+        $result_search = $db->getFirstRow("
+            SELECT *
+            FROM `persons`
+            WHERE `name` = '".$db->escape($name)."'
+            AND `firstname` = '".$db->escape($firstname)."'
+            AND `sex` = '".$db->escape($_POST['sex'])."'");
+
+
         echo '">';
-        echo '<td class="firstname">'.$firstname.'</td>';
-        echo '<td class="name">'.$name.'</td>';
-        echo '<td class="time">'.$time.'</td>';
+        echo '<td class="firstname" ';
+
+        if (!$result_search) echo ' style="color:blue;"';
+
+        echo '>'.$firstname.'</td>';
+        echo '<td class="name" ';
+
+        if (!$result_search) echo ' style="color:blue;"';
+
+        echo '>'.$name.'</td>';
+
+
+        for($i = 0; $i < 3; $i++) {
+            if (isset($times[$i])) echo '<td class="time'.$i.'">'.$times[$i].'</td>';
+            else echo '<td class="time'.$i.'">-1</td>';
+        }
+        echo '<td style="font-size:0.8em" class="number">'.$number.'</td>';
 
         echo '<td class="team"';
         if ($correct && $team_id < 0) echo ' style="background-color:#B1FFB1"';
@@ -368,16 +418,23 @@ $(function(){
     $(this).toggleClass('notcorrect').toggleClass('correct');
   });
   $('#send').click(function() {
-    var names = [],
+    var
+      times0 = [],
+      times1 = [],
+      times2 = [],
+      numbers = [],
+      names = [],
       firstnames = [],
-      times = [],
       teams = [];
 
     $('tr.correct').each(function(i, elem) {
       var e = {}
       names.push($(this).find('.name').text());
       firstnames.push($(this).find('.firstname').text());
-      times.push($(this).find('.time').text());
+      times0.push($(this).find('.time0').text());
+      times1.push($(this).find('.time1').text());
+      times2.push($(this).find('.time2').text());
+      numbers.push($(this).find('.number').text());
       teams.push($(this).find('.team').data('id'));
     });
 
@@ -388,8 +445,11 @@ $(function(){
       'discipline': '<?php echo $_POST['discipline']; ?>',
       'names[]': names,
       'firstnames[]': firstnames,
-      'times[]': times,
-      'teams[]': teams
+      'times0[]': times0,
+      'times1[]': times1,
+      'times2[]': times2,
+      'teams[]': teams,
+      'numbers[]': numbers
     }, function(data) {
         if (data.indexOf('SUCCESS ---- SUCCESS') > 0) {
             window.location = '?page=administration&admin=import'
@@ -456,7 +516,7 @@ $disciplines = array(
     </select>
     <h3>Zeiten</h3>
     <textarea name="scores" style="width:1000px"></textarea>
-    <input type="text" name="spalten" value="col,col,firstname,name,team,time" style="width:500px"/><br/>
+    <input type="text" name="spalten" value="name,firstname,team,time,time2" style="width:500px"/><br/>
     <input type="radio" value="tab" name="seperator" id="seperator-tab"/><label for="seperator-tab">tab</label><br/>
     <input type="radio" value="comma" name="seperator" id="seperator-comma"/><label for="seperator-comma">comma</label>
     <h4>Erklärung</h4>
@@ -465,6 +525,8 @@ $disciplines = array(
         <li>firstname</li>
         <li>name</li>
         <li>time</li>
+        <li>time2</li>
+        <li>time3</li>
         <li>team</li>
     </ul>
   <button type="submit">Testen</button>

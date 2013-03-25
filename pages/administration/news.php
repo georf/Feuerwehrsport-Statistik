@@ -112,7 +112,7 @@ foreach ($news as $new) {
     echo '<td>'.gDate($new['date']).'</td>';
     echo '<td>'.htmlspecialchars($new['title']).'</td>';
     echo '<td><button class="dialog-open" data-id="'.$new['id'].'">Bearbeiten</button></td>';
-    echo '<td>'.htmlspecialchars(substr(strip_tags($new['content']),0,300)).'</td>';
+    echo '<td>'.htmlspecialchars(mb_substr(strip_tags($new['content']),0,300)).'</td>';
     echo '</tr>';
 }
 echo '</table>';
