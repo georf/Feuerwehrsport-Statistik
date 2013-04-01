@@ -385,7 +385,7 @@
                         };
                         var i;
                         for (i = 0; i < data.gs_score.length; i++) {
-                            data.la_score[i].key = 'gs';
+                            data.gs_score[i].key = 'gs';
                             wPost('set-score-wk', data.gs_score[i], function(data) {
                                 checkReady();
                             });
