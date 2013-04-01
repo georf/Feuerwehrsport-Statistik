@@ -101,3 +101,8 @@ foreach ($sexs as $sex => $title) {
 
     echo '</tbody></table>';
 }
+
+?>
+<h2>Neue Person hinzufügen</h2>
+<p class="six columns">Ist eine Person die du kennst noch nicht eingetragen? Dann trage sie doch schnell ins System ein!</p>
+<p><button id="add-person">Person hinzufügen</button></p>
