@@ -19,7 +19,7 @@ if (!$MyData) {
         SELECT `person_id`
         FROM `scores`
         WHERE `team_id` = '".$id."'
-        AND `discipline_id` = 2
+        AND `discipline` = 'HB'
     ");
     foreach ($scores as $score) {
         $pid = $score['person_id'];
@@ -33,7 +33,7 @@ if (!$MyData) {
         SELECT `person_id`
         FROM `scores`
         WHERE `team_id` = '".$id."'
-        AND `discipline_id` = 1
+        AND `discipline` = 'HL'
     ");
     foreach ($scores as $score) {
         $pid = $score['person_id'];

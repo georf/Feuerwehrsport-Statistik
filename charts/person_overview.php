@@ -70,7 +70,7 @@ if (!$MyData) {
                       INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
                       WHERE `s`.`person_id` = '".$db->escape($_id)."'
                       AND YEAR(`c`.`date`) = '".$year['year']."'
-                      AND `s`.`discipline_id` = '".$db->escape($dis['dis'])."'
+                      AND `s`.`discipline` = '".$db->escape($dis['name'])."'
                       AND `s`.`time` IS NOT NULL
                       ORDER BY `s`.`time`
                     ) `i`

@@ -28,6 +28,6 @@ foreach ($events as $event) {
 echo '</tbody></table>
     <h2>Diagramme</h2>';
 
-echo '<img src="chart.php?type=events&amp;discipline=2&amp;sex=female" alt=""/>';
-echo '<img src="chart.php?type=events&amp;discipline=1&amp;sex=male" alt=""/>';
-echo '<img src="chart.php?type=events&amp;discipline=2&amp;sex=male" alt=""/>';
+echo '<img src="chart.php?type=events&amp;discipline=HB&amp;sex=female" alt=""/>';
+echo '<img src="chart.php?type=events&amp;discipline=HL&amp;sex=male" alt=""/>';
+echo '<img src="chart.php?type=events&amp;discipline=HB&amp;sex=male" alt=""/>';

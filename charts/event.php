@@ -12,7 +12,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
   exit();
 }
 
-if (isset($_GET['discipline']) && is_numeric($_GET['discipline'])) {
+if (isset($_GET['discipline']) && in_array($_GET['discipline'], array('HL', 'HB'))) {
   $_discipline = $_GET['discipline'];
 }
 
@@ -68,7 +68,7 @@ if (!$MyData) {
                 FROM `scores` `s`
                 INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
                 WHERE `s`.`competition_id` = '".$competition['id']."'
-                AND `s`.`discipline_id` = '".$db->escape($_discipline)."'
+                AND `s`.`discipline` = '".$db->escape($_discipline)."'
                 AND `p`.`sex` = '".$db->escape($_sex)."'
                 AND `s`.`time` IS NOT NULL
                 ORDER BY `s`.`time`) `i`
