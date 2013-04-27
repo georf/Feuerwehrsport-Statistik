@@ -122,4 +122,18 @@ foreach ($competitions as $competition) {
             Link::competition($competition['id'], 'ⓘ'),
         '</td><td style="'.getMissedColor($competition['missed']).'" title="'.getMissedTitle($competition['missed']).'"></td></tr>';
 }
-echo '</tbody></table>';
+?>
+
+</tbody></table>
+
+<h2>Auswertung</h2>
+<div class="row">
+    <div class="five columns">
+        <h4>Verteilung der Wettkämpfe über das Jahr</h4>
+        <img src="chart.php?type=overview_month" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Verteilung der Wettkämpfe über die Woche</h4>
+        <img src="chart.php?type=overview_week" alt="" class="big"/>
+    </div>
+</div>
