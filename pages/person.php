@@ -344,6 +344,9 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
         }
         echo '</tbody></table>';
 
+        echo '<h3 style="clear:both">'.$name.' - Vergleich der Bestzeiten mit anderen Sportler</h3>';
+        echo '<p class="chart"><img class="big" src="chart.php?type=person_best_score&amp;key=',$key,'&amp;id=',$_id,'" style="width:700px;height:230px" alt=""/></p>';
+
 
     } elseif ($key == 'zk') {
 
@@ -419,6 +422,51 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
               '</tr>';
         }
         echo '</tbody></table>';
+
+        // search for team mates
+        $teammates = array();
+
+        foreach ($scores as $score) {
+            for ($wk = 1; $wk < 8; $wk++) {
+                if (array_key_exists('person_'.$wk, $score) && $score['person_'.$wk] != null && $score['person_'.$wk] != $id) {
+                    if (!array_key_exists($score['person_'.$wk], $teammates)) $teammates[$score['person_'.$wk]] = array();
+                    $teammates[$score['person_'.$wk]][] = $score['competition_id'];
+                }
+            }
+        }
+
+        if (count($teammates) > 0) {
+
+            asort($teammates);
+
+            echo '<h3 style="clear:both">'.$name.' - Mannschaftsmitglieder</h3>';
+            echo '<table class="datatable teammates"><thead><tr>',
+                '<th style="width:15%">Person</th>',
+                '<th style="width:7%">Läufe</th>',
+                '<th style="width:77%">Wettkämpfe</th>',
+              '</tr></thead><tbody>';
+            foreach ($teammates as $tmId => $tmCompetitions) {
+                $tmCs = array_unique($tmCompetitions);
+
+                $comps = array();
+                foreach ($tmCs as $c) {
+                    $co = FSS::competition($c);
+                    $comps[] = Link::competition($c,
+                        $co['place'].'`'.date('y', strtotime($co['date'])),
+                        $co['event'].' - '.gDate($co['date'])
+                    );
+                }
+
+                echo
+                '<tr>',
+                  '<td>'.Link::person($tmId, 'full').'</td>',
+                  '<td>'.count($tmCompetitions).'</td>',
+                  '<td>'.implode(', ', $comps).'</td>',
+                '</tr>';
+            }
+            echo '</tbody></table>';
+        }
+
 
     }
     echo '</div>';

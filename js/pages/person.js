@@ -115,4 +115,5 @@ $(function() {
     sortTable('.sc_hl , .sc_hb', 3, "desc", 5);
     sortTable('.sc_zk', 2, "desc", 6);
     sortTable('.sc_gs , .sc_la , .sc_fs', 3, "desc", 6);
+    sortTable('.teammates', 1, "desc", 2);
 });
