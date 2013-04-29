@@ -64,7 +64,7 @@
                     if (type == FORM) {
 
                         for (i = 0, l = items.length; i < l; i++) {
-                            if (Array.isArray(items[i])) {
+                            if ($.isArray(items[i])) {
                                 items[i] = window.FormElement.apply({}, items[i]);
                             }
                             $div.append(items[i].getElement());

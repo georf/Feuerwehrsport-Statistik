@@ -743,7 +743,7 @@
         };
 
         if (typeof not != 'undefined' && not !== null) {
-            if (!Array.isArray(not) ){
+            if (!$.isArray(not) ){
                 not = [not];
             }
             opt["aoColumnDefs"] = [
