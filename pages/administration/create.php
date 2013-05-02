@@ -40,6 +40,7 @@ if (isset($_POST['type'])) {
 
 
 <h2>Wettkampf</h2>
+<button class="C_add">Hinzufügen</button>
 <div class="container">
   <table class="table">
     <tr><th>Typ</th><th>Ort</th><th>Name</th><th>Datum</th></tr>
@@ -76,7 +77,7 @@ foreach ($competitions as $competition) {
 
 ?>
 </table>
-<button id="C_add">Hinzufügen</button>
+<button class="C_add">Hinzufügen</button>
 <div class="formbox" id="C_add_box">
   <h3>Wettkampf</h3>
   <form method="post" action="">
@@ -181,7 +182,7 @@ $(function(){
 
   var darkroom = $('<div class="darkroom"></div>').appendTo('body');
 
-  $('#C_add').click(function(){
+  $('.C_add').click(function(){
     darkroom.show();
     $('#C_add_box').show();
     return false;
