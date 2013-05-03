@@ -140,7 +140,7 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
 
 	// set links
 	$links = $db->getRows("
-            SELEC`id`
+            SELECT `id`
             FROM `links`
             WHERE `for` = 'team'
             AND `for_id` = '".$team['id']."'");
