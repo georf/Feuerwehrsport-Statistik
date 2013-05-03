@@ -138,7 +138,18 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
             $db->updateRow('team_memberships', $score['id'], array('team_id' => $new_team['id']));
         }
 
-        // delete person
+	// set links
+	$links = $db->getRows("
+            SELEC`id`
+            FROM `links`
+            WHERE `for` = 'team'
+            AND `for_id` = '".$team['id']."'");
+        foreach ($links as $link) {
+            $db->updateRow('links', $link['id'], array('for_id' => $new_team['id']));
+        }
+
+
+        // delete team
         $db->deleteRow('teams', $team['id']);
     }
 
