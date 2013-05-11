@@ -42,6 +42,14 @@ class FSS
     public static function sex($sex) {
         return ($sex === 'female')? 'weiblich':'männlich';
     }
+    
+    public static function palette($sex) {
+        if ($sex === 'female') {
+            return array("R"=>229,"G"=>11,"B"=>11,"Alpha"=>80);
+        } else {
+            return array("R"=>0,"G"=>113,"B"=>222,"Alpha"=>100);
+        }
+    }
 
 
     public static function tableRow($table, $id) {
@@ -57,15 +65,13 @@ class FSS
 
     public static function competition($id) {
         global $db;
+        
+        TempDB::generate('x_full_competitions');
 
         return $db->getFirstRow("
-            SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
-                `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-            FROM `competitions` `c`
-            INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-            INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-            LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-            WHERE `c`.`id` = '".$db->escape($id)."'
+            SELECT *
+            FROM `x_full_competitions` 
+            WHERE `id` = '".$db->escape($id)."'
             LIMIT 1;
         ");
     }

@@ -467,6 +467,11 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
             echo '</tbody></table>';
         }
 
+        if (in_array($key, array('la'))) {
+            echo '<h3 style="clear:both">'.$name.' - Gelaufene Positionen</h3>';
+            echo '<img src="chart.php?type=position_'.$key.'&amp;id='.$id.'" alt=""/>';
+        }
+
 
     }
     echo '</div>';

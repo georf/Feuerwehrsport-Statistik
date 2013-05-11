@@ -8,6 +8,13 @@ $events = $db->getRows("
     GROUP BY `e`.`id`
 ");
 
+TempDB::generate('x_full_competitions');
+$events = $db->getRows("
+    SELECT `event_id`, `event`, COUNT(`id`) AS `count`
+    FROM `x_full_competitions`
+    GROUP BY `event_id`
+");
+
 echo '<h1>Wettkampf-Typen</h1>
  <table class="datatable">
     <thead>
@@ -20,7 +27,7 @@ echo '<h1>Wettkampf-Typen</h1>
 
 foreach ($events as $event) {
   echo
-    '<tr><td>'.Link::event($event['id'], $event['name']).'</td><td>',
+    '<tr><td>'.Link::event($event['event_id'], $event['event']).'</td><td>',
       $event['count'],
     '</td></tr>';
 }

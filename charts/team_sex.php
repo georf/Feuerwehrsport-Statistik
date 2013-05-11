@@ -1,11 +1,9 @@
 <?php
 
-if (isset($_GET['id']) && is_numeric($_GET['id']) && Check::isIn($_GET['id'], 'teams')) {
-  $_id = $_GET['id'];
-  $id = $_id;
-} else {
-  exit();
-}
+if (!Check::get('id') || !Check::isIn($_GET['id'], 'teams'))  throw new Exception('bad input');
+
+$_id = $_GET['id'];
+$id = $_id;
 
 
 $MyData = Cache::get();

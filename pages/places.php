@@ -1,12 +1,12 @@
 <?php
 
+TempDB::generate('x_full_competitions');
 
 
 $places = $db->getRows("
-    SELECT `p`.*, COUNT(`c`.`id`) AS `count`
-    FROM `places` `p`
-    INNER JOIN `competitions` `c` ON `c`.`place_id` = `p`.`id`
-    GROUP BY `p`.`id`
+    SELECT `place_id`, `place`, COUNT(`id`) AS `count`
+    FROM `x_full_competitions`
+    GROUP BY `place_id`
 ");
 
 Title::set('Wettkampforte');
@@ -23,7 +23,7 @@ echo '
 
 foreach ($places as $place) {
     echo
-    '<tr><td>'.Link::place($place['id'], $place['name']).'</td><td>',
+    '<tr><td>'.Link::place($place['place_id'], $place['place']).'</td><td>',
       $place['count'],
     '</td></tr>';
 }

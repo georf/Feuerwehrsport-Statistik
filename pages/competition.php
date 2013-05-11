@@ -5,16 +5,7 @@ if (!isset($_GET['id']) || !Check::isIn($_GET['id'], 'competitions')) throw new 
 $_id = $_GET['id'];
 
 
-$competition = $db->getFirstRow("
-    SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
-        `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-    FROM `competitions` `c`
-    INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-    WHERE `c`.`id` = '".$db->escape($_id)."'
-    LIMIT 1;
-");
+$competition = FSS::competition($_id);
 
 $id = $competition['id'];
 

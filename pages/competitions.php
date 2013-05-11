@@ -1,6 +1,12 @@
 <?php
 Title::set('Wettkämpfe');
 
+TempDB::generate('x_scores_male');
+TempDB::generate('x_scores_female');
+TempDB::generate('x_full_competitions');
+
+
+
 echo '
     <h1>Wettkämpfe</h1>
       <table class="datatable">
@@ -25,32 +31,24 @@ echo '
         <tbody>';
 
 $competitions = $db->getRows("
-    SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
-            `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-    FROM `competitions` `c`
-    INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-    ORDER BY `c`.`date` DESC;
+    SELECT *
+    FROM `x_full_competitions`
+    ORDER BY `date` DESC;
 ");
 
 foreach ($competitions as $competition) {
 
     $hbm = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'male'
     ", 'count');
     $hbf = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_female`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'female'
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
@@ -82,8 +80,8 @@ foreach ($competitions as $competition) {
         AND `sex` = 'male'
     ", 'count');
     $hl = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM `scores`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HL'
     ", 'count');

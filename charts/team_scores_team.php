@@ -21,15 +21,13 @@ if (!$fullData) {
     $title  = '';
 
 
+    TempDB::generate('x_full_competitions');
+
     $competitions = $db->getRows("
-        SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
-            `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-        FROM `competitions` `c`
-        INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-        INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-        LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-        WHERE `c`.`score_type_id` != 0
-        ORDER BY `c`.`date`
+        SELECT *
+        FROM `x_full_competitions`
+        WHERE `score_type_id` != 0
+        ORDER BY `date`
     ");
     $competitionScores = array();
 
@@ -37,6 +35,7 @@ if (!$fullData) {
         switch ($key) {
             case 'hb':
                 if (!$sex) throw new Exception('sex not defined');
+                TempDB::generate('x_scores_'.$sex);
 
                 $scores = $db->getRows("
                     SELECT `best`.*
@@ -47,7 +46,7 @@ if (!$fullData) {
                                 SELECT `id`,`team_number`,
                                 `person_id`,
                                 `time`
-                                FROM `scores`
+                                FROM `x_scores_".$sex."`
                                 WHERE `time` IS NOT NULL
                                 AND `competition_id` = '".$competition['id']."'
                                 AND `discipline` = 'HB'
@@ -57,7 +56,7 @@ if (!$fullData) {
                                 SELECT `id`,`team_number`,
                                 `person_id`,
                                 ".FSS::INVALID." AS `time`
-                                FROM `scores`
+                                FROM `x_scores_".$sex."`
                                 WHERE `time` IS NULL
                                 AND `competition_id` = '".$competition['id']."'
                                 AND `discipline` = 'HB'
@@ -67,8 +66,6 @@ if (!$fullData) {
                         ) `all`
                         GROUP BY `person_id`
                     ) `best`
-                    INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
-                    WHERE `sex` = '".$sex."'
                     ORDER BY `time`
                 ");
 
@@ -76,6 +73,7 @@ if (!$fullData) {
                 break;
 
             case 'hl':
+                TempDB::generate('x_scores_male');
 
                 $scores = $db->getRows("
                     SELECT `best`.*
@@ -86,7 +84,7 @@ if (!$fullData) {
                                 SELECT `id`,`team_number`,
                                 `person_id`,
                                 `time`
-                                FROM `scores`
+                                FROM `x_scores_male`
                                 WHERE `time` IS NOT NULL
                                 AND `competition_id` = '".$competition['id']."'
                                 AND `discipline` = 'HL'
@@ -96,7 +94,7 @@ if (!$fullData) {
                                 SELECT `id`,`team_number`,
                                 `person_id`,
                                 ".FSS::INVALID." AS `time`
-                                FROM `scores`
+                                FROM `x_scores_male`
                                 WHERE `time` IS NULL
                                 AND `competition_id` = '".$competition['id']."'
                                 AND `discipline` = 'HL'

@@ -16,14 +16,15 @@ $id = $event['id'];
 echo '<h1>',htmlspecialchars($event['name']),'</h1>';
 Title::set(htmlspecialchars($event['name']));
 
+
+TempDB::generate('x_scores_male');
+TempDB::generate('x_scores_female');
+TempDB::generate('x_full_competitions');
 $competitions = $db->getRows("
-    SELECT `c`.*,`p`.`name` AS `place`,
-        `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-    FROM `competitions` `c`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-    WHERE `c`.`event_id` = '".$id."'
-    ORDER BY `c`.`date` DESC;
+    SELECT *
+    FROM `x_full_competitions`
+    WHERE `event_id` = '".$id."'
+    ORDER BY `date` DESC;
 ");
 
 echo    '
@@ -46,23 +47,20 @@ echo    '
     </thead>
     <tbody>';
 
+
 foreach ($competitions as $competition) {
 
     $hbm = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'male'
     ", 'count');
     $hbf = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_female`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'female'
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
@@ -94,8 +92,8 @@ foreach ($competitions as $competition) {
         AND `sex` = 'male'
     ", 'count');
     $hl = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM `scores`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HL'
     ", 'count');

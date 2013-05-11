@@ -45,13 +45,13 @@ if (!$fullData) {
             ");
             $title = FSS::dis2name($key);*/
 
+
+    TempDB::generate('x_scores_'.$person['sex']);
     $scores = $db->getRows("
-        SELECT MIN( `time` ) AS `time`, `s`.`person_id`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
-        WHERE `s`.`time` IS NOT NULL
+        SELECT MIN( `time` ) AS `time`, `person_id`
+        FROM `x_scores_".$person['sex']."`
+        WHERE `time` IS NOT NULL
         AND `discipline` LIKE '".$db->escape($_GET['key'])."'
-        AND `p`.`sex` = '".$person['sex']."'
         GROUP BY `person_id`
         ORDER BY `time`
     ");

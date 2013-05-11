@@ -1,5 +1,9 @@
 <?php
 Title::set('Wettkämpfer');
+
+TempDB::generate('x_scores_male');
+TempDB::generate('x_scores_female');
+
 echo '<h1>Wettkämpfer</h1>';
 
 $sexs = array(
@@ -17,7 +21,7 @@ foreach ($sexs as $sex => $title) {
     foreach ($persons as $key => $person) {
         $persons[$key]['hb'] = $db->getFirstRow("
             SELECT COUNT(`id`) AS `count`
-            FROM `scores`
+            FROM `x_scores_".$sex."`
             WHERE `person_id` = '".$person['id']."'
             AND `discipline` = 'HB'
         ", 'count');
@@ -25,7 +29,7 @@ foreach ($sexs as $sex => $title) {
         if ($sex === 'male') {
             $persons[$key]['hl'] = $db->getFirstRow("
                 SELECT COUNT(`id`) AS `count`
-                FROM `scores`
+                FROM `x_scores_male`
                 WHERE `person_id` = '".$person['id']."'
                 AND `discipline` = 'HL'
             ", 'count');

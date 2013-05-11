@@ -3,6 +3,10 @@
 if (!isset($_GET['id']) || !Check::isIn($_GET['id'], 'places')) throw new PageNotFound();
 
 
+TempDB::generate('x_scores_male');
+TempDB::generate('x_scores_female');
+TempDB::generate('x_full_competitions');
+
 $_id = $_GET['id'];
 
 $place = $db->getFirstRow("
@@ -17,13 +21,10 @@ Title::set(htmlspecialchars($place['name']));
 echo '<h1>',htmlspecialchars($place['name']),'</h1>';
 
 $competitions = $db->getRows("
-    SELECT `c`.*,`e`.`name` AS `event`,
-        `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
-    FROM `competitions` `c`
-    INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-    LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-    WHERE `c`.`place_id` = '".$id."'
-    ORDER BY `c`.`date` DESC;
+    SELECT *
+    FROM `x_full_competitions`
+    WHERE `place_id` = '".$id."'
+    ORDER BY `date` DESC;
 ");
 
 echo    '
@@ -49,20 +50,16 @@ echo    '
 foreach ($competitions as $competition) {
 
     $hbm = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'male'
     ", 'count');
     $hbf = $db->getFirstRow("
-        SELECT COUNT(`s`.`id`) AS `count`
-        FROM `scores` `s`
-        INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+        SELECT COUNT(`id`) AS `count`
+        FROM `x_scores_female`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HB'
-        AND `p`.`sex` = 'female'
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
@@ -95,7 +92,7 @@ foreach ($competitions as $competition) {
     ", 'count');
     $hl = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores`
+        FROM `x_scores_male`
         WHERE `competition_id` = '".$competition['id']."'
         AND `discipline` = 'HL'
     ", 'count');
