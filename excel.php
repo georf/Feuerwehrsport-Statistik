@@ -925,7 +925,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             SELECT `id`,`team_id`,`team_number`,
                             `person_1`,`person_2`,`person_3`,`person_4`,
                             `time`,`run`
-                            FROM `scores_stafette` `gC`
+                            FROM `scores_fs` `gC`
                             WHERE `time` IS NOT NULL
                             AND `gC`.`sex` = '".$sex."'
                             AND `gC`.`competition_id` = '".$id."'
@@ -933,7 +933,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             SELECT `id`,`team_id`,`team_number`,
                             `person_1`,`person_2`,`person_3`,`person_4`,
                             99999999 AS `time`,`run`
-                            FROM `scores_stafette` `gD`
+                            FROM `scores_fs` `gD`
                             WHERE `time` IS NULL
                             AND `gD`.`sex` = '".$sex."'
                             AND `gD`.`competition_id` = '".$id."'

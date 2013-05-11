@@ -28,13 +28,13 @@ if ($_POST['key'] === 'zk') {
         AND `competition_id` = '".$score['competition_id']."'
     ");
 } elseif ($_POST['key'] === 'fs') {
-    if (!Check::isIn($_POST['scoreId'], 'scores_stafette'))  throw new Exception('score id not found');
+    if (!Check::isIn($_POST['scoreId'], 'scores_fs'))  throw new Exception('score id not found');
 
-    $score = FSS::tableRow('scores_stafette', $_POST['scoreId']);
+    $score = FSS::tableRow('scores_fs', $_POST['scoreId']);
 
     $scores = $db->getRows("
         SELECT *
-        FROM `scores_stafette`
+        FROM `scores_fs`
         WHERE `team_id` = '".$score['team_id']."'
         AND `team_number` = '".$score['team_number']."'
         AND `sex` = '".$score['sex']."'

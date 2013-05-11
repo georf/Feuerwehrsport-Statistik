@@ -82,7 +82,7 @@ if (!$MyData) {
     // Feuerwehrstafette
     $scores = $db->getRows("
         SELECT `person_1`,`person_2`,`person_3`,`person_4`
-        FROM `scores_stafette`
+        FROM `scores_fs`
         WHERE `team_id` = '".$id."'
     ");
     foreach ($scores as $score) {

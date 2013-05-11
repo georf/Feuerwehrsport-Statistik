@@ -28,7 +28,7 @@ if (!$MyData) {
 
     $points[] = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_stafette`
+        FROM `scores_fs`
     ", 'count');
     $labels[] = 'FS';
 

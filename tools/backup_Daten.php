@@ -33,7 +33,7 @@ $tables = array(
     'scores',
     'scores_gruppenstafette',
     'scores_la',
-    'scores_stafette',
+    'scores_fs',
     'score_types',
     'teams',
     'team_memberships',

@@ -37,7 +37,7 @@ if (!$fullData) {
                     AND `time` IS NOT NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_stafette`
+                    FROM `scores_fs`
                     WHERE `person_1` = '".$id."'
                     OR `person_2` = '".$id."'
                     OR `person_3` = '".$id."'
@@ -76,7 +76,7 @@ if (!$fullData) {
                     AND `time` IS NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_stafette`
+                    FROM `scores_fs`
                     WHERE `person_1` = '".$id."'
                     OR `person_2` = '".$id."'
                     OR `person_3` = '".$id."'
@@ -158,7 +158,7 @@ if (!$fullData) {
         case 'fs':
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `time` IS NOT NULL
                 AND (
                     `person_1` = '".$id."'
@@ -169,7 +169,7 @@ if (!$fullData) {
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `time` IS NULL
                 AND (
                     `person_1` = '".$id."'

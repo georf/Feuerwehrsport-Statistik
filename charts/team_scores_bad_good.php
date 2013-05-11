@@ -73,7 +73,7 @@ if (!$fullData) {
 
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `time` IS NOT NULL
                 AND `sex` = '".$sex."'
                 AND `team_id` = '".$db->escape($id)."'
@@ -81,7 +81,7 @@ if (!$fullData) {
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `time` IS NULL
                 AND `sex` = '".$sex."'
                 AND `team_id` = '".$db->escape($id)."'

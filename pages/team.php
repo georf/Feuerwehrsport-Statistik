@@ -111,7 +111,7 @@ foreach ($scores as $score) {
 // Feuerwehrstafette
 $scores = $db->getRows("
     SELECT `person_1`,`person_2`,`person_3`,`person_4`
-    FROM `scores_stafette`
+    FROM `scores_fs`
     WHERE `team_id` = '".$id."'
 ");
 foreach ($scores as $score) {
@@ -204,7 +204,7 @@ foreach ($sc_fs as $sex => $name) {
                     SELECT `id`,`team_number`,`competition_id`,
                     `person_1`,`person_2`,`person_3`,`person_4`,
                     `time`
-                    FROM `scores_stafette` `gC`
+                    FROM `scores_fs` `gC`
                     WHERE `time` IS NOT NULL
                     AND `gC`.`team_id` = '".$id."'
                     AND `gC`.`sex` = '".$sex."'
@@ -212,7 +212,7 @@ foreach ($sc_fs as $sex => $name) {
                     SELECT `id`,`team_number`,`competition_id`,
                     `person_1`,`person_2`,`person_3`,`person_4`,
                     ".FSS::INVALID." AS `time`
-                    FROM `scores_stafette` `gD`
+                    FROM `scores_fs` `gD`
                     WHERE `time` IS NULL
                     AND `gD`.`team_id` = '".$id."'
                     AND `gD`.`sex` = '".$sex."'

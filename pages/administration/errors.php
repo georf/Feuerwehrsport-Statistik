@@ -62,10 +62,10 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
             // set scores
             $scores = $db->getRows("
                 SELECT `id`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `person_".$i."` = '".$person['id']."'");
             foreach ($scores as $score) {
-                $db->updateRow('scores_stafette', $score['id'], array('person_'.$i => $new_person['id']));
+                $db->updateRow('scores_fs', $score['id'], array('person_'.$i => $new_person['id']));
             }
         }
 
@@ -123,10 +123,10 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         // set scores
         $scores = $db->getRows("
             SELECT `id`
-            FROM `scores_stafette`
+            FROM `scores_fs`
             WHERE `team_id` = '".$team['id']."'");
         foreach ($scores as $score) {
-            $db->updateRow('scores_stafette', $score['id'], array('team_id' => $new_team['id']));
+            $db->updateRow('scores_fs', $score['id'], array('team_id' => $new_team['id']));
         }
 
         // set scores

@@ -80,13 +80,13 @@ foreach ($competitions as $competition) {
     ", 'count');
     $fsf = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_stafette`
+        FROM `scores_fs`
         WHERE `competition_id` = '".$competition['id']."'
         AND `sex` = 'female'
     ", 'count');
     $fsm = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_stafette`
+        FROM `scores_fs`
         WHERE `competition_id` = '".$competition['id']."'
         AND `sex` = 'male'
     ", 'count');

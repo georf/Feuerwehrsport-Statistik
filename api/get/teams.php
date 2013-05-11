@@ -40,7 +40,7 @@ if (Check::post('personId') && Check::isIn($_POST['personId'], 'persons')) {
                 OR `person_7` = '".$id."'
             UNION
                 SELECT `team_id`,CONCAT('FS',`id`) AS `key`
-                FROM `scores_stafette`
+                FROM `scores_fs`
                 WHERE `person_1` = '".$id."'
                 OR `person_2` = '".$id."'
                 OR `person_3` = '".$id."'

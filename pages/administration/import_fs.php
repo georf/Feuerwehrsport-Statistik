@@ -20,7 +20,7 @@ if (isset($_POST['step']) && $_POST['step'] == 'save') {
             }
 
 
-            $db->insertRow('scores_stafette', array(
+            $db->insertRow('scores_fs', array(
                 'team_id' => $cols[0],
                 'team_number' => intval($cols[2])-1,
                 'run' => $cols[1],

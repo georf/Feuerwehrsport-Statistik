@@ -55,7 +55,7 @@ if (!$MyData) {
                     WHERE `competition_id` = '".$competition['id']."'
                 UNION
                     SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                    FROM `scores_stafette`
+                    FROM `scores_fs`
                     WHERE `competition_id` = '".$competition['id']."'
                 UNION
                     SELECT CONCAT(CAST(`team_id` AS CHAR),'female',CAST(`team_number` AS CHAR)) AS `team`

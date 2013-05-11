@@ -110,7 +110,7 @@ if (!$fullData) {
             $scores = $db->getRows("
                 SELECT
                     `s`.`time`,`c`.`date`
-                FROM `scores_stafette` `s`
+                FROM `scores_fs` `s`
                 INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
                 WHERE
                 `time` IS NOT NULL AND (

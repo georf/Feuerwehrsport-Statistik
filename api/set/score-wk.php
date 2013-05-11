@@ -7,7 +7,7 @@ if ($_POST['key'] === 'gs') {
     $table = 'scores_gruppenstafette';
     $wks = 7;
 } elseif ($_POST['key'] === 'fs') {
-    $table = 'scores_stafette';
+    $table = 'scores_fs';
     $wks = 5;
 } elseif ($_POST['key'] === 'la') {
     $table = 'scores_la';

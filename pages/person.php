@@ -49,7 +49,7 @@ $teams = $db->getRows("
             OR `person_7` = '".$id."'
         UNION
             SELECT `team_id`,CONCAT('FS',`id`) AS `key`
-            FROM `scores_stafette`
+            FROM `scores_fs`
             WHERE `person_1` = '".$id."'
             OR `person_2` = '".$id."'
             OR `person_3` = '".$id."'
@@ -180,7 +180,7 @@ $fs = $db->getRows("
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`,
         `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`
-    FROM `scores_stafette` `s`
+    FROM `scores_fs` `s`
     INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
     INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
     INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`

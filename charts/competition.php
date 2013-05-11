@@ -77,7 +77,7 @@ if (!$fullData) {
                     SELECT *
                     FROM (
                         SELECT `team_id`,`team_number`,`time`
-                        FROM `scores_stafette`
+                        FROM `scores_fs`
                         WHERE `time` IS NOT NULL
                         AND `sex` = '".$sex."'
                         AND `competition_id` = '".$id."'
