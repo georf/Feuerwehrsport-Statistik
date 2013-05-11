@@ -34,7 +34,7 @@ if (!$MyData) {
 
     $points[] = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_gruppenstafette`
+        FROM `scores_gs`
     ", 'count');
     $labels[] = 'GS';
 

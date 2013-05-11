@@ -31,7 +31,7 @@ $tables = array(
     'persons',
     'places',
     'scores',
-    'scores_gruppenstafette',
+    'scores_gs',
     'scores_la',
     'scores_fs',
     'score_types',

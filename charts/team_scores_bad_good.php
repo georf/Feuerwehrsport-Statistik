@@ -34,13 +34,13 @@ if (!$fullData) {
         case 'gs':
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `team_id` = '".$db->escape($id)."'
                 AND `time` IS NOT NULL
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `team_id` = '".$db->escape($id)."'
                 AND `time` IS NULL
             ", 'bad');

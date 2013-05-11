@@ -30,7 +30,7 @@ $teams = $db->getRows("
             AND `discipline` = 'HL'
         UNION
             SELECT `team_id`,CONCAT('GS',`id`) AS `key`
-            FROM `scores_gruppenstafette`
+            FROM `scores_gs`
             WHERE `person_1` = '".$id."'
             OR `person_2` = '".$id."'
             OR `person_3` = '".$id."'
@@ -135,7 +135,7 @@ $gs = $db->getRows("
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`,
         `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`
-    FROM `scores_gruppenstafette` `s`
+    FROM `scores_gs` `s`
     INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
     INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
     INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`

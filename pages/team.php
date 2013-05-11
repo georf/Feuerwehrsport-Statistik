@@ -69,7 +69,7 @@ foreach ($scores as $score) {
 // Gruppenstafette
 $scores = $db->getRows("
     SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`
-    FROM `scores_gruppenstafette`
+    FROM `scores_gs`
     WHERE `team_id` = '".$id."'
 ");
 foreach ($scores as $score) {
@@ -159,14 +159,14 @@ $sc_gs = $db->getRows("
             SELECT `id`,`team_number`,`competition_id`,
             `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
             `time`
-            FROM `scores_gruppenstafette` `gC`
+            FROM `scores_gs` `gC`
             WHERE `time` IS NOT NULL
             AND `gC`.`team_id` = '".$id."'
         ) UNION (
             SELECT `id`,`team_number`,`competition_id`,
             `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
             ".FSS::INVALID." AS `time`
-            FROM `scores_gruppenstafette` `gD`
+            FROM `scores_gs` `gD`
             WHERE `time` IS NULL
             AND `gD`.`team_id` = '".$id."'
         ) ORDER BY `time`

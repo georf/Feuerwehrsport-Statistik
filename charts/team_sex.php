@@ -44,7 +44,7 @@ if (!$MyData) {
     // Gruppenstafette
     $scores = $db->getRows("
         SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`
-        FROM `scores_gruppenstafette`
+        FROM `scores_gs`
         WHERE `team_id` = '".$id."'
     ");
     foreach ($scores as $score) {

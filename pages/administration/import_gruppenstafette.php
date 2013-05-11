@@ -29,7 +29,7 @@ if (isset($_POST['step'])) {
                 );
 
                 print_r($insert);
-              echo $db->insertRow('scores_gruppenstafette', $insert);
+              echo $db->insertRow('scores_gs', $insert);
             }
         }
 

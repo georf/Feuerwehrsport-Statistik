@@ -41,14 +41,14 @@ $gs = $db->getRows("
                 SELECT `id`,`team_id`,`team_number`,
                 `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
                 `time`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `time` IS NOT NULL
                 AND `competition_id` = '".$id."'
             ) UNION (
                 SELECT `id`,`team_id`,`team_number`,
                 `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
                 ".FSS::INVALID." AS `time`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `time` IS NULL
                 AND `competition_id` = '".$id."'
             ) ORDER BY `time`

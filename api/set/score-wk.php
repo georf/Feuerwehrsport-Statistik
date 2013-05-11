@@ -4,7 +4,7 @@ if (!Check::post('key', 'scoreId')) throw new Exception('no score id given');
 $table = false;
 $wks = false;
 if ($_POST['key'] === 'gs') {
-    $table = 'scores_gruppenstafette';
+    $table = 'scores_gs';
     $wks = 7;
 } elseif ($_POST['key'] === 'fs') {
     $table = 'scores_fs';

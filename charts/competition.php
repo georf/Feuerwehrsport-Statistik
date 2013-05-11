@@ -34,7 +34,7 @@ if (!$fullData) {
                     SELECT *
                     FROM (
                         SELECT `team_id`,`team_number`,`time`
-                        FROM `scores_gruppenstafette`
+                        FROM `scores_gs`
                         WHERE `time` IS NOT NULL
                         AND `competition_id` = '".$id."'
                         ORDER BY `time`

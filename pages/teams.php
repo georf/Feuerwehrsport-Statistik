@@ -40,7 +40,7 @@ foreach ($teams as $team) {
     // Gruppenstafette
     $scores = $db->getRows("
         SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`
-        FROM `scores_gruppenstafette`
+        FROM `scores_gs`
         WHERE `team_id` = '".$team['id']."'
     ");
     foreach ($scores as $score) {
@@ -93,7 +93,7 @@ foreach ($teams as $team) {
             GROUP BY `competition_id`
         UNION
             SELECT `competition_id`
-            FROM `scores_gruppenstafette`
+            FROM `scores_gs`
             WHERE `team_id` = '".$team['id']."'
             GROUP BY `competition_id`
         UNION

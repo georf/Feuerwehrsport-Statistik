@@ -773,14 +773,14 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                         SELECT `id`,`team_id`,`team_number`,
                         `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
                         `time`
-                        FROM `scores_gruppenstafette` `gC`
+                        FROM `scores_gs` `gC`
                         WHERE `time` IS NOT NULL
                         AND `gC`.`competition_id` = '".$id."'
                     ) UNION (
                         SELECT `id`,`team_id`,`team_number`,
                         `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
                         99999999 AS `time`
-                        FROM `scores_gruppenstafette` `gD`
+                        FROM `scores_gs` `gD`
                         WHERE `time` IS NULL
                         AND `gD`.`competition_id` = '".$id."'
                     ) ORDER BY `time`
@@ -845,7 +845,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                 $moreScores = $db->getRows("
                     (
                         SELECT `time`
-                        FROM `scores_gruppenstafette` `gC`
+                        FROM `scores_gs` `gC`
                         WHERE `time` IS NOT NULL
                         AND `gC`.`competition_id` = '".$id."'
                         AND `id` != '".$score['id']."'
@@ -853,7 +853,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                         AND `team_number` = '".$score['team_number']."'
                     ) UNION (
                         SELECT 99999999 AS `time`
-                        FROM `scores_gruppenstafette` `gD`
+                        FROM `scores_gs` `gD`
                         WHERE `time` IS NULL
                         AND `gD`.`competition_id` = '".$id."'
                         AND `id` != '".$score['id']."'

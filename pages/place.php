@@ -63,7 +63,7 @@ foreach ($competitions as $competition) {
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_gruppenstafette`
+        FROM `scores_gs`
         WHERE `competition_id` = '".$competition['id']."'
     ", 'count');
     $laf = $db->getFirstRow("

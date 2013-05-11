@@ -36,7 +36,7 @@ foreach ($sexs as $sex => $title) {
         } else {
             $persons[$key]['gs'] = $db->getFirstRow("
                 SELECT COUNT(`id`) AS `count`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `person_1` = '".$person['id']."'
                 OR `person_2` = '".$person['id']."'
                 OR `person_3` = '".$person['id']."'

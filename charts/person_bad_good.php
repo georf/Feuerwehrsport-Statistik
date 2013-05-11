@@ -16,7 +16,7 @@ if (!$fullData) {
                 SELECT COUNT(*) AS `good`
                 FROM (
                     SELECT `id`
-                    FROM `scores_gruppenstafette`
+                    FROM `scores_gs`
                     WHERE `person_1` = '".$id."'
                     OR `person_2` = '".$id."'
                     OR `person_3` = '".$id."'
@@ -55,7 +55,7 @@ if (!$fullData) {
                 SELECT COUNT(*) AS `bad`
                 FROM (
                     SELECT `id`
-                    FROM `scores_gruppenstafette`
+                    FROM `scores_gs`
                     WHERE `person_1` = '".$id."'
                     OR `person_2` = '".$id."'
                     OR `person_3` = '".$id."'
@@ -96,7 +96,7 @@ if (!$fullData) {
         case 'gs':
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `time` IS NOT NULL
                 AND (
                     `person_1` = '".$id."'
@@ -109,7 +109,7 @@ if (!$fullData) {
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `time` IS NULL
                 AND (
                     `person_1` = '".$id."'

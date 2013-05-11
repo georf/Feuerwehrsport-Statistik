@@ -35,7 +35,7 @@ if (isset($_POST['step'])) {
                 continue;
             }
               // insert score
-              $db->insertRow('scores_gruppenstafette', array(
+              $db->insertRow('scores_gs', array(
                 'competition_id' => $_POST['competition'],
                 'time' => $person['time'.$i],
                 'team_id' => $person['team'],

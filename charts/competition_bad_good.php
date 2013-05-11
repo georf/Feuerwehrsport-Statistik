@@ -42,7 +42,7 @@ if (!$fullData) {
                     AND `time` IS NOT NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_gruppenstafette`
+                    FROM `scores_gs`
                     WHERE `competition_id` = '".$db->escape($id)."'
                     AND `time` IS NOT NULL
                 UNION
@@ -67,7 +67,7 @@ if (!$fullData) {
                     AND `time` IS NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_gruppenstafette`
+                    FROM `scores_gs`
                     WHERE `competition_id` = '".$db->escape($id)."'
                     AND `time` IS NULL
                 UNION
@@ -89,13 +89,13 @@ if (!$fullData) {
 
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `competition_id` = '".$db->escape($id)."'
                 AND `time` IS NOT NULL
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `competition_id` = '".$db->escape($id)."'
                 AND `time` IS NULL
             ", 'bad');

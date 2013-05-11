@@ -21,7 +21,7 @@ if (Check::post('personId') && Check::isIn($_POST['personId'], 'persons')) {
                 AND `discipline` = 'HL'
             UNION
                 SELECT `team_id`,CONCAT('GS',`id`) AS `key`
-                FROM `scores_gruppenstafette`
+                FROM `scores_gs`
                 WHERE `person_1` = '".$id."'
                 OR `person_2` = '".$id."'
                 OR `person_3` = '".$id."'
