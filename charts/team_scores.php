@@ -59,7 +59,7 @@ if (!$fullData) {
                     FROM
                     (
                         SELECT `competition_id`,`time`
-                        FROM `scores_loeschangriff`
+                        FROM `scores_la`
                         WHERE `time` IS NOT NULL
                         AND `team_id` = '".$id."'
                         AND `sex` = '".$sex."'

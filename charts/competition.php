@@ -55,7 +55,7 @@ if (!$fullData) {
                     SELECT *
                     FROM (
                         SELECT `team_id`,`team_number`,`time`
-                        FROM `scores_loeschangriff`
+                        FROM `scores_la`
                         WHERE `time` IS NOT NULL
                         AND `sex` = '".$sex."'
                         AND `competition_id` = '".$id."'
@@ -351,7 +351,7 @@ if ( $MyCache->isInCache($ChartHash)) {
 
     /* Render the picture */
     $myPicture->stroke();
-    
+
     /* Push the rendered picture to the cache */
     $MyCache->writeToCache($ChartHash, $myPicture);
 

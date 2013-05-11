@@ -52,7 +52,7 @@ if (!$fullData) {
 
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_loeschangriff`
+                FROM `scores_la`
                 WHERE `time` IS NOT NULL
                 AND `sex` = '".$sex."'
                 AND `team_id` = '".$db->escape($id)."'
@@ -60,7 +60,7 @@ if (!$fullData) {
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_loeschangriff`
+                FROM `scores_la`
                 WHERE `time` IS NULL
                 AND `sex` = '".$sex."'
                 AND `team_id` = '".$db->escape($id)."'

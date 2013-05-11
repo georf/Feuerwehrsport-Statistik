@@ -11,7 +11,7 @@ if (!$fullData) {
     if ($_GET['key'] == 'full') {
         $key = 'full';
     } else {
-        
+
         $keys = explode('-', $_GET['key']);
         $key = $keys[0];
 
@@ -32,7 +32,7 @@ if (!$fullData) {
 
     switch ($key) {
         case 'full':
-        
+
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
                 FROM (
@@ -47,7 +47,7 @@ if (!$fullData) {
                     AND `time` IS NOT NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_loeschangriff`
+                    FROM `scores_la`
                     WHERE `competition_id` = '".$db->escape($id)."'
                     AND `time` IS NOT NULL
                 UNION
@@ -57,7 +57,7 @@ if (!$fullData) {
                     AND `time` IS NOT NULL
                 ) `i`
             ", 'good');
-        
+
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
                 FROM (
@@ -72,7 +72,7 @@ if (!$fullData) {
                     AND `time` IS NULL
                 UNION
                     SELECT `id`
-                    FROM `scores_loeschangriff`
+                    FROM `scores_la`
                     WHERE `competition_id` = '".$db->escape($id)."'
                     AND `time` IS NULL
                 UNION
@@ -83,7 +83,7 @@ if (!$fullData) {
                 ) `i`
             ", 'bad');
             $title = 'Ganzer Wettkampf';
-        
+
             break;
         case 'gs':
 
@@ -107,7 +107,7 @@ if (!$fullData) {
 
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_loeschangriff`
+                FROM `scores_la`
                 WHERE `time` IS NOT NULL
                 AND `sex` = '".$sex."'
                 AND `competition_id` = '".$db->escape($id)."'
@@ -115,7 +115,7 @@ if (!$fullData) {
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_loeschangriff`
+                FROM `scores_la`
                 WHERE `time` IS NULL
                 AND `sex` = '".$sex."'
                 AND `competition_id` = '".$db->escape($id)."'

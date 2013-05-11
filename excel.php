@@ -624,7 +624,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             SELECT `id`,`team_id`,`team_number`,
                             `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
                             `time`
-                            FROM `scores_loeschangriff` `gC`
+                            FROM `scores_la` `gC`
                             WHERE `time` IS NOT NULL
                             AND `gC`.`sex` = '".$sex."'
                             AND `gC`.`competition_id` = '".$id."'
@@ -632,7 +632,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             SELECT `id`,`team_id`,`team_number`,
                             `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
                             99999999 AS `time`
-                            FROM `scores_loeschangriff` `gD`
+                            FROM `scores_la` `gD`
                             WHERE `time` IS NULL
                             AND `gD`.`sex` = '".$sex."'
                             AND `gD`.`competition_id` = '".$id."'
@@ -699,7 +699,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                     $moreScores = $db->getRows("
                         (
                             SELECT `time`
-                            FROM `scores_loeschangriff` `gC`
+                            FROM `scores_la` `gC`
                             WHERE `time` IS NOT NULL
                             AND `gC`.`sex` = '".$sex."'
                             AND `gC`.`competition_id` = '".$id."'
@@ -708,7 +708,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             AND `team_number` = '".$score['team_number']."'
                         ) UNION (
                             SELECT 99999999 AS `time`
-                            FROM `scores_loeschangriff` `gD`
+                            FROM `scores_la` `gD`
                             WHERE `time` IS NULL
                             AND `gD`.`sex` = '".$sex."'
                             AND `gD`.`competition_id` = '".$id."'

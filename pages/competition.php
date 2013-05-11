@@ -89,7 +89,7 @@ foreach ($sexes as $sex) {
                     SELECT `id`,`team_id`,`team_number`,
                     `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
                     `time`
-                    FROM `scores_loeschangriff`
+                    FROM `scores_la`
                     WHERE `time` IS NOT NULL
                     AND `sex` = '".$sex."'
                     AND `competition_id` = '".$id."'
@@ -97,7 +97,7 @@ foreach ($sexes as $sex) {
                     SELECT `id`,`team_id`,`team_number`,
                     `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
                     ".FSS::INVALID." AS `time`
-                    FROM `scores_loeschangriff`
+                    FROM `scores_la`
                     WHERE `time` IS NULL
                     AND `sex` = '".$sex."'
                     AND `competition_id` = '".$id."'

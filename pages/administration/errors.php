@@ -50,10 +50,10 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
             // set scores
             $scores = $db->getRows("
                 SELECT `id`
-                FROM `scores_loeschangriff`
+                FROM `scores_la`
                 WHERE `person_".$i."` = '".$person['id']."'");
             foreach ($scores as $score) {
-                $db->updateRow('scores_loeschangriff', $score['id'], array('person_'.$i => $new_person['id']));
+                $db->updateRow('scores_la', $score['id'], array('person_'.$i => $new_person['id']));
             }
         }
 
@@ -114,10 +114,10 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         // set scores
         $scores = $db->getRows("
             SELECT `id`
-            FROM `scores_loeschangriff`
+            FROM `scores_la`
             WHERE `team_id` = '".$team['id']."'");
         foreach ($scores as $score) {
-            $db->updateRow('scores_loeschangriff', $score['id'], array('team_id' => $new_team['id']));
+            $db->updateRow('scores_la', $score['id'], array('team_id' => $new_team['id']));
         }
 
         // set scores

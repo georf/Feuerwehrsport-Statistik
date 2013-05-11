@@ -63,7 +63,7 @@ if (!$MyData) {
     // Löschangriff
     $scores = $db->getRows("
         SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-        FROM `scores_loeschangriff`
+        FROM `scores_la`
         WHERE `team_id` = '".$id."'
     ");
     foreach ($scores as $score) {

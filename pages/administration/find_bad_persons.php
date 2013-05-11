@@ -84,7 +84,7 @@ foreach ($persons as $person) {
             `s`.`time`,`s`.`team_id`,
             `s`.`id` AS `score_id`,`s`.`team_number`,
             `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`,`s`.`person_7`
-        FROM `scores_loeschangriff` `s`
+        FROM `scores_la` `s`
         INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
         INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
         INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`

@@ -48,7 +48,7 @@ foreach ($sexs as $sex => $title) {
 
         $persons[$key]['la'] = $db->getFirstRow("
             SELECT COUNT(`id`) AS `count`
-            FROM `scores_loeschangriff`
+            FROM `scores_la`
             WHERE `person_1` = '".$person['id']."'
             OR `person_2` = '".$person['id']."'
             OR `person_3` = '".$person['id']."'

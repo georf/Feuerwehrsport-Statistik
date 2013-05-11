@@ -15,7 +15,7 @@ if (!$storage) {
     for ($i = 1; $i < 8; $i++) {
         $positions[] = $db->getFirstRow("
             SELECT COUNT(`id`) AS `count`
-            FROM `scores_loeschangriff`
+            FROM `scores_la`
             WHERE `person_".$i."` = ".$id."
         ", 'count');
     }

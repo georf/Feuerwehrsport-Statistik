@@ -22,7 +22,7 @@ if (!$MyData) {
 
     $points[] = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_loeschangriff`
+        FROM `scores_la`
     ", 'count');
     $labels[] = 'LA';
 

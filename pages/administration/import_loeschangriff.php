@@ -31,7 +31,7 @@ if (isset($_POST['step'])) {
                 );
 
                 print_r($insert);
-              echo $db->insertRow('scores_loeschangriff', $insert);
+              echo $db->insertRow('scores_la', $insert);
             }
         }
 

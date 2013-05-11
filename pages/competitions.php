@@ -57,13 +57,13 @@ foreach ($competitions as $competition) {
     ", 'count');
     $laf = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_loeschangriff`
+        FROM `scores_la`
         WHERE `competition_id` = '".$competition['id']."'
         AND `sex` = 'female'
     ", 'count');
     $lam = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
-        FROM `scores_loeschangriff`
+        FROM `scores_la`
         WHERE `competition_id` = '".$competition['id']."'
         AND `sex` = 'male'
     ", 'count');

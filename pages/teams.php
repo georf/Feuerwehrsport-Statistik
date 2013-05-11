@@ -55,7 +55,7 @@ foreach ($teams as $team) {
     // Löschangriff
     $scores = $db->getRows("
         SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-        FROM `scores_loeschangriff`
+        FROM `scores_la`
         WHERE `team_id` = '".$team['id']."'
     ");
     foreach ($scores as $score) {
@@ -98,7 +98,7 @@ foreach ($teams as $team) {
             GROUP BY `competition_id`
         UNION
             SELECT `competition_id`
-            FROM `scores_loeschangriff`
+            FROM `scores_la`
             WHERE `team_id` = '".$team['id']."'
             GROUP BY `competition_id`
         UNION
