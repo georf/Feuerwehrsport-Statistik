@@ -96,19 +96,6 @@ if (!$MyData) {
     }
 
 
-
-    $memberships = $db->getRows("
-      SELECT `person_id`, `start`, `end`, `id`
-      FROM `team_memberships`
-      WHERE `team_id` = '".$id."'
-      GROUP BY `person_id`
-    ");
-
-    foreach ($memberships as $score) {
-        $pid = $score['person_id'];
-        if (!isset($members[$pid])) $members[$pid] = 'male';
-    }
-
     $male = 0;
     $female = 0;
     foreach ($members as $pid=>$member) {
@@ -164,6 +151,9 @@ if ($MyCache->isInCache($ChartHash)) {
 
     /* Create the pPie object */
     $PieChart = new pPie($myPicture,$MyData);
+
+    $PieChart->setSliceColor(0, FSS::palette('male'));
+    $PieChart->setSliceColor(1, FSS::palette('female'));
 
     /* Draw a simple pie chart */
     $PieChart->draw2DPie(30,30,array(

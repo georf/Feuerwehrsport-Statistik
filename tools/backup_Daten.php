@@ -36,7 +36,6 @@ $tables = array(
     'scores_fs',
     'score_types',
     'teams',
-    'team_memberships',
 );
 
 foreach ($tables as $table) {

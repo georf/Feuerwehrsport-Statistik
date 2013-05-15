@@ -69,14 +69,6 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
             }
         }
 
-        // set scores
-        $memberships = $db->getRows("
-            SELECT `id`
-            FROM `team_memberships`
-            WHERE `person_id` = '".$person['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('team_memberships', $score['id'], array('person_id' => $new_person['id']));
-        }
 
         // delete person
         $db->deleteRow('persons', $person['id']);
@@ -129,17 +121,8 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
             $db->updateRow('scores_fs', $score['id'], array('team_id' => $new_team['id']));
         }
 
-        // set scores
-        $memberships = $db->getRows("
-            SELECT `id`
-            FROM `team_memberships`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('team_memberships', $score['id'], array('team_id' => $new_team['id']));
-        }
-
-	// set links
-	$links = $db->getRows("
+        // set links
+        $links = $db->getRows("
             SELECT `id`
             FROM `links`
             WHERE `for` = 'team'

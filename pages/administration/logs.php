@@ -29,21 +29,6 @@ foreach($logs as $log) {
         break;
 
 
-
-
-        case 'membership-remove':
-            $content = json_decode($log['content'], true);
-            echo '<td colspan="3">'.$content['firstname'].' '.$content['name'].' von »'.$content['team'].'« entfernt (#'.$content['id'].')</td>';
-        break;
-
-
-
-        case 'membership-add':
-            $content = json_decode($log['content'], true);
-            echo '<td colspan="3">'.$content['firstname'].' '.$content['name'].' zu »'.$content['team'].'« hinzugefügt (#'.$content['id'].')</td>';
-        break;
-
-
         case 'score':
             $content = json_decode($log['content'], true);
 
