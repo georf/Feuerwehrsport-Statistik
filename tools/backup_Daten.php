@@ -21,7 +21,6 @@ password="'.$config['database']['password'].'"
 
 $tables = array(
     'competitions',
-    'disciplines',
     'errors',
     'events',
     'file_uploads',
@@ -48,7 +47,7 @@ foreach ($tables as $table) {
         ' > '.__DIR__.'/Daten/'.$table);
 }
 
-shell_exec('cd '.__DIR__.'/Daten/ ; git add . ');
+shell_exec('cd '.__DIR__.'/Daten/ ; git add -A . ');
 $output = shell_exec('cd '.__DIR__.'/Daten/ ; git status ');
 if (strpos($output, 'nothing to commit') === false) {
     shell_exec('cd '.__DIR__.'/Daten/ ; git commit -am "Backup '.date('d.m.Y').'" -q ');
