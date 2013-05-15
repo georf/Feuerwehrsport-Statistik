@@ -72,5 +72,6 @@ class Cache {
 
         $db->query("TRUNCATE TABLE `cache`");
         TempDB::clean();
+        TempDB::generate();
     }
 }

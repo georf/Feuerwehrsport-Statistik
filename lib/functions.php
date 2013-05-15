@@ -167,17 +167,6 @@ function aasort (&$array, $key) {
     $array=$ret;
 }
 
-function teamNumber($number) {
-    if ($number == -2) {
-        return 'F';
-    } elseif ($number == -1) {
-        return 'E';
-    } else {
-        return ($number + 1);
-    }
-}
-
-
 function getStatusColor($status) {
     $c = array(
         '#90EE90',

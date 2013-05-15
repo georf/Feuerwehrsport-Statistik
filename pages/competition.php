@@ -746,7 +746,7 @@ foreach ($dis as $fullKey => $scores) {
 
             echo
                 '<tr data-id="',$score['id'],'">',
-                    '<td>'.Link::team($score['team_id'], $score['shortteam'].' '.FSS::teamNumber($score['team_number']).$run, 'Details zu '.$score['team'].' anzeigen'),'</td>',
+                    '<td>'.Link::team($score['team_id'], $score['shortteam'].' '.FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition').$run, 'Details zu '.$score['team'].' anzeigen'),'</td>',
                     '<td>',FSS::time($score['time']),'</td>';
 
             for ($wk = 1; $wk < 8; $wk++) {

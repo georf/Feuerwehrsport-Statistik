@@ -4,6 +4,9 @@ class FSS
 {
     const INVALID = 99999999;
 
+    private static $competitionTeamNumbers = false;
+    private static $teamTeamNumbers = false;
+
 
     public static function isInvalid($time) {
         return ($time == self::INVALID || !$time);
@@ -19,13 +22,68 @@ class FSS
     }
 
 
-    public static function teamNumber($number) {
+    public static function teamNumber($number, $competition_id = false, $team_id = false, $cache = false, $pre = '') {
+        global $db;
+
         if ($number == -1) {
-            return 'E';
+            return $pre.'E';
         } elseif ($number == -2) {
-            return 'F';
+            return $pre.'F';
         }
-        return (intval($number)+1);
+
+        if (!$competition_id) {
+            return (intval($number)+1);
+        }
+
+        if ($cache == 'competition') {
+            if (self::$competitionTeamNumbers === false) {
+                $rows = $db->getRows("
+                    SELECT `team_id`
+                    FROM `x_team_numbers`
+                    WHERE `competition_id` = '".$competition_id."'
+                ");
+
+                self::$competitionTeamNumbers = array();
+                foreach ($rows as $row) {
+                    self::$competitionTeamNumbers[$row['team_id']] = true;
+                }
+            }
+
+            if (isset(self::$competitionTeamNumbers[$team_id])) {
+                return $pre.(intval($number)+1);
+            }
+            return '';
+        }
+
+        if ($cache == 'team') {
+            if (self::$teamTeamNumbers === false) {
+                $rows = $db->getRows("
+                    SELECT `team_id`
+                    FROM `x_team_numbers`
+                    WHERE `competition_id` = '".$competition_id."'
+                ");
+
+                self::$teamTeamNumbers = array();
+                foreach ($rows as $row) {
+                    self::$teamTeamNumbers[$row['team_id']] = true;
+                }
+            }
+
+            if (isset(self::$teamTeamNumbers[$team_id])) {
+                return $pre.(intval($number)+1);
+            }
+            return '';
+        }
+
+        if (count($db->getRows("
+            SELECT `team_id`
+            FROM `x_team_numbers`
+            WHERE `competition_id` = '".$competition_id."'
+            AND `team_id` = '".$team_id."'
+        "))) {
+            return $pre.(intval($number)+1);
+        }
+        return '';
     }
 
 
@@ -42,7 +100,7 @@ class FSS
     public static function sex($sex) {
         return ($sex === 'female')? 'weiblich':'männlich';
     }
-    
+
     public static function palette($sex) {
         if ($sex === 'female') {
             return array("R"=>229,"G"=>11,"B"=>11,"Alpha"=>80);
@@ -65,12 +123,12 @@ class FSS
 
     public static function competition($id) {
         global $db;
-        
+
         TempDB::generate('x_full_competitions');
 
         return $db->getFirstRow("
             SELECT *
-            FROM `x_full_competitions` 
+            FROM `x_full_competitions`
             WHERE `id` = '".$db->escape($id)."'
             LIMIT 1;
         ");

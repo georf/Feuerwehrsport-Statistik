@@ -11,7 +11,7 @@ class TempDB {
                 KEY `event_id` (`event_id`),
                 KEY `date` (`date`)
             )
-            ENGINE = MYISAM DEFAULT CHARSET = utf8
+            ENGINE = INNODB DEFAULT CHARSET = utf8
             SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`,
                 `t`.`persons`,`t`.`run`,`t`.`score`,`t`.`id` AS `score_type`
             FROM `competitions` `c`
@@ -29,7 +29,7 @@ class TempDB {
                 KEY `time` (`time`),
                 KEY `discipline` (`discipline`)
             )
-            ENGINE = MYISAM DEFAULT CHARSET = utf8
+            ENGINE = INNODB DEFAULT CHARSET = utf8
             SELECT `s`.*, `p`.`name`, `p`.`firstname`
             FROM `persons` `p`
             INNER JOIN `scores` `s` ON `s`.`person_id` = `p`.`id`
@@ -45,11 +45,39 @@ class TempDB {
                 KEY `time` (`time`),
                 KEY `discipline` (`discipline`)
             )
-            ENGINE = MYISAM DEFAULT CHARSET = utf8
+            ENGINE = INNODB DEFAULT CHARSET = utf8
             SELECT `s`.*, `p`.`name`, `p`.`firstname`
             FROM `persons` `p`
             INNER JOIN `scores` `s` ON `s`.`person_id` = `p`.`id`
             WHERE `p`.`sex` = 'male'
+        ",
+        'x_team_numbers' => "
+            CREATE TABLE x_team_numbers
+            (
+                KEY `competition_id` (`competition_id`),
+                KEY `team_id` (`team_id`)
+            )
+            ENGINE = INNODB DEFAULT CHARSET = utf8
+            SELECT *
+            FROM (
+                    SELECT `competition_id` , `team_id` , `team_number`
+                    FROM `scores`
+                    WHERE `team_id` IS NOT NULL
+                    AND `team_number` > 0
+                UNION
+                    SELECT `competition_id` , `team_id` , `team_number`
+                    FROM `scores_la`
+                    WHERE `team_number` > 0
+                UNION
+                    SELECT `competition_id` , `team_id` , `team_number`
+                    FROM `scores_gs`
+                    WHERE `team_number` > 0
+                UNION
+                    SELECT `competition_id` , `team_id` , `team_number`
+                    FROM `scores_fs`
+                    WHERE `team_number` > 0
+            ) `rows`
+            GROUP BY `competition_id` , `team_id` , `team_number`
         ",
     );
 
@@ -58,15 +86,27 @@ class TempDB {
     public static function clean() {
         global $db;
 
-        foreach (self::$tables as $table => $statement) {
-            $db->query("DROP TABLE IF EXISTS `".$table."`");
-        }
 
+        $tables = $db->getRows("SHOW TABLES");
+        foreach ($tables as $table) {
+            foreach ($table as $t) {
+                if (strpos($t, 'x_') === 0) {
+                    $db->query("DROP TABLE IF EXISTS `".$t."`");
+                }
+            }
+        }
         self::$exists = array();
     }
 
-    public static function generate($table) {
+    public static function generate($table = false) {
         global $db;
+
+        if ($table === false) {
+            foreach (self::$tables as $key => $value) {
+                self::generate($key);
+            }
+            return;
+        }
 
         if (!array_key_exists($table, self::$tables)) return false;
 
@@ -75,6 +115,7 @@ class TempDB {
             return true;
         } else {
             self::$exists[$table] = true;
+
             return $db->query(self::$tables[$table]);
         }
     }

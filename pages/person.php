@@ -332,7 +332,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
 
                 $t_name = $teams[$score['team_id']]['name'];
                 if ($score['score_type_id']) {
-                    $t_name .= ' '.FSS::teamNumber($score['team_number']);
+                    $t_name .= FSS::teamNumber($score['team_number'], $score['competition_id'], $score['team_id'], false, ' ');
                 }
                 echo Link::team($score['team_id'], $t_name);
             }
@@ -401,7 +401,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
 
                 $t_name = $teams[$score['team_id']]['name'];
                 if ($score['score_type_id']) {
-                    $t_name .= ' '.FSS::teamNumber($score['team_number']);
+                    $t_name .= FSS::teamNumber($score['team_number'], $score['competition_id'], $score['team_id'], false, ' ');
                 }
                 echo Link::team($score['team_id'], $t_name);
             }

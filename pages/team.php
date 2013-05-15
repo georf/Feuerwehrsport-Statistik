@@ -668,7 +668,7 @@ if (count($sc_gs)) {
             '<td style="font-size:0.7em;">'.Link::event($score['e_id'], $score['e_name']).'</td>',
             '<td style="font-size:0.7em;">'.Link::place($score['p_id'], $score['p_name']).'</td>',
             '<td>'.$score['c_date'].'</td>',
-            '<td>'.FSS::teamNumber($score['team_number']).'</td>',
+            '<td>'.FSS::teamNumber($score['team_number'], $score['c_id'], $id, 'team').'</td>',
             '<td>',FSS::time($score['time']),'</td>';
 
         for ($wk = 1; $wk < 7; $wk++) {
@@ -739,7 +739,7 @@ foreach ($sc_fs as $sex => $content) {
                 '<td style="font-size:0.7em;">'.Link::event($score['e_id'], $score['e_name']).'</td>',
                 '<td style="font-size:0.7em;">'.Link::place($score['p_id'], $score['p_name']).'</td>',
                 '<td style="font-size:0.8em;">'.$score['c_date'].'</td>',
-                '<td style="font-size:0.8em;">'.FSS::teamNumber($score['team_number']).'</td>',
+                '<td style="font-size:0.8em;">'.FSS::teamNumber($score['team_number'], $score['c_id'], $id, 'team').'</td>',
                 '<td style="font-size:0.9em;">',FSS::time($score['time']),'</td>';
 
             for ($wk = 1; $wk < 5; $wk++) {
@@ -819,7 +819,7 @@ foreach ($sc_la as $sex => $content) {
                 '<td style="font-size:0.7em;">'.Link::event($score['e_id'], $score['e_name']).'</td>',
                 '<td style="font-size:0.7em;">'.Link::place($score['p_id'], $score['p_name']).'</td>',
                 '<td style="font-size:0.7em;">'.$score['c_date'].'</td>',
-                '<td style="font-size:0.7em;">'.FSS::teamNumber($score['team_number']).'</td>',
+                '<td style="font-size:0.7em;">'.FSS::teamNumber($score['team_number'], $score['c_id'], $id, 'team').'</td>',
                 '<td style="font-size:0.9em;">',FSS::time($score['time']),'</td>';
 
             for ($wk = 1; $wk < 8; $wk++) {
