@@ -122,56 +122,13 @@ if (isset($_POST['step'])) {
                     case 'time':
                     case 'time2':
                     case 'time3':
-                        $time = $cols[$i];
-
-                        if ($time == 'N') {
+                        $time = Import::getTime($cols[$i]);
+                        if ($time === null) {
+                            $time = 'NULL';
+                        } elseif ($time === false) {
                             $time = -1;
-                        } else {
-                            if (!preg_match('|^[\d,:;.]+$|', trim($time))) {
-                                $correct = false;
-                            }
-
-                            if (preg_match('|^(\d+):(\d{2})[:,](\d{2})$|', trim($time), $arr)) {
-                                $time = (intval($arr[1])*60+intval($arr[2])).':'.$arr[3];
-                            }
-
-                            if (strpos($time, ',') !== false || strpos($time, '.') !== false) {
-                                $time = str_replace(',','.',$time);
-                                $time = str_replace(':','',$time);
-                                $time = str_replace(';','',$time);
-                                $time = floatval($time) *100;
-                            } elseif (strpos($time, ';') !== false || strpos($time, ':')) {
-                                $time = str_replace(';','.',$time);
-                                $time = str_replace(':','.',$time);
-                                $time = floatval($time) *100;
-                            } elseif (is_numeric($time)) {
-                                $time = intval($time);
-
-                                if ($time > 98) $correct = false;
-                                else $time *= 100;
-                            }
-
-
-                            if (is_numeric($time) && $time < 1200) {
-                                $correct = true;
-                                $time = 'NULL';
-                            }
-
-                            if (is_numeric($time) && $time > 99800) {
-                                $correct = true;
-                                $time = 'NULL';
-                            }
-
-                            if ($time == 'D' || $time == 'd') {
-                                $correct = true;
-                                $time = 'NULL';
-                            }
                         }
-
                         $times[] = $time;
-                        $time = '0';
-
-
                         break;
 
                     case 'team':
@@ -179,185 +136,22 @@ if (isset($_POST['step'])) {
                         $oldteam = $team;
 
 
-                        if (preg_match('/ 1$/', $team) || preg_match('/ I$/', $team)) {
-                            $number = 1;
-                        } elseif (preg_match('/ 2$/', $team) || preg_match('/ II$/', $team)) {
-                            $number = 2;
-                        } elseif (preg_match('/ 3$/', $team) || preg_match('/ III$/', $team)) {
-                            $number = 3;
+                        $number = Import::getTeamNumber($team, $number);
+
+                        if (is_numeric($team) && Check::isIn($team, 'teams')) {
+                            $team_id = $team;
+                            break;
                         }
 
-
-                        if (is_numeric($team)) {
-                            $team_db = $db->getFirstRow("
-                                SELECT *
-                                FROM `teams`
-                                WHERE `id` = '".$db->escape($team)."'
-                                LIMIT 1;");
-                        } else {
-                            $team = preg_replace('/^FF /', '', $team);
-                            $team = preg_replace('/^Team /', '', $team);
-                            $team = preg_replace('/ 1$/', '', $team);
-                            $team = preg_replace('/ 2$/', '', $team);
-                            $team = preg_replace('/ 3$/', '', $team);
-                            $team = preg_replace('/ I$/', '', $team);
-                            $team = preg_replace('/ II$/', '', $team);
-
-                            $team_db = $db->getFirstRow("
-                                SELECT *
-                                FROM `teams`
-                                WHERE `name` LIKE '".$db->escape($team)."'
-                                OR `short` LIKE '".$db->escape($team)."'
-                                OR CONCAT(`name`,' I') LIKE '".$db->escape($team)."'
-                                OR CONCAT(`name`,' II') LIKE '".$db->escape($team)."'
-                                OR CONCAT(`name`,' III') LIKE '".$db->escape($team)."'
-                                OR CONCAT(`name`,' 1') LIKE '".$db->escape($team)."'
-                                OR CONCAT(`name`,' 2') LIKE '".$db->escape($team)."'
-                                OR REPLACE(`name`,'FF ','') LIKE '".$db->escape($team)."'
-                                OR REPLACE(`name`,'TEAM ','') LIKE '".$db->escape($team)."'
-                                OR CONCAT(REPLACE(`name`,'TEAM ',''),' I') LIKE '".$db->escape($team)."'
-                                OR CONCAT(REPLACE(`name`,'TEAM ',''),' II') LIKE '".$db->escape($team)."'
-                                LIMIT 1;");
+                        $test_id = Import::getTeamId($team);
+                        if ($test_id !== false) {
+                            $team_id = $test_id;
+                            $test_id = FSS::tableRow('teams', $test_id);
+                            $team = $test_id['short'];
+                            break;
                         }
 
-                        if ($team_db) {
-                            $team_id = $team_db['id'];
-                            $team = $team_db['short'];
-                        } else {
-
-                            switch ($team) {
-
-                                case 'Team Meckl.-Vorp. I':
-                                case 'Team Meckl.-Vorp. II':
-                                case 'Mecklenburg-Vorpommern':
-                                case 'Mecklenburg-Vorpommern I':
-                                case 'Mecklenburg-Vorpommern II':
-                                case 'Meckl.-Vorp.':
-                                case 'Mecklenb.-Vorp.':
-                                case 'Team-MV':
-                                case 'Meckl.-Vorpomm.':
-                                case 'MV':
-                                case 'MV 1':
-                                case 'MV 2':
-                                case 'Meckl.-Vorpommern':
-                                case 'Team Meckl.-Vorp.':
-                                    $team = 'Team MV';
-                                    $team_id = 2;
-                                break;
-
-
-                                case 'Halle':
-                                case 'Feuerwehr Halle':
-                                    $team = 'Halle';
-                                    $team_id = 8;
-                                break;
-
-
-                                case 'Nord-West-Sachsen':
-                                    $team = 'NW-Sachsen';
-                                    $team_id = 14;
-                                break;
-
-
-                                case 'Gamstedt-Stelzendorf':
-                                case 'Gamstädt-Stelzendorf':
-                                    $team = 'Gamstädt/Stelzendorf';
-                                    $team_id = 39;
-                                break;
-
-                                case 'TSV Zeulenroda':
-                                    $team = 'Zeulenroda';
-                                    $team_id = 15;
-                                break;
-
-                                case 'Team Märkisch-Oderland 1':
-                                case 'Märkisch-Oderl.':
-                                case 'Märk.Oderland':
-                                case 'Team Märkisch-Oderland':
-                                case 'Märk.-Oderland':
-                                case 'Märk.-Oderl.':
-                                    $team = 'MOL';
-                                    $team_id = 10;
-                                break;
-
-                                case 'Sachsen-Anhalt':
-                                case 'Anhalt 1':
-                                case 'Anhalt 2':
-                                case 'Anhalt':
-                                    $team = 'SA';
-                                    $team_id = 20;
-                                break;
-
-                                case 'Burkersdorf':
-                                    $team = 'Burkersdorf';
-                                    $team_id = 19;
-                                break;
-
-                                case 'Südthüringen-Auswahl':
-                                case 'Südthüringen-':
-                                case 'Süd-Thüringen-Auswah':
-                                    $team = 'Südthüringen';
-                                    $team_id = 37;
-                                break;
-
-                                case 'Halle-Thalheim':
-                                    $team = 'Halle-Thalheim';
-                                    $team_id = 38;
-                                break;
-
-                                case 'Gamstädt':
-                                    $team = 'Gamstädt';
-                                    $team_id = 16;
-                                break;
-
-                                case 'Leipzig':
-                                    $team = 'Leipzig';
-                                    $team_id = 25;
-                                break;
-
-                                case 'Muldenthal':
-                                    $team = 'Muldental';
-                                    $team_id = 12;
-                                break;
-
-                                case 'Team Nudersdorf':
-                                    $team = 'Nudersdorf';
-                                    $team_id = 30;
-                                break;
-
-                                case 'Taura':
-                                case 'Taura 1':
-                                case 'Taura 2':
-                                    $team = 'Taura';
-                                    $team_id = 13;
-                                break;
-
-                                case 'Team - Lausitz [E]':
-                                case 'Team Lausitz [E]':
-                                case 'Lausitz':
-                                case 'Lausitz 1':
-                                case 'Lausitz 2':
-                                    $team = 'Lausitz';
-                                    $team_id = 3;
-                                break;
-
-                                case 'Thüringenauswahl':
-                                case 'Thüringen Auswahl 1':
-                                case 'Thüringen Auswahl':
-                                case 'Thüringen-':
-                                case 'Thüringen Auswahl 2':
-                                    $team = 'Thüringen';
-                                    $team_id = 11;
-                                break;
-
-
-                                default:
-                                    $correct = false;
-                                    $team = '';
-                                    $team_id = '-1';
-                                break;
-                            }
-                        }
+                        $correct = false;
                         break;
                 }
             }
@@ -457,6 +251,10 @@ $(function(){
       teams.push($(this).find('.team').data('id'));
     });
 
+    var w = new FormWindow();
+    w.open();
+
+
     $.post('?page=administration&admin=import_fs2',{
       'step': 'save',
       'sex': '<?php echo $_POST['sex']; ?>',
@@ -466,6 +264,7 @@ $(function(){
       'teams[]': teams,
       'numbers[]': numbers
     }, function(data) {
+        w.close();
         if (data.indexOf('SUCCESS ---- SUCCESS') > 0) {
             window.location = '?page=administration&admin=import_fs2'
         } else {
