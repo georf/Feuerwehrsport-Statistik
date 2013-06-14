@@ -6,14 +6,39 @@ if (!$MyData) {
     $months = array();
     $labels = array();
 
-    for ($i = 1; $i < 8; $i++) {
-        $c = $i%7+1;
-        $months[$i] = $db->getFirstRow("
-          SELECT COUNT(*) AS `count`
-          FROM `competitions`
-          WHERE DAYOFWEEK(`date`) = '".$c."'
-        ", 'count');
-        $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
+
+    if (Check::get('event') && Check::isIn($_GET['event'], 'events')) {
+        for ($i = 1; $i < 8; $i++) {
+            $c = $i%7+1;
+            $months[$i] = $db->getFirstRow("
+                SELECT COUNT(*) AS `count`
+                FROM `competitions`
+                WHERE DAYOFWEEK(`date`) = '".$c."'
+                AND `event_id` = '".$db->escape($_GET['event'])."'
+            ", 'count');
+            $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
+        }
+    } elseif (Check::get('place') && Check::isIn($_GET['place'], 'places')) {
+        for ($i = 1; $i < 8; $i++) {
+            $c = $i%7+1;
+            $months[$i] = $db->getFirstRow("
+                SELECT COUNT(*) AS `count`
+                FROM `competitions`
+                WHERE DAYOFWEEK(`date`) = '".$c."'
+                AND `place_id` = '".$db->escape($_GET['place'])."'
+            ", 'count');
+            $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
+        }
+    } else {
+        for ($i = 1; $i < 8; $i++) {
+            $c = $i%7+1;
+            $months[$i] = $db->getFirstRow("
+              SELECT COUNT(*) AS `count`
+              FROM `competitions`
+              WHERE DAYOFWEEK(`date`) = '".$c."'
+            ", 'count');
+            $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
+        }
     }
 
 
@@ -73,7 +98,7 @@ if ($MyCache->isInCache($ChartHash)) {
       "GridB"=>220,
       "LabelRotation"=>90,
       "Mode" => SCALE_MODE_MANUAL,
-      "ManualScale" => array(array('Min'=>0, 'Max'=>$max+2)),
+      "ManualScale" => array(array('Min'=>0, 'Max'=>(ceil(intval($MyData->getMax('Anzahl der Wettkämpfe'))/10)*10))),
       "CycleBackground"=>TRUE
     );
     $myPicture->drawScale($scaleSettings);

@@ -6,15 +6,36 @@ if (!$MyData) {
     $months = array();
     $labels = array();
 
-    for ($i = 1; $i < 13; $i++) {
-        $months[$i] = $db->getFirstRow("
-          SELECT COUNT(*) AS `count`
-          FROM `competitions`
-          WHERE MONTH(`date`) = '".$i."'
-        ", 'count');
-        $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
+    if (Check::get('event') && Check::isIn($_GET['event'], 'events')) {
+        for ($i = 1; $i < 13; $i++) {
+            $months[$i] = $db->getFirstRow("
+                SELECT COUNT(*) AS `count`
+                FROM `competitions`
+                WHERE MONTH(`date`) = '".$i."'
+                AND `event_id` = '".$db->escape($_GET['event'])."'
+            ", 'count');
+            $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
+        }
+    } elseif (Check::get('place') && Check::isIn($_GET['place'], 'places')) {
+        for ($i = 1; $i < 13; $i++) {
+            $months[$i] = $db->getFirstRow("
+                SELECT COUNT(*) AS `count`
+                FROM `competitions`
+                WHERE MONTH(`date`) = '".$i."'
+                AND `place_id` = '".$db->escape($_GET['place'])."'
+            ", 'count');
+            $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
+        }
+    } else {
+        for ($i = 1; $i < 13; $i++) {
+            $months[$i] = $db->getFirstRow("
+              SELECT COUNT(*) AS `count`
+              FROM `competitions`
+              WHERE MONTH(`date`) = '".$i."'
+            ", 'count');
+            $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
+        }
     }
-
 
     $MyData = new pData();
     $MyData->addPoints($labels, "Labels");
@@ -40,8 +61,6 @@ if ($MyCache->isInCache($ChartHash)) {
     $MyCache->strokeFromCache($ChartHash);
 } else {
 
-
-
     $w = 210;
     $h = 150;
 
@@ -66,7 +85,7 @@ if ($MyCache->isInCache($ChartHash)) {
       "GridB"=>220,
       "LabelRotation"=>90,
       "Mode" => SCALE_MODE_MANUAL,
-      "ManualScale" => array(array('Min'=>0, 'Max'=>30)),
+      "ManualScale" => array(array('Min'=>0, 'Max'=>(ceil(intval($MyData->getMax('Anzahl der Wettkämpfe'))/10)*10))),
       "CycleBackground"=>TRUE
     );
     $myPicture->drawScale($scaleSettings);

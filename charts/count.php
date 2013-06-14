@@ -101,7 +101,7 @@ if ($MyCache->isInCache($ChartHash)) {
 
 
     $w = 920;
-    $h = 265;
+    $h = 30 + $MyData->getSerieCount('Labels')*8.2;
     $title = 'Anzahl der Zeiten pro Wettkampf';
     /* Create the pChart object */
     $myPicture = Chart::create($w, $h, $MyData);
@@ -117,7 +117,7 @@ if ($MyCache->isInCache($ChartHash)) {
     $myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(8),"R"=>0,"G"=>0,"B"=>0));
 
     /* Define the chart area */
-    $myPicture->setGraphArea(Chart::size(20),Chart::size(18),Chart::size(915),Chart::size(200));
+    $myPicture->setGraphArea(Chart::size(60),Chart::size(30),Chart::size(915),Chart::size($h - 5));
 
     /* Draw the scale */
     $scaleSettings = array(
@@ -129,7 +129,7 @@ if ($MyCache->isInCache($ChartHash)) {
       "GridB"=>200,
       "DrawSubTicks"=>TRUE,
       "CycleBackground"=>TRUE,
-      "LabelRotation"=>90,
+      "Pos"=>SCALE_POS_TOPBOTTOM,
       "Mode" => SCALE_MODE_START0
     );
     $myPicture->drawScale($scaleSettings);
