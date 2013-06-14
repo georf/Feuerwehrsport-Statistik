@@ -28,6 +28,7 @@ $tables = array(
     'logs',
     'news',
     'persons',
+    'persons_spelling',
     'places',
     'scores',
     'scores_gs',
@@ -35,6 +36,7 @@ $tables = array(
     'scores_fs',
     'score_types',
     'teams',
+    'teams_spelling',
 );
 
 foreach ($tables as $table) {
