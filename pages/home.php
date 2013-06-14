@@ -156,7 +156,13 @@ foreach ($missed as $m) {
         <p>Die Daten für diese statistische Auswertung stammen von verschiedenen Quellen. Ein großer Teil wurde mir von Daniel Grosche zur Verfügung gestellt. Diese Daten lagen sogar im Excel-Format vor, wodurch die Daten schnell importiert werden konnten. Weitere Ergebnisse wurden aus PDFs extrahiert. Dabei ist neben der Seite vom Team MV die Seite des LFV BB und der Feuerwehr Cottbus zu nennen, die viele Ergebnisse bereitstellen.</p>
         <p>Ein großer Dank geht auch an <a href="http://www.feuerwehrsport-statistik.de/?page=person&id=302">Florian Müller</a>. Er hat vielen Zeiten Mannschaften zugeordnet und mehrere Wettkämpfe digitalisiert.</p>
         <p>Sollte sich jemand durch die Verwendung der Daten in seinem Urheberrecht verletzt fühlen, bitte nicht sofort abmahnen. Über <a href="#kontakt">E-Mail</a> bin ich immer relativ schnell erreichbar. Das gleiche gilt auch für <a href="#fehler">Fehler in den Daten</a>.</p>
-        <p>Falls auch ein Informatiker unter den Lesern sein sollte: Ich stelle natürlich die Datensammlung auch gerne zur Verfügung, falls jemand selber damit rumprobieren will. Der Quelltext für die Programmierung ist noch nicht öffentlich einsehbar. Sobald ich diesen aufgeräumt habe, wird er bei Github zur Verfügung gestellt.</p>
+        <p>Falls auch ein Informatiker unter den Lesern sein sollte:</p>
+        <ul class="disc">
+            <li><a href="https://github.com/georf/Feuerwehrsport-Statistik">Quelltext</a></li>
+            <li><a href="https://github.com/georf/Feuerwehrsport-Statistik-Daten">Datenbank</a></li>
+            <li><a href="https://github.com/georf/Feuerwehrsport-Statistik-Ergebnisse">PDF-Dokumente</a></li>
+            <li><a href="https://github.com/georf/Feuerwehrsport-Statistik-Logos">Logos der Teams</a></li>
+        </ul></p>
     </div>
     <div class="six columns" style="text-align:center;"><img src="styling/images/application-x-gnumeric.png" alt=""/></div>
 </div>

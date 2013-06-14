@@ -733,6 +733,30 @@
             $('body').append($big.css('display', 'none'));
         });
 
+        $('.hideshow').each(function() {
+            var box = $(this);
+            var headline = box.find('.headline');
+            var span = $('<span style="background:#BAE0F1;border-radius:5px;padding:2px;margin-left:10px;">^</span>');
+            headline.find('h3').append(span);
+            
+            var divs = box.find('div:not(.headline)');
+            divs.hide();
+            
+            var open = false;
+            headline.click(function() {
+                if (open) {
+                    divs.slideUp();
+                    open = false;
+                    headline.attr('title', 'Klicken zum Öffnen');
+                    span.text('^');
+                } else {
+                    divs.slideDown();
+                    open = true;
+                    headline.attr('title', 'Klicken zum Schließen');
+                    span.text('˅');
+                }
+            }).css({ 'cursor':'pointer'}).attr('title', 'Klicken zum Öffnen');
+        });
     });
 
     window.sortTable = function(selector, sort, direction, not, count) {
@@ -755,5 +779,6 @@
         }
         $(selector).dataTable(opt);
     };
+    
 
 })(window, $, document);

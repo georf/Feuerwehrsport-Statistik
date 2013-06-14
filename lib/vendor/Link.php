@@ -2,7 +2,7 @@
 
 class Link
 {
-    public static function competition($id, $text = 'ⓘ', $title = 'Details zu diesem Wettkampf anzeigen') {
+    public static function competition($id, $text = 'Info', $title = 'Details zu diesem Wettkampf anzeigen') {
         global $config;
         return '<a href="'.$config['url'].'?page=competition&amp;id='.$id.'" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
     }

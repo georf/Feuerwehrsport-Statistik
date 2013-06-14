@@ -13,12 +13,15 @@ $event = $db->getFirstRow("
 
 $id = $event['id'];
 
+$individual = 0;
+
 echo '<h1>',htmlspecialchars($event['name']),'</h1>';
 Title::set(htmlspecialchars($event['name']));
 
 
-TempDB::generate('x_scores_male');
-TempDB::generate('x_scores_female');
+TempDB::generate('x_scores_hbf');
+TempDB::generate('x_scores_hbm');
+TempDB::generate('x_scores_hl');
 TempDB::generate('x_full_competitions');
 $competitions = $db->getRows("
     SELECT *
@@ -52,15 +55,13 @@ foreach ($competitions as $competition) {
 
     $hbm = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_male`
+        FROM `x_scores_hbm`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HB'
     ", 'count');
     $hbf = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_female`
+        FROM `x_scores_hbf`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HB'
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
@@ -93,10 +94,11 @@ foreach ($competitions as $competition) {
     ", 'count');
     $hl = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_male`
+        FROM `x_scores_hl`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HL'
     ", 'count');
+    
+    $individual += $hl + $hbm + $hbf;
 
     echo
         '<tr><td>',
@@ -132,9 +134,37 @@ foreach ($competitions as $competition) {
 }
 
 echo '</tbody></table>
-<h2>Diagramme</h2>';
 
+<h2>Auswertung</h2>
+<div class="row">
+    <div class="five columns">
+        <h4>Verteilung der Wettkämpfe über das Jahr</h4>
+        <img src="chart.php?type=overview_month&amp;event='.$_id.'" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Verteilung der Wettkämpfe über die Woche</h4>
+        <img src="chart.php?type=overview_week&amp;event='.$_id.'" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Angebotene Disziplinen pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_score_types&amp;event='.$_id.'" alt="" class="big"/>
+    </div>
+</div>
+<div class="row">
+    <div class="five columns">
+        <h4>Anzahl der Mannschaften pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_team_counts&amp;event='.$_id.'" alt="" class="big"/>
+    </div>';
 
-echo '<img src="chart.php?type=event&amp;discipline=HB&amp;sex=female&amp;id='.$id.'" alt=""/>';
-echo '<img src="chart.php?type=event&amp;discipline=HL&amp;sex=male&amp;id='.$id.'" alt=""/>';
-echo '<img src="chart.php?type=event&amp;discipline=HB&amp;sex=male&amp;id='.$id.'" alt=""/>';
+if ($individual > 0) {
+    echo '
+    <div class="five columns">
+        <h4>Mannschaftswertungen der Einzeldisziplinen</h4>
+        <img src="chart.php?type=competitions_team_scores&amp;event='.$_id.'" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Anzahl der Einzelstarter pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_person_counts&amp;event='.$_id.'" alt="" class="big"/>
+    </div>';
+}
+echo '</div>';

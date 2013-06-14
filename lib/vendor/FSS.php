@@ -163,4 +163,10 @@ class FSS
         );
         return $c[$key];
     }
+
+    public static function dis2img($key, $tall = false) {
+        $n = '';
+        if ($tall) $n = 'tall-';
+        return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'"/>';
+    }
 }

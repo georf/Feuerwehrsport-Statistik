@@ -3,6 +3,10 @@ Title::set('Wettkämpfe');
 
 TempDB::generate('x_scores_male');
 TempDB::generate('x_scores_female');
+TempDB::generate('x_scores_hbf');
+TempDB::generate('x_scores_hbm');
+TempDB::generate('x_scores_hl');
+
 TempDB::generate('x_full_competitions');
 
 
@@ -33,22 +37,20 @@ echo '
 $competitions = $db->getRows("
     SELECT *
     FROM `x_full_competitions`
-    ORDER BY `date` DESC;
+    ORDER BY `date` DESC
 ");
 
 foreach ($competitions as $competition) {
 
     $hbm = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_male`
+        FROM `x_scores_hbm`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HB'
     ", 'count');
     $hbf = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_female`
+        FROM `x_scores_hbf`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HB'
     ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
@@ -81,9 +83,8 @@ foreach ($competitions as $competition) {
     ", 'count');
     $hl = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_male`
+        FROM `x_scores_hl`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HL'
     ", 'count');
 
     echo
@@ -133,5 +134,23 @@ foreach ($competitions as $competition) {
     <div class="five columns">
         <h4>Verteilung der Wettkämpfe über die Woche</h4>
         <img src="chart.php?type=overview_week" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Angebotene Disziplinen pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_score_types" alt="" class="big"/>
+    </div>
+</div>
+<div class="row">
+    <div class="five columns">
+        <h4>Mannschaftswertungen der Einzeldisziplinen</h4>
+        <img src="chart.php?type=competitions_team_scores" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Anzahl der Mannschaften pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_team_counts" alt="" class="big"/>
+    </div>
+    <div class="five columns">
+        <h4>Anzahl der Einzelstarter pro Wettkampf</h4>
+        <img src="chart.php?type=competitions_person_counts" alt="" class="big"/>
     </div>
 </div>

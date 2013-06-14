@@ -1,8 +1,9 @@
 <?php
 Title::set('Wettkämpfer');
 
-TempDB::generate('x_scores_male');
-TempDB::generate('x_scores_female');
+TempDB::generate('x_scores_hbm');
+TempDB::generate('x_scores_hbf');
+TempDB::generate('x_scores_hl');
 
 echo '<h1>Wettkämpfer</h1>';
 
@@ -21,17 +22,15 @@ foreach ($sexs as $sex => $title) {
     foreach ($persons as $key => $person) {
         $persons[$key]['hb'] = $db->getFirstRow("
             SELECT COUNT(`id`) AS `count`
-            FROM `x_scores_".$sex."`
+            FROM `x_scores_hb".substr($sex,0,1)."`
             WHERE `person_id` = '".$person['id']."'
-            AND `discipline` = 'HB'
         ", 'count');
 
         if ($sex === 'male') {
             $persons[$key]['hl'] = $db->getFirstRow("
                 SELECT COUNT(`id`) AS `count`
-                FROM `x_scores_male`
+                FROM `x_scores_hl`
                 WHERE `person_id` = '".$person['id']."'
-                AND `discipline` = 'HL'
             ", 'count');
         } else {
             $persons[$key]['gs'] = $db->getFirstRow("

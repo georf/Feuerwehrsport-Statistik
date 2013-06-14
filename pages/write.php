@@ -64,7 +64,7 @@ $(function() {
         $('#form-box').hide();
 
         checkLogin(function() {
-            wPost('persons', {sex: sex}, function( data ) {
+            wPost('get-persons', {sex: sex}, function( data ) {
                 var persons = data.persons;
                 new NewRow(count, persons);
             });
@@ -84,7 +84,7 @@ var TeamInput = function(rowHandler) {
 
 
         checkLogin(function() {
-            wPost('teams', {personId: personId}, function( data ) {
+            wPost('get-teams', {personId: personId}, function( data ) {
                 var i, l,
                     teams = data.teams;
                 var teamOption = true;
