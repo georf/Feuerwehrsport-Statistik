@@ -2,42 +2,42 @@
 
 if (isset($_POST['step'])) {
 
-  if ($_POST['step'] == 'save') {
-    $persons = array();
+    if ($_POST['step'] == 'save') {
+        $persons = array();
 
-    for ($i=0; $i < count($_POST['names']); $i++) {
-      $persons[$i] = array(
-        'name' => $_POST['names'][$i],
-        'firstname' => $_POST['firstnames'][$i],
-        'team' => $_POST['teams'][$i],
-        'time0' => $_POST['times0'][$i],
-        'time1' => $_POST['times1'][$i],
-        'time2' => $_POST['times2'][$i],
-        'number' => strval(intval($_POST['numbers'][$i]) -1),
-        'id' => null
-      );
-    }
+        for ($i=0; $i < count($_POST['names']); $i++) {
+            $persons[$i] = array(
+                'name' => $_POST['names'][$i],
+                'firstname' => $_POST['firstnames'][$i],
+                'team' => $_POST['teams'][$i],
+                'time0' => $_POST['times0'][$i],
+                'time1' => $_POST['times1'][$i],
+                'time2' => $_POST['times2'][$i],
+                'number' => strval(intval($_POST['numbers'][$i]) -1),
+                'id' => null
+            );
+        }
 
-    foreach ($persons as $person) {
-      // search person
-      $result = $db->getFirstRow("
-        SELECT *
-        FROM `persons`
-        WHERE `name` = '".$db->escape($person['name'])."'
-        AND `firstname` = '".$db->escape($person['firstname'])."'
-        AND `sex` = '".$db->escape($_POST['sex'])."'");
+        foreach ($persons as $person) {
+            // search person
+            $result = $db->getFirstRow("
+                SELECT *
+                FROM `persons`
+                WHERE `name` = '".$db->escape($person['name'])."'
+                AND `firstname` = '".$db->escape($person['firstname'])."'
+                AND `sex` = '".$db->escape($_POST['sex'])."'");
 
-      if ($result) {
-        $person['id'] = $result['id'];
-      } else {
-        // insert
-        $result = $db->insertRow('persons', array(
-          'name' => $person['name'],
-          'firstname' => $person['firstname'],
-          'sex' => $_POST['sex']
-        ));
-        $person['id'] = $result;
-      }
+            if ($result) {
+                $person['id'] = $result['id'];
+            } else {
+                // insert
+            $result = $db->insertRow('persons', array(
+                'name' => $person['name'],
+                'firstname' => $person['firstname'],
+                'sex' => $_POST['sex']
+            ), false);
+            $person['id'] = $result;
+        }
 
 
         if ($person['team'] == -1) {
@@ -53,19 +53,18 @@ if (isset($_POST['step'])) {
             }
 
             // insert score
-              $db->insertRow('scores', array(
+            $db->insertRow('scores', array(
                 'person_id' => $person['id'],
                 'competition_id' => $_POST['competition'],
                 'discipline' => $_POST['discipline'],
                 'time' => $person['time'.$i],
                 'team_number' => $person['number'],
                 'team_id' => $person['team']
-              ));
-          }
-
-
-
+            ), false);
+        }
     }
+
+    Cache::clean();
 
     echo 'SUCCESS ---- SUCCESS';
 

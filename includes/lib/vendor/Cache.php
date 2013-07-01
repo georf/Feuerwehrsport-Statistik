@@ -74,19 +74,8 @@ class Cache {
         TempDB::clean();
         TempDB::generate('x_team_numbers');
 
-        $vz = opendir($config['cache']);
-        while ($file = readdir($vz)) {
-            if (preg_match($config['cache-file'], $file) && is_file($config['cache'].$file)) {
-                unlink ($file);
-            }
-        }
-
-        $vz = opendir('page');
-        while ($file = readdir($vz)) {
-            if (is_file('page/'.$file) && preg_match('|\.html$|', $file)) {
-                unlink ('page/'.$file);
-            }
-        }
+        shell_exec('find '.$config['base'].'chart/ -type f | egrep "\.png$" | xargs rm');
+        shell_exec('find '.$config['base'].'page/ -type f | egrep "\.html$" | xargs rm');
     }
         
 

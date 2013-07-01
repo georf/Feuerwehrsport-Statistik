@@ -2,168 +2,164 @@
 
 if (isset($_POST['step'])) {
 
-  if ($_POST['step'] == 'save') {
-    $persons = array();
+    if ($_POST['step'] == 'save') {
+        $persons = array();
 
-    for ($i=0; $i < count($_POST['teams']); $i++) {
-      $persons[$i] = array(
-        'team' => $_POST['teams'][$i],
-        'number' => strval(intval($_POST['numbers'][$i]) -1),
-        'time0' => $_POST['times0'][$i],
-        'time1' => $_POST['times1'][$i],
-        'time2' => $_POST['times2'][$i],
-        'id' => null
-      );
-    }
-
-
-    foreach ($persons as $person) {
-
-
-
-
-        if ($person['team'] == -1) {
-            $person['team'] = NULL;
-            print_r($person);
-            continue;
+        for ($i=0; $i < count($_POST['teams']); $i++) {
+            $persons[$i] = array(
+                'team' => $_POST['teams'][$i],
+                'number' => strval(intval($_POST['numbers'][$i]) -1),
+                'time0' => $_POST['times0'][$i],
+                'time1' => $_POST['times1'][$i],
+                'time2' => $_POST['times2'][$i],
+                'id' => null
+            );
         }
 
-        for($i = 0; $i < 3; $i++) {
-            if ($person['time'.$i] == 'NULL') {
-                $person['time'.$i] = NULL;
-            } elseif ($person['time'.$i] == '-1') {
+
+        foreach ($persons as $person) {
+
+            if ($person['team'] == -1) {
+                $person['team'] = NULL;
                 continue;
             }
-              // insert score
-              $db->insertRow('scores_la', array(
-                'competition_id' => $_POST['competition'],
-                'sex' => $_POST['sex'],
-                'time' => $person['time'.$i],
-                'team_id' => $person['team'],
-                'team_number' => $person['number'],
-              ));
-          }
 
-    }
-
-    echo 'SUCCESS ---- SUCCESS';
-
-
-
-  } elseif ($_POST['step'] == 'test') {
-
-    $competition = $db->getFirstRow("
-      SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`
-      FROM `competitions` `c`
-      INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
-      INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-      WHERE `c`.`id` = '".$_POST['competition']."'
-    ");
-
-    echo '<h3>Wettkampf: ',$competition['date'],' - ',$competition['event'],' - ',$competition['place'],'</h3>';
-
-
-
-    echo '<h3>Geschlecht: '.$_POST['sex'].'</h3>';
-    echo '<ul class="disc" id="add-team"></ul>';
-
-    echo '<table id="scores" class="table"><tr><th>Team</th><th>Zeit</th><th>Zeit2</th><th>Zeit3</th><th>Num</th><th>Old</th><th>Eingabe</th></tr>';
-    $scores = explode("\n", $_POST['scores']);
-
-
-    $seperator = "\t";
-
-    if ($_POST['seperator'] == 'tab') {
-        $seperator = "\t";
-    } elseif ($_POST['seperator'] == 'space') {
-        $seperator = " ";
-    } else {
-        $seperator = ",";
-    }
-
-    $ths = explode(",", $_POST['spalten']);
-
-    foreach($scores as $score) {
-        $correct = true;
-        $score = trim($score);
-
-        $cols = str_getcsv($score, $seperator);
-
-        $times = array();
-        $time = '0';
-        $team = '';
-        $team_id = '-1';
-        $oldteam = '';
-        $number = '1';
-
-        if (count($cols) < count($ths)) {
-            $name = '';
-            $firstname = '';
-            $time = '0';
-            $team = '';
-            $oldteam = '';
-            $correct = false;
-        } else {
-
-            for ($i = 0; $i < count($ths); $i++) {
-                $cols[$i] = trim($cols[$i]);
-                switch ($ths[$i]) {
-                    case 'time':
-                    case 'time2':
-                    case 'time3':
-                        $time = Import::getTime($cols[$i]);
-                        if ($time === null) {
-                            $time = 'NULL';
-                        } elseif ($time === false) {
-                            $time = -1;
-                        }
-                        $times[] = $time;
-                        break;
-
-                    case 'team':
-                        $team = trim($cols[$i]);
-                        $oldteam = $team;
-
-
-                        $number = Import::getTeamNumber($team, $number);
-
-                        if (is_numeric($team) && Check::isIn($team, 'teams')) {
-                            $team_id = $team;
-                            break;
-                        }
-
-                        $test_id = Import::getTeamId($team);
-                        if ($test_id !== false) {
-                            $team_id = $test_id;
-                            $test_id = FSS::tableRow('teams', $test_id);
-                            $team = $test_id['short'];
-                            break;
-                        }
-
-                        $correct = false;
-                        break;
+            for($i = 0; $i < 3; $i++) {
+                if ($person['time'.$i] == 'NULL') {
+                    $person['time'.$i] = NULL;
+                } elseif ($person['time'.$i] == '-1') {
+                    continue;
                 }
+                
+                // insert score
+                $db->insertRow('scores_la', array(
+                    'competition_id' => $_POST['competition'],
+                    'sex' => $_POST['sex'],
+                    'time' => $person['time'.$i],
+                    'team_id' => $person['team'],
+                    'team_number' => $person['number'],
+                ), false);
             }
         }
+        
+        Cache::clean();
+
+        echo 'SUCCESS ---- SUCCESS';
+
+    } elseif ($_POST['step'] == 'test') {
+
+        $competition = $db->getFirstRow("
+            SELECT `c`.*,`e`.`name` AS `event`, `p`.`name` AS `place`
+            FROM `competitions` `c`
+            INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
+            INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
+            WHERE `c`.`id` = '".$_POST['competition']."'
+        ");
+
+        echo '<h3>Wettkampf: ',$competition['date'],' - ',$competition['event'],' - ',$competition['place'],'</h3>';
 
 
-        echo
-            '<tr class="'.Import::getCorrectClass($correct).'">',
-                '<td class="team"';
 
-        if ($correct && $team_id < 0) echo ' style="background-color:#B1FFB1"';
-        echo ' data-id="'.$team_id.'">'.$team.'</td>';
+        echo '<h3>Geschlecht: '.$_POST['sex'].'</h3>';
+        echo '<ul class="disc" id="add-team"></ul>';
 
-        for($i = 0; $i < 3; $i++) {
-            if (isset($times[$i])) echo '<td class="time'.$i.'">'.$times[$i].'</td>';
-            else echo '<td class="time'.$i.'">-1</td>';
+        echo '<table id="scores" class="table"><tr><th>Team</th><th>Zeit</th><th>Zeit2</th><th>Zeit3</th><th>Num</th><th>Old</th><th>Eingabe</th></tr>';
+        $scores = explode("\n", $_POST['scores']);
+
+
+        $seperator = "\t";
+
+        if ($_POST['seperator'] == 'tab') {
+            $seperator = "\t";
+        } elseif ($_POST['seperator'] == 'space') {
+            $seperator = " ";
+        } else {
+            $seperator = ",";
         }
-        echo '<td style="font-size:0.8em" class="number">'.$number.'</td>';
-        echo '<td style="font-size:0.8em" class="oldteam">'.$oldteam.'</td>';
 
-        echo '<td style="font-size:0.8em">'.$score.'</td>';
-        echo '</tr>';
-    }
+        $ths = explode(",", $_POST['spalten']);
+
+        foreach($scores as $score) {
+            $correct = true;
+            $score = trim($score);
+
+            $cols = str_getcsv($score, $seperator);
+
+            $times = array();
+            $time = '0';
+            $team = '';
+            $team_id = '-1';
+            $oldteam = '';
+            $number = '1';
+
+            if (count($cols) < count($ths)) {
+                $name = '';
+                $firstname = '';
+                $time = '0';
+                $team = '';
+                $oldteam = '';
+                $correct = false;
+            } else {
+
+                for ($i = 0; $i < count($ths); $i++) {
+                    $cols[$i] = trim($cols[$i]);
+                    switch ($ths[$i]) {
+                        case 'time':
+                        case 'time2':
+                        case 'time3':
+                            $time = Import::getTime($cols[$i]);
+                            if ($time === null) {
+                                $time = 'NULL';
+                            } elseif ($time === false) {
+                                $time = -1;
+                            }
+                            $times[] = $time;
+                            break;
+
+                        case 'team':
+                            $team = trim($cols[$i]);
+                            $oldteam = $team;
+
+
+                            $number = Import::getTeamNumber($team, $number);
+
+                            if (is_numeric($team) && Check::isIn($team, 'teams')) {
+                                $team_id = $team;
+                                break;
+                            }
+
+                            $test_id = Import::getTeamId($team);
+                            if ($test_id !== false) {
+                                $team_id = $test_id;
+                                $test_id = FSS::tableRow('teams', $test_id);
+                                $team = $test_id['short'];
+                                break;
+                            }
+
+                            $correct = false;
+                            break;
+                    }
+                }
+            }
+
+
+            echo
+                '<tr class="'.Import::getCorrectClass($correct).'">',
+                    '<td class="team"';
+
+            if ($correct && $team_id < 0) echo ' style="background-color:#B1FFB1"';
+            echo ' data-id="'.$team_id.'">'.$team.'</td>';
+
+            for($i = 0; $i < 3; $i++) {
+                if (isset($times[$i])) echo '<td class="time'.$i.'">'.$times[$i].'</td>';
+                else echo '<td class="time'.$i.'">-1</td>';
+            }
+            echo '<td style="font-size:0.8em" class="number">'.$number.'</td>';
+            echo '<td style="font-size:0.8em" class="oldteam">'.$oldteam.'</td>';
+
+            echo '<td style="font-size:0.8em">'.$score.'</td>';
+            echo '</tr>';
+        }
 
     echo '</table>';
     ?>

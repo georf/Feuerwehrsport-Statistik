@@ -2,43 +2,43 @@
 
 if (isset($_POST['step'])) {
 
-  if ($_POST['step'] == 'test') {
-      print_r($_POST);
-    $rows = array();
+    if ($_POST['step'] == 'test') {
+        
+        $rows = array();
 
-    for ($i=0; $i < count($_POST['team']); $i++) {
-       if (!Check::isIn($_POST['team'][$i], 'teams')) continue;
-       if (!Check::isIn($_POST['competition'], 'competitions')) continue;
-       if (!in_array($_POST['sex'], array('male','female'))) continue;
+        for ($i=0; $i < count($_POST['team']); $i++) {
+            if (!Check::isIn($_POST['team'][$i], 'teams')) continue;
+            if (!Check::isIn($_POST['competition'], 'competitions')) continue;
+            if (!in_array($_POST['sex'], array('male','female'))) continue;
 
-       for($z = 0; $z < 5; $z++) {
-           if (isset($_POST['time'.$z][$i])) {
+            for ($z = 0; $z < 5; $z++) {
+                if (isset($_POST['time'.$z][$i])) {
 
-               if ($_POST['time'.$z][$i] == 'D') $time = NULL;
-               else {
-                    $time = intval($_POST['time'.$z][$i]);
-                    if ($time < 2000) continue;
+                    if ($_POST['time'.$z][$i] == 'D') $time = NULL;
+                    else {
+                        $time = intval($_POST['time'.$z][$i]);
+                        if ($time < 2000) continue;
+                    }
+
+
+                    echo '<br>INSERT<br/>';
+                    $insert = array(
+                        'team_id' => $_POST['team'][$i],
+                        'team_number' => $_POST['team_number'][$i],
+                        'time' => $time,
+                        'competition_id' => $_POST['competition'],
+                        'sex' => $_POST['sex']
+                    );
+
+                    print_r($insert);
+                    echo $db->insertRow('scores_la', $insert, false);
                 }
-
-
-                echo '<br>INSERT<br/>';
-                $insert = array(
-                'team_id' => $_POST['team'][$i],
-                'team_number' => $_POST['team_number'][$i],
-                'time' => $time,
-                'competition_id' => $_POST['competition'],
-                'sex' => $_POST['sex']
-                );
-
-                print_r($insert);
-              echo $db->insertRow('scores_la', $insert);
             }
         }
 
-    }
+        Chart::clean();
 
-
-    echo 'SUCCESS ---- SUCCESS';
+        echo 'SUCCESS ---- SUCCESS';
 
 
 
