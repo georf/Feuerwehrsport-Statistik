@@ -689,7 +689,7 @@
 
         $('img.big').click(function() {
             var $img = $(this);
-            var newSrc = $img.attr('src') + '&amp;big=1';
+            var newSrc = $img.attr('src').replace(/chart\//, 'chart/big/');
             var $big = $('<img src="' + newSrc + '" alt=""/>');
 
             $img.css('cursor','wait');
