@@ -3,10 +3,6 @@
 // a == id
 // b == key
 
-$fullData = Cache::get();
-
-if (!$fullData) {
-
     if (Check::get('a')) $_GET['id'] = $_GET['a'];
     if (Check::get('b')) $_GET['key'] = $_GET['b'];
 
@@ -233,33 +229,6 @@ if (!$fullData) {
     $MyData->addPoints(array('Gültig', 'Ungültig'), "Platzierung");
     $MyData->setAbscissa("Platzierung");
 
-    $fullData = array(
-        'title' => $title,
-        'myData' => $MyData
-    );
-    Cache::put($fullData);
-}
-
-$MyData = $fullData['myData'];
-$title = $fullData['title'];
-
-
-/* Create the cache object */
-$MyCache = new pCache();
-
-/* Compute the hash linked to the chart data */
-$ChartHash = $MyCache->getHash($MyData, Cache::getId());
-
-
-/* Test if we got this hash in our cache already */
-if ( $MyCache->isInCache($ChartHash)) {
-
-    /* If we have it, get the picture from the cache! */
-    $MyCache->strokeFromCache($ChartHash);
-} else {
-
-
-
     $w = 140;
     $h = 65;
     $myPicture = Chart::create($w, $h, $MyData);
@@ -296,9 +265,5 @@ if ( $MyCache->isInCache($ChartHash)) {
 
     $PieChart->drawPieLegend(Chart::size(68),Chart::size(17));
 
-    /* Push the rendered picture to the cache */
-    $MyCache->writeToCache($ChartHash, $myPicture);
-
     /* Render the picture */
     $myPicture->stroke();
-}
