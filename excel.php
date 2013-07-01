@@ -1,7 +1,7 @@
 <?php
 
 try {
-    require_once(__DIR__.'/lib/init.php');
+    require_once(__DIR__.'/includes/lib/init.php');
 } catch (Exception $e) {
     die($e->getMessage());
 }

@@ -1,7 +1,7 @@
 <?php
 
 try {
-    require_once(__DIR__.'/lib/init.php');
+    require_once(__DIR__.'/includes/lib/init.php');
 } catch (Exception $e) {
     die($e->getMessage());
 }
@@ -22,8 +22,8 @@ try {
     $_page = $_GET['type'];
 
 
-
-    $path = 'charts/';
+    ob_start();
+    $path = 'includes/charts/';
     $vz = opendir($path);
     $foundChart = false;
     while ($file = readdir($vz)) {
@@ -38,6 +38,11 @@ try {
     if (!$foundChart) {
         throw new Exception('bad chart type');
     }
+
+    $content = ob_get_contents();
+    Cache::generateFile($content);
+    ob_end_clean();
+    die($content);
 } catch (Exception $e) {
 
     /* Create the pChart object */

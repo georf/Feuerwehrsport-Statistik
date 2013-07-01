@@ -1,7 +1,7 @@
 <?php
 
 try {
-    require_once(__DIR__.'/lib/init.php');
+    require_once(__DIR__.'/includes/lib/init.php');
 } catch (Exception $e) {
     die($e->getMessage());
 }
@@ -19,9 +19,9 @@ try {
         $_page = 'home';
     }
 
-    $path = 'pages/';
+    $path = 'includes/pages/';
     $pageFound = false;
-    $no_cache = array('administration', 'competition_upload', 'year', 'discipline','place');
+    $no_cache = array('administration', 'competition_upload');
 
     $vz = opendir($path);
     while ($file = readdir($vz)) {
@@ -29,42 +29,13 @@ try {
 
             $content = '';
 
-            // check for admin page
-            if (isset($_SESSION['loggedin']) && is_file($path.'administration/pages/'.$file)) {
+            ob_start();
+            include(__DIR__.'/'.$path.$file);
 
-                ob_start();
-                include(__DIR__.'/'.$path.'administration/pages/'.$file);
-                $header .= ob_get_contents();
-                ob_end_clean();
-            }
+            $content = ob_get_contents();
+            ob_end_clean();
 
-            if (in_array($_page, $no_cache)) {
-
-                ob_start();
-                include(__DIR__.'/'.$path.$file);
-
-                $content = ob_get_contents();
-                ob_end_clean();
-            } else {
-                $cache = Cache::get();
-                if ($cache) {
-                    $content = $cache['content'];
-                    Title::set($cache['title']);
-                } else {
-                    ob_start();
-
-                    include(__DIR__.'/'.$path.$file);
-
-                    $content = ob_get_contents();
-                    ob_end_clean();
-
-                    $cache = array(
-                        'content' => $content,
-                        'title' => Title::get(),
-                    );
-                    Cache::put($cache);
-                }
-            }
+            ob_start();
 
             echo Title::replace($header, 'Feuerwehrsport-Statistik');
             echo $content;
@@ -82,11 +53,22 @@ try {
     $vz = opendir($path);
     while ($file = readdir($vz)) {
         if (is_file($path.$file) && $file == $_page.'.js') {
-            echo '<script type="text/javascript" src="'.$path.$file.'"></script>';
+            echo '<script type="text/javascript" src="/'.$path.$file.'"></script>';
             break;
         }
     }
     closedir($vz);
+
+
+    include(__DIR__.'/styling/footer.php');
+
+    $content = ob_get_contents();
+    if (!in_array($_page, $no_cache)) {
+        Cache::generateFile($content);
+    }
+    ob_end_clean();
+    die($content);
+
 } catch (PageNotFound $e) {
     ob_end_clean();
     $e->sendHeader();
@@ -101,3 +83,4 @@ try {
 }
 
 include(__DIR__.'/styling/footer.php');
+

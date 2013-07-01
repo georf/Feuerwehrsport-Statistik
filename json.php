@@ -1,7 +1,7 @@
 <?php
 
 try {
-    require_once(__DIR__.'/lib/init.php');
+    require_once(__DIR__.'/includes/lib/init.php');
 } catch (Exception $e) {
     die($e->getMessage());
 }
@@ -31,7 +31,7 @@ if (isset($_GET['type'])) {
             try {
                 if (!in_array($type, array('set', 'get', 'add'))) throw new Exception();
 
-                $path = __DIR__.'/api/'.$type.'/';
+                $path = __DIR__.'/includes/api/'.$type.'/';
                 $found = false;
                 $vz = opendir($path);
                 while ($file = readdir($vz)) {

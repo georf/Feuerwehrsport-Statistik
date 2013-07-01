@@ -1,0 +1,41 @@
+RewriteEngine On
+
+# Weiterleitung von alten URLs zu neuen URLs
+RewriteRule ^page-([a-z_]+)\.html$ /page/$1.html [L,R=301]
+RewriteRule ^page-([a-z_]+)-([0-9]+)\.html$ /page/$1-$2.html [L,R=301]
+
+
+# page/
+RewriteCond %{REQUEST_URI} ^/page/([a-z_]+)\.html$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^page/([a-z_]+)\.html$ index.php?page=$1 [L]
+
+RewriteCond %{REQUEST_URI} ^/page/([a-z_]+)-([0-9]+)\.html$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^page/([a-z_]+)-([0-9]+)\.html$ index.php?page=$1&id=$2 [L]
+
+
+# chart/
+RewriteCond %{REQUEST_URI} ^/chart/([a-z_]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/([a-z_]+)\.png$ chart.php?type=$1 [L]
+
+RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/big/([a-z_]+)\.png$ chart.php?type=$1&big=1 [L]
+
+RewriteCond %{REQUEST_URI} ^/chart/([a-z_]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/([a-z_]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2 [L]
+
+RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/big/([a-z_]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&big=1 [L]
+
+RewriteCond %{REQUEST_URI} ^/chart/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3 [L]
+
+RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3&big=1 [L]
