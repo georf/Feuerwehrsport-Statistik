@@ -13,6 +13,6 @@ lib/config.php
 includes/lib/config.php
 
 # cache
-lib/vendor/pChart/cache
+lib/vendor/pChart/cache/*
 page
 chart
