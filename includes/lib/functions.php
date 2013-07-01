@@ -11,7 +11,7 @@ function __autoload($className)
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-    require 'lib/vendor/'.$fileName;
+    require __DIR__.'/vendor/'.$fileName;
 }
 
 
