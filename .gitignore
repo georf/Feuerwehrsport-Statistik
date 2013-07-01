@@ -10,7 +10,7 @@ styling/logos
 
 # config
 lib/config.php
-
+includes/lib/config.php
 
 # cache
 lib/vendor/pChart/cache
