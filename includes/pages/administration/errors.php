@@ -175,39 +175,8 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
 
 }
 if (isset($_GET['delete']) && Check::isIn($_GET['delete'], 'errors')) {
-    $db->deleteRow('errors', $_GET['delete']);
+    $db->deleteRow('errors', $_GET['delete'], 'id', false);
 }
-/*
-$lines = $db->getRows("SELECT `k`.`id` AS `person_id` , `g`.`id` AS `new_person_id`
-FROM (
-
-SELECT *
-FROM `persons`
-WHERE `name` LIKE '%,'
-) `k` , `persons` `g`
-WHERE `g`.`name` = REPLACE( `k`.`name` , ',', '' )
-AND `g`.`firstname` = `k`.`firstname`");
-
-$lines = $db->getRows("SELECT `k`.`id` AS `person_id` , `g`.`id` AS `new_person_id`
-FROM (
-
-SELECT *
-FROM `persons`
-WHERE `sex` LIKE 'male'
-) `k` , `persons` `g`
-WHERE `g`.`name` = `k`.`name`
-AND `g`.`firstname` = `k`.`firstname`
-AND `g`.`sex` = 'female'");
-
-foreach ($lines as $line) {
-    $line['reason'] = 'together';
-    $line['type'] = 'person';
-
-    $db->insertRow('errors', array(
-                    'user_id' => Login::getId(),
-                    'content' => serialize($line)
-                ));
-}*/
 
 $errors = $db->getRows("
     SELECT *

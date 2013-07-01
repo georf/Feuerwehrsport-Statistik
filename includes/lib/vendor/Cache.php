@@ -88,30 +88,15 @@ class Cache {
             }
         }
     }
+        
 
     public static function generateFile($content) {
         global $config;
+        
+        $name = $_SERVER['SCRIPT_URL'];
 
-        if (preg_match('|\.php$|', $_SERVER['SCRIPT_URL'])) return;
+        if (preg_match('|\.php$|', $name)) return;
 
-        file_put_contents($config['cache'].$_SERVER['SCRIPT_URL'], $content);
-    }
-
-    public static function name2url($name) {
-        $replace = array(
-            'ä' => 'ae',
-            'Ä' => 'Ae',
-            'ü' => 'ue',
-            'Ü' => 'Ue',
-            'ö' => 'oe',
-            'Ö' => 'Oe',
-            'ß' => 'ss',
-        );
-
-        foreach ($replace as $s => $t) {
-            $name = str_replace($s, $t, $name);
-        }
-
-        return preg_replace('|[^a-zA-Z]|', '', $name);
+        file_put_contents($config['base'].preg_replace('|^/|', '', $name), $content);
     }
 }

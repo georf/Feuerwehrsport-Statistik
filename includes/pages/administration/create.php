@@ -39,9 +39,14 @@ if (isset($_POST['type'])) {
 ?>
 
 
-<h2>Wettkampf</h2>
+<p>
+    <span id="top-competitions" style="border:1px solid blue;margin:3px;padding:3px;">Wettkämpfe</span>
+    <span id="top-events" style="border:1px solid blue;margin:3px;padding:3px;">Events</span>
+    <span id="top-places" style="border:1px solid blue;margin:3px;padding:3px;">Places</span>
+</p>
+
+<div class="tab container" id="tab-competitions">
 <button class="C_add">Hinzufügen</button>
-<div class="container">
   <table class="table">
     <tr><th>Typ</th><th>Ort</th><th>Name</th><th>Datum</th></tr>
 
@@ -78,6 +83,8 @@ foreach ($competitions as $competition) {
 ?>
 </table>
 <button class="C_add">Hinzufügen</button>
+</div>
+
 <div class="formbox" id="C_add_box">
   <h3>Wettkampf</h3>
   <form method="post" action="">
@@ -118,12 +125,11 @@ foreach ($competitions as $competition) {
     <button type="submit" id="C_submit">Eintragen</button><button id="C_cancel" class="cancel-button">Abbrechen</button>
   </form>
 </div>
-</div>
 
 
-<div class="container">
-  <h2>Veranstaltungen</h2>
-  <table class="table">
+<div class="tab container" id="tab-events">
+<button class="E_add">Hinzufügen</button>
+<table class="table">
 <?php
 
 foreach ($events as $event) {
@@ -132,8 +138,9 @@ foreach ($events as $event) {
 
 ?>
 </table>
+<button class="E_add">Hinzufügen</button>
 </div>
-<button id="E_add">Hinzufügen</button>
+
 <div class="formbox" id="E_add_box">
   <h3>Veranstaltung</h3>
   <form method="post" action="">
@@ -148,9 +155,9 @@ foreach ($events as $event) {
   </form>
 </div>
 
-<h2>Orte</h2>
-<div class="container">
-  <table class="table">
+<div class="tab container" id="tab-places">
+<button class="P_add">Hinzufügen</button>
+<table class="table">
 <?php
 
 foreach ($places as $place) {
@@ -159,8 +166,9 @@ foreach ($places as $place) {
 
 ?>
 </table>
+<button class="P_add">Hinzufügen</button>
 </div>
-<button id="P_add">Hinzufügen</button>
+
 <div class="formbox" id="P_add_box">
   <h3>Ort</h3>
   <form method="post" action="">
@@ -188,12 +196,12 @@ $(function(){
     return false;
   });
 
-  $('#E_add').click(function(){
+  $('.E_add').click(function(){
     darkroom.show();
     $('#E_add_box').show();
     return false;
   });
-  $('#P_add').click(function(){
+  $('.P_add').click(function(){
     darkroom.show();
     $('#P_add_box').show();
     return false;
@@ -208,6 +216,13 @@ $(function(){
   $('.status-select').change(function() {
       $(this).closest('form').submit();
     });
+    
+    
+    $('#top-competitions, #top-events, #top-places').click(function() {
+        $('.tab').hide();
+        $('#' + $(this).attr('id').replace(/top-/, 'tab-')).show();
+    });
+    $('#top-competitions').click();
 
 });
 </script>

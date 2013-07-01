@@ -161,7 +161,7 @@ class Database {
 		return $id;
 	}
 
-  public function deleteRow($table, $id, $colName = 'id') {
+  public function deleteRow($table, $id, $colName = 'id', $cleanCache = true) {
 
 		$mysqlQuery = 'DELETE FROM `'.$table.'` ';
 
@@ -176,8 +176,10 @@ class Database {
 
         $result =  (mysql_affected_rows($this->dbConnection) === 1);
 
-        // clean cache
-        Cache::clean();
+        if ($cleanCache) {
+            // clean cache
+            Cache::clean();
+        }
 
 		return $result;
   }
