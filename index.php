@@ -21,7 +21,7 @@ try {
 
     $path = 'includes/pages/';
     $pageFound = false;
-    $no_cache = array('administration', 'competition_upload');
+    $no_cache = array('administration', 'competition_upload', 'newhome');
 
     $vz = opendir($path);
     while ($file = readdir($vz)) {

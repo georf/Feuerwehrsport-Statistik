@@ -1,39 +1,6 @@
 $(function() {
     "use strict";
 
-    $('#add-score-type').click(function() {
-        checkLogin(function() {
-            wPost('get-score-types', {}, function(data) {
-                var options = [];
-                options.push({
-                    value: 0,
-                    display: 'Keine'
-                });
-                var t, i, l = data.types.length;
-                for (i = 0; i < l; i++) {
-                    t = data.types[i];
-                    options.push({
-                        value: t.id,
-                        display: t.persons + '/'+ t.run + '/' + t.score
-                    });
-                }
-
-                var w = new FormWindow([
-                    ['Select', 'score_type_id', 'Wertung', 0, 'Die Zahlen bedeuten:<ol><li>Mannschaftsstärke</li><li>Läufer pro Disziplin</li><li>Wertungen</li></ol>', {options: options}]
-                ], 'Mannschaftswertung hinzufügen', 'Bitte wählen Sie den Wertungstyp aus:');
-
-                w.submit(function(data) {
-                    this.close();
-
-                    data.id = global('competition-id');
-
-                    wPost('set-score-type', data, function() {
-                        location.reload();
-                    });
-                }).open();
-            });
-        });
-    });
 
     var sortCol = 3;
     if (global('competition-score_type')) sortCol++;

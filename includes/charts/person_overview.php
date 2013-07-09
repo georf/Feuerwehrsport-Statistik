@@ -24,6 +24,23 @@ $years = $db->getRows("
     ORDER BY `year`
 ");
 
+$yearRows = $db->getRows("
+    SELECT YEAR(`c`.`date`) AS `year`
+    FROM `scores` `s`
+    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+    INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+    WHERE `s`.`person_id` = '".$_id."'
+    GROUP BY `year`
+    ORDER BY `year`
+");
+
+$years = array();
+for ($i = $yearRows[0]['year']; $i <= $yearRows[count($yearRows) - 1]['year']; $i++) {
+    $years[] = array('year'=>$i.'');
+}
+
+
+
 if ($person['sex'] == 'male') {
     $diss = array(array(
             'name' => 'HL',

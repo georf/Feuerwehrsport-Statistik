@@ -1,8 +1,8 @@
 (function(window, $, document) {
     "use strict";
 
-    var checkUrl = 'json.php',
-        loginUrl = 'json.php?type=login',
+    var checkUrl = '/json.php',
+        loginUrl = '/json.php?type=login',
 
         question = '',
         answer = 0,
@@ -97,7 +97,7 @@
 
 
     window.wPost = function( type, data, callback ) {
-        var url = 'json.php?type=' + type;
+        var url = '/json.php?type=' + type;
         var w = new FormWindow();
         w.open();
 

@@ -106,36 +106,314 @@ foreach ($missed as $m) {
         <h4 style="margin-top:15px">Ø Beste 5 pro Wettkampf</h4>
         <?=Chart::img('overview_best', false, true, 'overview_best')?>
     </div>
-    <div class="sixteen columns">
-        <?=Chart::img('count', false, true, 'anzahlwettkampf')?>
-    </div>
-    <div class="sixteen columns">
-        <h4>Status des Imports</h4>
-        <div style="width:910px;margin:5px auto 15px auto;">
-        <?php
-
-            $co = array(
-                '#009200',
-                '#00C600',
-                '#60F20E',
-                '#FFEB00',
-                '#FF8100',
-                '#E73131'
-            );
-
-            foreach ($missedArr as $key => $count) {
-
-                $c = $count/$competitions;
-
-                $t = floor($c*100).'%';
-                if ($c*100 < 10) $t = ' ';
-
-                echo '<div style="text-align:center;float:right;height:20px;background:'.$co[$key].';position:relative;width:'.floor($c*900).'px;color:#'.dechex(0xFFFFFF-hexdec(substr($co[$key],1))).'" title="'.floor($c*100).'% ('.$count.' Wettkämpfe)">'.$t.'</div>';
-            }
-        ?>
-        </div>
-    </div>
 </div>
+<h2 class="toToc">Super Leistungen von diesem Jahr</h2>
+<?php
+
+$_year = date('Y');
+
+$disciplines = array(
+    array('hb', 'female'),
+    array('hb', 'male'),
+    array('hl', 'male'),
+);
+
+foreach ($disciplines as $d) {
+    $dis = $d[0];
+    $sex = $d[1];
+
+    $persons = array();
+
+    echo
+    '<div class="eight columns">',
+    '<table class="table" style="width:100%;box-shadow:5px 5px 5px #BFBFBF;">',
+    '<tr><th colspan="3" style="background:#ADD8E6;text-align:center;border-color:#ADD8E6">',FSS::dis2img($dis),' ',FSS::dis2name($dis),' ',FSS::sex($sex),'</th></tr>';
+
+    $scores = $db->getRows("
+        SELECT `s`.*, `e`.`name` AS `event`
+        FROM `scores` `s`
+        INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+        INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
+        INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+        WHERE YEAR(`c`.`date`) = '".$db->escape($_year)."'
+        AND `discipline` = '".$dis."'
+        AND `p`.`sex` = '".$sex."'
+    ");
+
+    foreach ($scores as $s) {
+        if (!isset($persons[$s['person_id']])) {
+            $persons[$s['person_id']] = array(
+                'scores' => array(),
+                'avg' => FSS::INVALID,
+                'calc' => FSS::INVALID,
+                'count' => 0,
+                'invalids' => 0
+            );
+        }
+        $persons[$s['person_id']]['scores'][] = $s;
+    }
+
+    foreach ($persons as $pid => $p) {
+        $sum = 0;
+        $Ds = 0;
+        $count = 0;
+
+        foreach ($p['scores'] as $s) {
+            if (FSS::isInvalid($s['time'])) {
+                $Ds++;
+            } else {
+                $sum += intval($s['time']);
+                $count++;
+            }
+        }
+        if ($count != 0) {
+            $persons[$pid]['avg'] = $sum/$count;
+        }
+
+        //- 1/23 *x^2+ 10
+        $sum = 0;
+        for ($z = 0; $z < $count; $z++) {
+            $s = -1/23 * pow($z, 2) + 10;
+            if ($s < 0) break;
+            $sum += $s;
+        }
+        $persons[$pid]['calc'] = $persons[$pid]['avg'] + $Ds*15 - $sum;
+        //$persons[$pid]['calc'] = $persons[$pid]['avg'] + $Ds*15 - $count*10;
+
+        $persons[$pid]['count'] = $count;
+        $persons[$pid]['invalid'] = $Ds;
+
+    }
+
+    uasort($persons, function($a, $b) {
+        return ($a['calc'] > $b['calc']);
+    });
+
+    $i = 1;
+    foreach ($persons as $pid => $p) {
+        echo '<tr style="border-top:5px solid #ADD8E6"><td>',$i,'.</td><td>',Link::fullPerson($pid),'</td>';
+        $i++;
+
+        $ss = array();
+
+        foreach ($p['scores'] as $s) {
+            $ss[] = Link::competition($s['competition_id'], FSS::time($s['time']), $s['event']);
+        }
+
+        echo '<td>'.implode(', ', $ss).'</td></tr><tr>';
+
+        echo '<td colspan="2"><em>',round($p['calc']/10).' Punkte</em></td><td>Durchschnitt: <strong>'.FSS::time($p['avg']).'</strong></td>';
+
+        echo '</tr>';
+
+        if ($i > 5) break;
+    }
+
+    echo '</table></div>';
+}
+
+
+echo
+'<div class="eight columns">',
+'<table class="table" style="width:100%;box-shadow:5px 5px 5px #BFBFBF;">',
+'<tr><th colspan="3" style="background:#ADD8E6;text-align:center;border-color:#ADD8E6">',FSS::dis2img('gs'),' ',FSS::dis2name('gs'),'</th></tr>';
+
+
+$scores = $db->getRows("
+    SELECT `s`.*, `e`.`name` AS `event`
+    FROM `scores_gs` `s`
+    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
+    WHERE YEAR(`c`.`date`) = '".$db->escape($_year)."'
+");
+$teams = array();
+foreach ($scores as $s) {
+    if (!isset($teams[$s['team_id'].'-'.$s['team_number']])) {
+        $teams[$s['team_id'].'-'.$s['team_number']] = array(
+            'scores' => array(),
+            'avg' => FSS::INVALID,
+            'calc' => FSS::INVALID,
+            'count' => 0,
+            'invalids' => 0
+        );
+    }
+    $teams[$s['team_id'].'-'.$s['team_number']]['scores'][] = $s;
+}
+
+foreach ($teams as $pid => $p) {
+    $sum = 0;
+    $Ds = 0;
+    $count = 0;
+
+    foreach ($p['scores'] as $s) {
+        if (FSS::isInvalid($s['time'])) {
+            $Ds++;
+        } else {
+            $sum += intval($s['time']);
+            $count++;
+        }
+    }
+    if ($count != 0) {
+        $teams[$pid]['avg'] = $sum/$count;
+    }
+
+    //- 1/23 *x^2+ 10
+    $sum = 0;
+    for ($z = 0; $z < $count; $z++) {
+        $s = -1/23 * pow($z, 2) + 10;
+        if ($s < 0) break;
+        $sum += $s;
+    }
+    $teams[$pid]['calc'] = $teams[$pid]['avg'] + $Ds*15 - $sum;
+    //$persons[$pid]['calc'] = $persons[$pid]['avg'] + $Ds*15 - $count*10;
+
+    $teams[$pid]['count'] = $count;
+    $teams[$pid]['invalid'] = $Ds;
+
+}
+
+uasort($teams, function($a, $b) {
+    return ($a['calc'] > $b['calc']);
+});
+
+$i = 1;
+foreach ($teams as $pidn => $p) {
+    $e = explode('-', $pidn);
+    $pid = $e[0];
+    echo '<tr style="border-top:5px solid #ADD8E6"><td>',$i,'.</td><td>',Link::team($pid),'</td>';
+    $i++;
+
+    $ss = array();
+
+    foreach ($p['scores'] as $s) {
+        $ss[] = Link::competition($s['competition_id'], FSS::time($s['time']), $s['event']);
+    }
+
+    echo '<td>'.implode(', ', $ss).'</td></tr><tr>';
+
+    echo '<td colspan="2"><em>',round($p['calc']/10).' Punkte</em></td><td>Durchschnitt: <strong>'.FSS::time($p['avg']).'</strong></td>';
+
+    echo '</tr>';
+
+    if ($i > 5) break;
+}
+
+echo '</table></div>';
+
+$sexes = array('female', 'male');
+foreach ($sexes as $sex) {
+
+    echo
+    '<div class="eight columns">',
+    '<table class="table" style="width:100%;box-shadow:5px 5px 5px #BFBFBF;">',
+    '<tr><th colspan="3" style="background:#ADD8E6;text-align:center;border-color:#ADD8E6">',FSS::dis2img('la'),' ',FSS::dis2name('la'),' ',FSS::sex($sex),'</th></tr>';
+
+
+    $scores = $db->getRows("
+        SELECT `s`.*, `e`.`name` AS `event`
+        FROM `scores_la` `s`
+        INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+        INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
+        WHERE YEAR(`c`.`date`) = '".$db->escape($_year)."'
+        AND `sex` = '".$sex."'
+    ");
+    $teams = array();
+    foreach ($scores as $s) {
+        if (!isset($teams[$s['team_id'].'-'.$s['team_number']])) {
+            $teams[$s['team_id'].'-'.$s['team_number']] = array(
+                'scores' => array(),
+                'avg' => FSS::INVALID,
+                'calc' => FSS::INVALID,
+                'count' => 0,
+                'invalids' => 0
+            );
+        }
+        $teams[$s['team_id'].'-'.$s['team_number']]['scores'][] = $s;
+    }
+
+    foreach ($teams as $pid => $p) {
+        $sum = 0;
+        $Ds = 0;
+        $count = 0;
+
+        foreach ($p['scores'] as $s) {
+            if (FSS::isInvalid($s['time'])) {
+                $Ds++;
+            } else {
+                $sum += intval($s['time']);
+                $count++;
+            }
+        }
+        if ($count != 0) {
+            $teams[$pid]['avg'] = $sum/$count;
+        }
+
+        //- 1/23 *x^2+ 10
+        $sum = 0;
+        for ($z = 0; $z < $count; $z++) {
+            $s = -1/23 * pow($z, 2) + 10;
+            if ($s < 0) break;
+            $sum += $s;
+        }
+        $teams[$pid]['calc'] = $teams[$pid]['avg'] + $Ds*15 - $sum;
+        //$persons[$pid]['calc'] = $persons[$pid]['avg'] + $Ds*15 - $count*10;
+
+        $teams[$pid]['count'] = $count;
+        $teams[$pid]['invalid'] = $Ds;
+
+    }
+
+    uasort($teams, function($a, $b) {
+        return ($a['calc'] > $b['calc']);
+    });
+
+    $i = 1;
+    foreach ($teams as $pidn => $p) {
+        $e = explode('-', $pidn);
+        $pid = $e[0];
+        echo '<tr style="border-top:5px solid #ADD8E6"><td>',$i,'.</td><td>',Link::team($pid),'</td>';
+        $i++;
+
+        $ss = array();
+
+        foreach ($p['scores'] as $s) {
+            $ss[] = Link::competition($s['competition_id'], FSS::time($s['time']), $s['event']);
+        }
+
+        echo '<td>'.implode(', ', $ss).'</td></tr><tr>';
+
+        echo '<td colspan="2"><em>',round($p['calc']/10).' Punkte</em></td><td>Durchschnitt: <strong>'.FSS::time($p['avg']).'</strong></td>';
+
+        echo '</tr>';
+
+        if ($i > 5) break;
+    }
+    echo '</table></div>';
+}
+
+echo '<div class="six columns">';
+echo '<p>Die einzelnen Disziplinen können für jedes Jahr separat angesehen werden. Dort wird auch die Punkteberechnung erklärt.</p>';
+echo '</div>';
+echo '<div class="seven columns">';
+echo '<table style="width:100%">';
+$years = $db->getRows("
+    SELECT YEAR(`date`) AS `year`, COUNT(`id`) AS `count`
+    FROM `competitions`
+    GROUP BY `year`
+    ORDER BY `year` DESC
+");
+for ( $i = 0; $i < count($years); $i = $i+4) {
+    echo '<tr><td>'.Link::singlediscipline($years[$i]['year']).' ('.$years[$i]['count'].')</td>';
+    if (isset($years[$i+1])) echo '<td>'.Link::singlediscipline($years[$i+1]['year']).' ('.$years[$i+1]['count'].')</td>';
+    if (isset($years[$i+2])) echo '<td>'.Link::singlediscipline($years[$i+2]['year']).' ('.$years[$i+2]['count'].')</td>';
+    if (isset($years[$i+3])) echo '<td>'.Link::singlediscipline($years[$i+3]['year']).' ('.$years[$i+3]['count'].')</td>';
+    echo '</tr>';
+}
+echo '</table>';
+echo '</div>';
+
+?>
+
 <h2 class="toToc">Mitmachen</h2>
 <div class="sixteen columns clearfix">
     <div class="nine columns">
@@ -165,6 +443,32 @@ foreach ($missed as $m) {
         </ul></p>
     </div>
     <div class="six columns" style="text-align:center;"><img src="/styling/images/application-x-gnumeric.png" alt=""/></div>
+</div>
+<div class="sixteen columns">
+        <h4>Status des Imports</h4>
+        <div style="width:910px;margin:5px auto 15px auto;">
+        <?php
+
+            $co = array(
+                '#009200',
+                '#00C600',
+                '#60F20E',
+                '#FFEB00',
+                '#FF8100',
+                '#E73131'
+            );
+
+            foreach ($missedArr as $key => $count) {
+
+                $c = $count/$competitions;
+
+                $t = floor($c*100).'%';
+                if ($c*100 < 10) $t = ' ';
+
+                echo '<div style="text-align:center;float:right;height:20px;background:'.$co[$key].';position:relative;width:'.floor($c*900).'px;color:#'.dechex(0xFFFFFF-hexdec(substr($co[$key],1))).'" title="'.floor($c*100).'% ('.$count.' Wettkämpfe)">'.$t.'</div>';
+            }
+        ?>
+    </div>
 </div>
 <h2 class="toToc" id="fehler">Fehler in den Daten</h2>
 <div class="sixteen columns clearfix">
