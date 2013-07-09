@@ -166,7 +166,8 @@ class FSS
 
     public static function dis2img($key, $tall = false) {
         $n = '';
-        if ($tall) $n = 'tall-';
+        if ($tall == 'blue') $n = 'blue-';
+        elseif ($tall) $n = 'tall-';
         return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'"/>';
     }
 

@@ -4,6 +4,9 @@ RewriteEngine On
 RewriteRule ^page-([a-z_]+)\.html$ /page/$1.html [L,R=301]
 RewriteRule ^page-([a-z_]+)-([0-9]+)\.html$ /page/$1-$2.html [L,R=301]
 
+# Interne Weiterleitung von index.html auf page/home.html
+RewriteCond %{QUERY_STRING} !page\=administration
+RewriteRule ^$ page/home.html
 
 # page/
 RewriteCond %{REQUEST_URI} ^/page/([a-z_]+)\.html$
@@ -39,3 +42,5 @@ RewriteRule ^chart/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1
 RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
 RewriteRule ^chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3&big=1 [L]
+
+

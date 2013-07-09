@@ -69,4 +69,9 @@ class Link
         return '<a href="'.$config['url'].'page/news-'.$id.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
     }
 
+    public static function singlediscipline($year, $title = false) {
+        global $config;
+        if (!$title) $title = 'Einzelergebnisse für das Jahr '.$year;
+        return '<a href="'.$config['url'].'page/singlediscipline-'.$year.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($year).'</a>';
+    }
 }

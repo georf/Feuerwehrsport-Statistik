@@ -452,3 +452,6 @@ cursor:pointer;
 border: 1px solid green;
 min-height:70px;
 }
+
+sup { vertical-align:text-top; font-size:70%; }
+sub { vertical-align:text-bottom; font-size:70%; }

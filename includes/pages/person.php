@@ -288,7 +288,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
     }
 
     echo '<div class="competition-box">';
-    echo '<h2 style="clear:both; margin-top:40px;" id="dis-',FSS::name2id($name),'">'.$name.'</h2>';
+    echo '<h2 style="clear:both; margin-top:40px;" id="dis-',FSS::name2id($name),'">'.FSS::dis2img($key).' '.$name.'</h2>';
 
     echo  '<table class="chart-table">',
           '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>',
