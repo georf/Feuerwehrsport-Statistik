@@ -342,6 +342,7 @@ $dis = array(
 );
 
 echo
+'<span style="float:right;"><a href="/?page=administration&amp;admin=competition&amp;id='.$id.'"><img src="/styling/images/configure.png" alt=""/></a></span>',
 '<h1>',
     htmlspecialchars($competition['event']),' - ',
     htmlspecialchars($competition['place']),' - ',
@@ -517,7 +518,7 @@ foreach ($dis as $fullKey => $scores) {
         $ave5 = $sum5/$i5;
         $ave10 = $sum10/$i10;
 
-        echo '<h2 id="dis-'.$fullKey.'">',FSS::dis2name($key);
+        echo '<h2 id="dis-'.$fullKey.'">'.FSS::dis2img($key).' ',FSS::dis2name($key);
         if ($sex) echo ' '.FSS::sex($sex);
         if ($final) echo ' - Finale';
         echo '</h2>';
@@ -598,7 +599,7 @@ foreach ($dis as $fullKey => $scores) {
 
         // Mannschaftswertung
         if (!$final && $key != 'zk' && $competition['score_type']) {
-            echo '<h2 id="dis-'.$fullKey.'-mannschaft">',FSS::dis2name($key);
+            echo '<h2 id="dis-'.$fullKey.'-mannschaft">'.FSS::dis2img($key).' ',FSS::dis2name($key);
             if ($sex) echo ' '.FSS::sex($sex);
             if ($final) echo ' - Mannschaftswertung';
             echo '</h2>';
@@ -684,8 +685,13 @@ foreach ($dis as $fullKey => $scores) {
         }
 
         $current_files = array();
+        $fkey = $key;
+        if ($sex && $sex == 'female') $fkey .= 'w';
+        if ($sex && $sex == 'male') $fkey .= 'm';
+        
         foreach ($files as $file) {
-            if (in_array($key, $file['content'])) {
+            
+            if (in_array($fkey, $file['content'])) {
                 $current_files[] = $file;
             }
         }
@@ -704,7 +710,7 @@ foreach ($dis as $fullKey => $scores) {
 
     } else {
 
-        echo '<h2 id="dis-'.$fullKey.'">',FSS::dis2name($key);
+        echo '<h2 id="dis-'.$fullKey.'">'.FSS::dis2img($key).' ',FSS::dis2name($key);
         if ($sex) echo ' '.FSS::sex($sex);
         echo '</h2>';
 
@@ -721,9 +727,9 @@ foreach ($dis as $fullKey => $scores) {
                 '<tr><th>Bestzeit:</th><td>',FSS::time($scores[0]['time']),'</td></tr>',
                 '<tr><th>Mannschaften:</th><td>',count($scores),'</td></tr>',
                 '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
-                '<tr><td style="text-align:center;" colspan="2">'.Chart::img('competition_bad_good', array($_id, 'full')).'</td></tr>',
+                '<tr><td style="text-align:center;" colspan="2">'.Chart::img('competition_bad_good', array($_id, $fullKey)).'</td></tr>',
               '</table>';
-        echo '<p class="chart">'.Chart::img('competition', array($_id, 'full')).'</p>';
+        echo '<p class="chart">'.Chart::img('competition', array($_id, $fullKey)).'</p>';
 
         echo '<table class="datatable sc_'.$key.'"><thead><tr>',
                 '<th style="width:14%">Team</th>',
@@ -838,7 +844,7 @@ if (count($files)) {
 echo '<button id="add-file">Datei hinzufügen</button>';
 
 echo '<div id="add-file-form" style="display:none;">
-    <form action="/page-competition_upload.html" method="post" enctype="multipart/form-data">
+    <form action="/page/competition_upload.html" method="post" enctype="multipart/form-data">
         <h3>Es dürfen nur PDFs hochgeladen werden.</h3>
         <table class="table">
             <tr><th rowspan="2">Datei</th><th colspan="8">Folgende Ergebnisse sind in dieser Datei enthalten</th></tr>
