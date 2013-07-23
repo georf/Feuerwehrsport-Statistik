@@ -839,6 +839,11 @@ foreach ($sc_la as $sex => $content) {
 }
 
 
+if (Map::isFile('teams', $_id)) {
+    echo '<h2 id="map">Karte</h2>';
+    echo '<p>'.Map::getImg('teams', $_id).'</p>';
+}
+
 echo '
 <h2 id="fehler">Fehler melden</h2>
 <p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>

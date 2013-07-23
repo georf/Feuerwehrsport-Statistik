@@ -124,6 +124,8 @@ foreach ($disciplines as $d) {
 
     $persons = array();
 
+    if ($dis == 'hl') echo '<br class="clear"/>';
+
     echo
     '<div class="eight columns">',
     '<table class="table" style="width:100%;box-shadow:5px 5px 5px #BFBFBF;">',
@@ -300,6 +302,8 @@ foreach ($teams as $pidn => $p) {
 
 echo '</table></div>';
 
+echo '<br class="clear"/>';
+
 $sexes = array('female', 'male');
 foreach ($sexes as $sex) {
 
@@ -390,6 +394,8 @@ foreach ($sexes as $sex) {
     }
     echo '</table></div>';
 }
+
+echo '<br class="clear"/>';
 
 echo '<div class="six columns">';
 echo '<p>Die einzelnen Disziplinen können für jedes Jahr separat angesehen werden. Dort wird auch die Punkteberechnung erklärt.</p>';

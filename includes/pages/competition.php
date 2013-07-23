@@ -500,6 +500,9 @@ foreach ($dis as $fullKey => $scores) {
         $i5 = 0;
         $sum10 = 0;
         $i10 = 0;
+        $ave = FSS::INVALID;
+        $ave5 = FSS::INVALID;
+        $ave10 = FSS::INVALID;
         foreach ($scores as $score) {
             if (FSS::isInvalid($score['time'])) continue;
 
@@ -514,9 +517,12 @@ foreach ($dis as $fullKey => $scores) {
                 $i10++;
             }
         }
-        $ave = $sum/$i;
-        $ave5 = $sum5/$i5;
-        $ave10 = $sum10/$i10;
+
+        if ($i != 0) {
+            $ave = $sum/$i;
+            $ave5 = $sum5/$i5;
+            $ave10 = $sum10/$i10;
+        }
 
         echo '<h2 id="dis-'.$fullKey.'">'.FSS::dis2img($key).' ',FSS::dis2name($key);
         if ($sex) echo ' '.FSS::sex($sex);
@@ -533,7 +539,10 @@ foreach ($dis as $fullKey => $scores) {
         if ($key != 'zk') echo '<tr><td style="text-align:center;" colspan="2">'.Chart::img('competition_bad_good', array($id, $fullKey)).'</td></tr>';
 
         echo '</table>';
-        echo '<p class="chart">'.Chart::img('competition', array($id, $fullKey), true, 'competition_platzierung').'</p>';
+
+        if ($i != 0) {
+            echo '<p class="chart">'.Chart::img('competition', array($id, $fullKey), true, 'competition_platzierung').'</p>';
+        }
 
         echo
           '<table class="datatable sc_'.$key;
@@ -688,9 +697,9 @@ foreach ($dis as $fullKey => $scores) {
         $fkey = $key;
         if ($sex && $sex == 'female') $fkey .= 'w';
         if ($sex && $sex == 'male') $fkey .= 'm';
-        
+
         foreach ($files as $file) {
-            
+
             if (in_array($fkey, $file['content'])) {
                 $current_files[] = $file;
             }
