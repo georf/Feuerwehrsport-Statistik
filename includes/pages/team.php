@@ -839,10 +839,15 @@ foreach ($sc_la as $sex => $content) {
 }
 
 
+echo '<h2 id="map">Karte</h2>';
 if (Map::isFile('teams', $_id)) {
-    echo '<h2 id="map">Karte</h2>';
-    echo '<p>'.Map::getImg('teams', $_id).'</p>';
+    echo '<div class="nine columns staticmap">'.Map::getImg('teams', $_id).'</div>';
+    echo '<div class="four columns staticmap"><button id="loadmap">Interaktive Karte laden</button></div>';
+} else {
+    echo '<div class="nine columns staticmap"><img src="/styling/images/no-location.png" alt=""/><br/>Keine Kartenposition vorhanden</div>';
+    echo '<div class="four columns staticmap"><button id="loadmap2">Interaktive Karte zum Bearbeiten laden</button></div>';
 }
+
 
 echo '
 <h2 id="fehler">Fehler melden</h2>

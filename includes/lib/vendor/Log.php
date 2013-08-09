@@ -169,6 +169,15 @@ class Log
                 if (count($persons)) $this->content .= implode(', ', $persons);
                 else $this->content .= 'Keine Wettkämpfer';
             break;
+
+
+            case 'set-team-location':
+            case 'set-team-position':
+                $this->description = "Kartenposition geändert";
+
+                $team = $this->raw['team'];
+                $this->content = Link::team($team['id'], $team['name']);
+            break;
         }
     }
 

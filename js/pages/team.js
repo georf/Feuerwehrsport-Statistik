@@ -102,4 +102,75 @@ $(function() {
             return;
         });
     });
+
+
+    var marker = null;
+    $('#loadmap').click(function() {
+        Map.loadStyle(function() {
+            $('<div class="four columns"><button id="editmap">Position bearbeiten</button></div>').insertAfter($('#loadmap').closest('div'));
+            $('<div id="dynamicmap" class="twelve columns" style="height:500px;"></div>').insertAfter($('#loadmap').closest('div'));
+            $('.staticmap').hide();
+
+            var lat = parseFloat(global('team-lat')), lon = parseFloat(global('team-lon'));
+
+            var map = Map.getMap(lat, lon, 8, 'dynamicmap');
+
+            marker = L.marker([lat, lon]).bindPopup(global('team-name')).addTo(map);
+
+            $('#editmap').click(function() {
+                var latlng = marker.getLatLng();
+                var editMarker = L.marker(latlng, {draggable: true});
+                map.removeLayer(marker).addLayer(editMarker);
+
+                $('#editmap').hide();
+                $('<button>Speichern</button>').insertAfter($('#editmap')).click(function() {
+                    checkLogin(function() {
+                        wPost('set-team-location', {
+                            lat: editMarker.getLatLng().lat,
+                            lon: editMarker.getLatLng().lng,
+                            team: global('team-id')
+                        }, function( data ) {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message);
+                            }
+                        });
+                    });
+                });
+                $('<p>Bitte den Marker auf die korrekte Position ziehen.</p>').insertAfter($('#editmap'));
+            });
+        });
+    });
+
+
+    $('#loadmap2').click(function() {
+        Map.loadStyle(function() {
+            $('<div class="four columns"><button id="editmap">Position bearbeiten</button></div>').insertAfter($('#loadmap2').closest('div'));
+            $('<div id="dynamicmap" class="twelve columns" style="height:500px;"></div>').insertAfter($('#loadmap2').closest('div'));
+            $('.staticmap').hide();
+
+            var map = Map.getMap(Map.lat, Map.lon, 8, 'dynamicmap');
+
+            var editMarker = L.marker([Map.lat, Map.lon], {draggable: true});
+            map.addLayer(editMarker);
+            $('#editmap').hide();
+            $('<button>Speichern</button>').insertAfter($('#editmap')).click(function() {
+                checkLogin(function() {
+                    wPost('set-team-location', {
+                        lat: editMarker.getLatLng().lat,
+                        lon: editMarker.getLatLng().lng,
+                        team: global('team-id')
+                    }, function( data ) {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                });
+            });
+            $('<p>Bitte den Marker auf die korrekte Position ziehen.</p>').insertAfter($('#editmap'));
+        });
+    });
 });

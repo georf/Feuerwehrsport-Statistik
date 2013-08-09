@@ -43,7 +43,7 @@ try {
     $no_cache = array('overview_best_year');
 
     $content = ob_get_contents();
-    if (!in_array($_page, $content)) Cache::generateFile($content);
+    if (!in_array($_page, $no_cache)) Cache::generateFile($content);
     ob_end_clean();
     die($content);
 } catch (Exception $e) {

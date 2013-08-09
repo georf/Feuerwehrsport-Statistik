@@ -738,10 +738,10 @@
             var headline = box.find('.headline');
             var span = $('<span style="background:#BAE0F1;border-radius:5px;padding:2px;margin-left:10px;">^</span>');
             headline.find('h3').append(span);
-            
+
             var divs = box.find('div:not(.headline)');
             divs.hide();
-            
+
             var open = false;
             headline.click(function() {
                 if (open) {
@@ -779,6 +779,56 @@
         }
         $(selector).dataTable(opt);
     };
-    
+
+    // map functions
+    window.Map = new function () {
+        var styleLoaded = false;
+        var loaded = function (callback) {
+            styleLoaded = true;
+            callback();
+        };
+
+        this.lat = 51;
+        this.lon = 13;
+
+
+        this.loadStyle = function (callback) {
+            if (styleLoaded) callback();
+            else {
+                $.getScript('/js/leaflet.js', function() {
+                    L.Icon.Default.imagePath = '/styling/images/';
+                    $.get('/styling/css/leaflet.css', function(css) {
+                        $('<style type="text/css"></style>').html(css).appendTo("head");
+
+                        if ($.browser.msie && parseInt($.browser.version, 10) < 8) {
+                            $.get('/styling/css/leaflet.ie.css', function(css) {
+                                $('<style type="text/css"></style>').html(css).appendTo("head");
+                                loaded(callback);
+                            });
+                        } else {
+                            loaded(callback);
+                        }
+                    });
+                });
+            }
+        };
+
+        this.getMap = function (lat, lon, zoom, id) {
+            var osmUrl="http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+            var osmAttrib='Map data © <a href="http://openstreetmap.org?lat='+lat+'&lon='+lon+'&zoom=12">openstreetmap</a>';
+            var osm = new L.TileLayer(osmUrl,{attribution: osmAttrib});
+
+            var fireUrl='http://openfiremap.org/hytiles/{z}/{x}/{y}.png';
+            var fireAttrib='<a href="http://openfiremap.org/?zoom=12&lat='+lat+'&lon='+lon+'">openfiremap</a>';
+            var fire = new L.TileLayer(fireUrl,{attribution: fireAttrib});
+
+
+            return new L.Map(id, {
+                    center: new L.LatLng(lat, lon),
+                    zoom: zoom,
+                    layers: [osm, fire]
+            });
+        };
+    };
 
 })(window, $, document);
