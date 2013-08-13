@@ -290,10 +290,12 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
     echo '<div class="competition-box">';
     echo '<h2 style="clear:both; margin-top:40px;" id="dis-',FSS::name2id($name),'">'.FSS::dis2img($key).' '.$name.'</h2>';
 
-    echo  '<table class="chart-table">',
-          '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>',
-          '<tr><th>Schlechteste Zeit:</th><td>',FSS::time($bad),'</td></tr>',
-          '<tr><th>Zeiten:</th><td>',count($scores),'</td></tr>';
+    echo  '<table class="chart-table">';
+
+    if ($i > 0) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>',
+          '<tr><th>Schlechteste Zeit:</th><td>',FSS::time($bad),'</td></tr>';
+
+    echo '<tr><th>Zeiten:</th><td>',count($scores),'</td></tr>';
 
     if ($i > 0) echo '<tr><th>Durchschnitt:</th><td>',FSS::time($sum/$i),'</td></tr>';
 
@@ -304,7 +306,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
 
     echo
           '</table>';
-    echo '<p class="chart">'.Chart::img('person', array($_id, $key)).'</p>';
+    if ($i > 0) echo '<p class="chart">'.Chart::img('person', array($_id, $key)).'</p>';
 
 
 

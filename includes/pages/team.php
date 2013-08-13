@@ -624,25 +624,35 @@ if (count($sc_gs)) {
 
     $sum = 0;
     $best = PHP_INT_MAX;
+    $bad  = 0;
     $i = 0;
     foreach ($sc_gs as $score) {
+
         if (FSS::isInvalid($score['time'])) continue;
+
         $sum += $score['time'];
-        if ($score['time'] < $best) $best = $score['time'];
         $i++;
+
+        if ($best > $score['time']) {
+            $best = $score['time'];
+        }
+        if ($bad < $score['time']) {
+            $bad = $score['time'];
+        }
     }
-    $ave = $sum/$i;
 
     echo  '<table class="chart-table">';
 
-    if ($best != PHP_INT_MAX) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>';
+    if ($i > 0) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>',
+          '<tr><th>Schlechteste Zeit:</th><td>',FSS::time($bad),'</td></tr>';
 
     echo
-            '<tr><th>Zeiten:</th><td>',count($sc_gs),'</td></tr>',
-            '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
-            '<tr><td style="text-align:center;" colspan="2">'.Chart::img('team_scores_bad_good', array($_id, 'gs')).'</td></tr>',
+            '<tr><th>Zeiten:</th><td>',count($sc_gs),'</td></tr>';
+    if ($i > 0) echo '<tr><th>Durchschnitt:</th><td>',FSS::time($sum/$i),'</td></tr>';
+
+    echo        '<tr><td style="text-align:center;" colspan="2">'.Chart::img('team_scores_bad_good', array($_id, 'gs')).'</td></tr>',
           '</table>';
-    echo '<p class="chart">'.Chart::img('team_scores', array($_id, 'gs')).'</p>';
+    if ($i > 0) echo '<p class="chart">'.Chart::img('team_scores', array($_id, 'gs')).'</p>';
 
 
     echo '<table class="datatable datatable-sort-gs sc_gs"><thead><tr>',
