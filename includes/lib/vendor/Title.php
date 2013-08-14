@@ -16,6 +16,8 @@ class Title
         if (is_string($title) && !is_string(self::$title)) {
             self::$title = $title;
         }
+
+        return '<h1>'.$title.'</h1>';
     }
 
     public static function get() {
