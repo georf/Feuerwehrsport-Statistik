@@ -469,7 +469,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
             echo '</tbody></table>';
         }
 
-        if (in_array($key, array('la'))) {
+        if (in_array($key, array('la', 'fs', 'gs'))) {
             echo '<h3 style="clear:both">'.$name.' - Gelaufene Positionen</h3>';
             echo Chart::img('position_'.$key, array($id));
         }
