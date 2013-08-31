@@ -472,7 +472,7 @@ echo '</div>';
 
 
 echo '<div class="four columns">'.
-    '<form class="excel-box" method="post" action="excel.php?competition='.$id.'" id="form-excel">'.
+    '<form class="excel-box" method="post" action="/competition-'.$id.'.xlsx" id="form-excel">'.
         '<input type="hidden" name="competition_id" value="'.$id.'"/>'.
         '<img src="/styling/images/excel.png" alt="excel" style="float:right"/>'.
         'Daten als Excel-Datei herunterladen.'.
@@ -809,7 +809,7 @@ echo '<h2 id="toc-weblinks">Weblinks zu diesem Wettkampf</h2>';
 if (count($links)) {
     echo '<ul class="disc">';
     foreach ($links as $link) {
-        echo '<li><a href="',htmlspecialchars($link['url']),'">',htmlspecialchars($link['name']),'</a></li>';
+        echo '<li>',Link::a($link['url'], $link['name']),'</li>';
     }
     echo '</ul>';
 }
