@@ -161,14 +161,15 @@ class FSS
             'zk' => 'Zweikampf',
             'hb' => 'Hindernisbahn',
         );
-        return $c[$key];
+        if (isset($c[$key])) return $c[$key];
+        return '';
     }
 
     public static function dis2img($key, $tall = false) {
         $n = '';
         if ($tall == 'blue') $n = 'blue-';
         elseif ($tall) $n = 'tall-';
-        return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'"/>';
+        return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'" title="'.self::dis2name($key).'"/>';
     }
 
     public static function countNoEmpty($count) {

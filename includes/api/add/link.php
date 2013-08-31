@@ -1,7 +1,7 @@
 <?php
 
 if (!Check::post('name', 'url', 'id', 'for')) throw new Exception("bad request");
-if (!in_array($_POST['for'], array('competition', 'team'))) throw new Exception("for is bad");
+if (!in_array($_POST['for'], array('competition', 'team', 'date'))) throw new Exception("for is bad");
 
 $table = $_POST['for'].'s';
 if (!Check::isIn($_POST['id'], $table)) throw new Exception("id not found");

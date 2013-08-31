@@ -65,13 +65,26 @@ class Link
     }
 
     public static function news($id, $text, $title) {
-        global $config;
-        return '<a href="'.$config['url'].'page/news-'.$id.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
+        return self::page_a('news-'.$id, $text, $title);
     }
 
     public static function singlediscipline($year, $title = false) {
-        global $config;
         if (!$title) $title = 'Einzelergebnisse für das Jahr '.$year;
-        return '<a href="'.$config['url'].'page/singlediscipline-'.$year.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($year).'</a>';
+        return self::page_a('singlediscipline-'.$year, $year, $title);
+    }
+
+    public static function date($id, $name = false) {
+        if (!$name) $name = 'Details';
+        return self::page_a('date-'.$id, $name);
+    }
+
+    public static function page_a($page, $name, $title = false) {
+        global $config;
+        return self::a($config['url'].'page/'.$page.'.html', $name, $title);
+    }
+
+    public static function a($url, $name, $title = false) {
+        $html_title = (!$title)? '' : ' title="'.htmlspecialchars($title).'"';
+        return '<a href="'.htmlspecialchars($url).'"'.$title.'>'.htmlspecialchars($name).'</a>';
     }
 }
