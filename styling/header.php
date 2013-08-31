@@ -21,12 +21,12 @@
 <body>
 <div class="container" id="header">
   <a href="/page/home.html">Startseite</a>
+  <a href="/page/dates.html">Termine</a>
   <a href="/page/news.html">Neuigkeiten</a>
   <a href="/page/competitions.html">Wettkämpfe</a>
   <a href="/page/teams.html">Mannschaften</a>
   <a href="/page/places.html">Orte</a>
   <a href="/page/events.html">Events</a>
   <a href="/page/persons.html">Personen</a>
-  <a href="/page/logs.html">Veränderungen</a>
 </div>
 <div class="container" id="main">
