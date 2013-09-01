@@ -16,7 +16,7 @@ if (!Check::isIn($place_id, 'places')) $place_id = NULL;
 $event_id = $_POST['event_id'];
 if (!Check::isIn($event_id, 'events')) $event_id = NULL;
 
-$db->insertRow('dates', array(
+$result = $db->insertRow('dates', array(
     'date' => $_POST['date'],
     'name' => $_POST['name'],
     'place_id' => $place_id,
@@ -24,5 +24,8 @@ $db->insertRow('dates', array(
     'description' => $_POST['description'],
     'disciplines' => implode(',', $provided)
 ));
+
+// generate log
+Log::insert('add-date', FSS::tableRow('dates', $result));
 
 $output['success'] = true;

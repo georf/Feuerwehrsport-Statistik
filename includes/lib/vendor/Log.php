@@ -56,6 +56,9 @@ class Log
                 } elseif ($this->raw['for'] == 'team') {
                     $this->description .= 'für Mannschaft';
                     $this->content = Link::team($this->raw['for_id']);
+                } elseif ($this->raw['for'] == 'date') {
+                    $this->description .= 'für Termin';
+                    $this->content = Link::date($this->raw['for_id']);
                 }
 
                 $this->content .= '<br/>Neu: <a href="'.htmlspecialchars($this->raw['url']).'">'.htmlspecialchars($this->raw['name']).'</a>';
@@ -75,6 +78,11 @@ class Log
                     $this->raw['name'].': '.$this->raw['content'];
             break;
 
+
+            case 'add-date':
+                $this->description = 'Termin hinzugefügt';
+                $this->content = Link::date($this->raw['id'], $this->raw['name']);
+            break;
 
             case 'add-team':
                 $this->description = 'Team hinzugefügt';
