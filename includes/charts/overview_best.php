@@ -1,13 +1,5 @@
 <?php
 
-$years = $db->getRows("
-    SELECT YEAR(`date`) AS `year`
-    FROM `competitions`
-    GROUP BY YEAR(`date`)
-    ORDER BY `year`
-");
-
-
 $diss = array(array(
         'name' => 'HL',
         'dis' => 'HL',
@@ -29,8 +21,8 @@ $diss = array(array(
 $labels  = array();
 
 
-foreach ($years as $year) {
-    $labels[] = substr($year['year'],2);
+for($year = 2006; $year <= date('Y'); $year++) {
+    $labels[] = substr($year,2);
 
     foreach ($diss as $key => $dis) {
         $avgs = array();
@@ -39,7 +31,7 @@ foreach ($years as $year) {
           SELECT `c`.*,`p`.`name` AS `place`
           FROM `competitions` `c`
           INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-          WHERE YEAR(`c`.`date`) = '".$year['year']."'
+          WHERE YEAR(`c`.`date`) = '".$year."'
           ORDER BY `c`.`date`;
         ");
 
