@@ -460,6 +460,39 @@ foreach ($competitions as $c_id => $competition) {
 
 }
 
+
+
+$competitions = $db->getRows("
+    SELECT `competition_id`,
+        SUM(`single`) AS `single`,
+        SUM(`gs`) AS `gs`,
+        SUM(`la`) AS `la`,
+        SUM(`fs`) AS `fs`
+    FROM (
+        SELECT `competition_id`,COUNT(*) AS `single`,0 AS `gs`,0 AS `la`,0 AS `fs`
+        FROM `scores`
+        WHERE `team_id` = '".$team['id']."'
+        GROUP BY `competition_id`
+    UNION
+        SELECT `competition_id`,0 AS `single`,COUNT(*) AS `gs`,0 AS `la`,0 AS `fs`
+        FROM `scores_gs`
+        WHERE `team_id` = '".$team['id']."'
+        GROUP BY `competition_id`
+    UNION
+        SELECT `competition_id`,0 AS `single`,0 AS `gs`,COUNT(*) AS `la`,0 AS `fs`
+        FROM `scores_la`
+        WHERE `team_id` = '".$team['id']."'
+        GROUP BY `competition_id`
+    UNION
+        SELECT `competition_id`,0 AS `single`,0 AS `gs`,0 AS `la`,COUNT(*) AS `fs`
+        FROM `scores_fs`
+        WHERE `team_id` = '".$team['id']."'
+        GROUP BY `competition_id`
+    ) `i`
+    GROUP BY `competition_id`
+");
+
+
 // Team - Logo
 if ($team['logo']) {
     echo '<p style="float:left;margin-right:20px;"><img src="/'.$config['logo-path'].$team['logo'].'" alt="'.htmlspecialchars($team['short']).'"/></p>';
@@ -495,6 +528,7 @@ echo '</td></tr>
 </table>';
 
 
+echo '<h2>Wettkämpfer</h2>';
 echo
   '<table class="datatable datatable-sort-members"><thead><tr>',
     '<th style="width:22%">Name</th>',
@@ -524,6 +558,35 @@ foreach ($members as $pid => $member) {
 }
 echo '</tbody></table>';
 
+echo '<h2>Wettkämpfe</h2>';
+
+echo
+  '<table class="datatable datatable-sort-competitions"><thead><tr>',
+    '<th style="width:13%">Datum</th>',
+    '<th style="width:22%">Typ</th>',
+    '<th style="width:22%">Ort</th>',
+    '<th style="width:8%">Einzel</th>',
+    '<th style="width:8%">GS</th>',
+    '<th style="width:8%">LA</th>',
+    '<th style="width:8%">FS</th>',
+    '<th style="width:10%"></th>',
+  '</tr></thead>',
+  '<tbody>';
+foreach ($competitions as $competition) {
+    $full = FSS::competition($competition['competition_id']);
+    echo
+        '<tr>',
+          '<td>',$full['date'],'</td>',
+          '<td>',htmlspecialchars($full['event']),'</td>',
+          '<td>',htmlspecialchars($full['place']),'</td>',
+          '<td>',$competition['single'],'</td>',
+          '<td>',$competition['gs'],'</td>',
+          '<td>',$competition['la'],'</td>',
+          '<td>',$competition['fs'],'</td>',
+          '<td>'.Link::competition($full['id']).'</td>',
+        '</tr>';
+}
+echo '</tbody></table>';
 
 // Mannschaftswertung
 foreach ($team_scores as $fullKey => $tscores) {

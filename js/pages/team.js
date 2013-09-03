@@ -4,6 +4,9 @@ $(function() {
     // Mitglieder
     sortTable('.datatable-sort-members', 0, 'asc', 8);
 
+    // Löschangriff
+    sortTable('.datatable-sort-competitions', 0, 'desc', 7);
+
     // Mannschaftswertung
     sortTable('.datatable-sort-team-scores', 0, 'desc', [3,4]);
 
