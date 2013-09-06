@@ -3,6 +3,21 @@
 echo Title::set('D-Cup Gesamtwertung');
 
 echo '<p>Diese Seite zeigt die Gesamtwertung der D-Cup-Ergebnisse. Dabei handelt es sich um selbst berechnete Daten, welche <strong>nicht offiziell</strong> sind.</p>';
+
+echo '
+<div class="row">
+    <div class="seven columns">
+        <p>Die Einzelergebnisse stehen jetzt auch zur Verfügung. Die Ergebnisse der Jugend kommen bei Bedarf auch noch mit rein.</p>
+    </div>
+    <div class="six columns">
+        <ul>
+        <li>'.FSS::dis2img('hb').' '.Link::dcup_single('2013', 'hbf', 'Hindernisbahn weiblich').'</li>
+        <li>'.FSS::dis2img('hb').' '.Link::dcup_single('2013', 'hbm', 'Hindernisbahn männlich').'</li>
+        <li>'.FSS::dis2img('hl').' '.Link::dcup_single('2013', 'hl', 'Hakenleitersteigen').'</li>
+        <li>'.FSS::dis2img('zk').' '.Link::dcup_single('2013', 'zk', 'Zweikampf').'</li>
+        </ul>
+    </div>
+</div>';
 echo '<p>Zu jedem Wettkampf stehen die einzelnen Punkte für die Disziplin und darunter die addierten Werte. Ganz rechts ist dann die Gesamtanzahl der Punkte zu finden. Die Mannschaften sind absteigend nach Punkte geordnet. Nach der <a href="http://www.feuerwehrsport-teammv.de/wp-content/uploads/2013/08/Ausschreibung-Deutschland-Cup-2013-DFV.pdf">Ausschreibung</a> gilt bei Punktgleichheit die bessere Löschangriff-Zeit. Dies wird hier <strong>nicht</strong> beachtet.</p>';
 
 foreach (array('female', 'male') as $sex) {

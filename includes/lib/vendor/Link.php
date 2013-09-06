@@ -83,6 +83,13 @@ class Link
         return self::a($config['url'].'page/'.$page.'.html', $name, $title);
     }
 
+    public static function dcup_single($year, $type, $display = false, $title = false) {
+        global $config;
+
+        if ($display == false) $display = 'Details';
+        return self::page_a('dcup_single-'.$year.'-'.$type, $display, $title);
+    }
+
     public static function a($url, $name, $title = false) {
         $html_title = (!$title)? '' : ' title="'.htmlspecialchars($title).'"';
         return '<a href="'.htmlspecialchars($url).'"'.$title.'>'.htmlspecialchars($name).'</a>';
