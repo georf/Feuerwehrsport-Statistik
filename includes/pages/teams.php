@@ -6,6 +6,7 @@
         <th style="width:30%">Name</th>
         <th style="width:25%">Abk.</th>
         <th style="width:12%">Typ</th>
+        <th style="width:8%">Land</th>
         <th style="width:8%">Mitglieder</th>
         <th style="width:8%">Wettkämpfe</th>
         <th style="width:8%"></th>
@@ -114,7 +115,12 @@ foreach ($teams as $team) {
     echo
     '<tr><td>',Link::team($team['id'], $team['name']),
     '</td><td>',htmlspecialchars($team['short']),'</td><td>',$team['type'],
-    '</td><td>',count($members),'</td><td>',count($competitions),
+    '</td><td';
+
+    if ($team['state']) echo ' title="',FSS::stateToText($team['state']),'">',$team['state'];
+    else echo '>';
+
+    echo '</td><td>',count($members),'</td><td>',count($competitions),
     '</td><td style="padding:0">';
 
     if ($team['logo']) {

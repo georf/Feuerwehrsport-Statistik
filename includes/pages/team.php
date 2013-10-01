@@ -525,6 +525,7 @@ foreach ($links as $link) {
 }
 echo '<span class="bt applications-internet-add" id="add-link" data-for-id="'.$id.'" data-for-table="team" title="Link hinzufügen"></span>';
 echo '</td></tr>
+<tr><th>Bundesland:</th><td>'.FSS::stateToText($team['state']).' <img alt="" src="/styling/images/configure.png" id="select-state" data-for-id="'.$id.'" data-for-type="team" data-current="'.$team['state'].'" title="Bundesland ändern" style="cursor:pointer;"/></td></tr>
 </table>';
 
 

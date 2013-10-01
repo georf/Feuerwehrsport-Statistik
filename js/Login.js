@@ -757,6 +757,49 @@
                 }
             }).css({ 'cursor':'pointer'}).attr('title', 'Klicken zum Öffnen');
         });
+
+        $('#select-state').click(function() {
+            var for_id = $(this).data('for-id');
+            var for_type = $(this).data('for-type');
+            var current = $(this).data('current');
+
+            var states = [
+                {value:'NULL',display:'unbekannt'},
+               {value:'BW',display:'Baden-Württemberg'},
+               {value:'BY',display:'Bayern'},
+               {value:'BE',display:'Berlin'},
+               {value:'BB',display:'Brandenburg'},
+               {value:'HB',display:'Bremen'},
+               {value:'HH',display:'Hamburg'},
+               {value:'HE',display:'Hessen'},
+               {value:'MV',display:'Mecklenburg-Vorpommern'},
+               {value:'NI',display:'Niedersachsen'},
+               {value:'NW',display:'Nordrhein-Westfalen'},
+               {value:'RP',display:'Rheinland-Pfalz'},
+               {value:'SL',display:'Saarland'},
+               {value:'SN',display:'Sachsen'},
+               {value:'ST',display:'Sachsen-Anhalt'},
+               {value:'SH',display:'Schleswig-Holstein'},
+               {value:'TH',display:'Thüringen'}
+            ];
+
+            checkLogin(function() {
+                var w = new FormWindow([
+                    ['Select', 'state', 'Land', current, null, {options: states}]
+                ], 'Bundesland auswählen');
+                w.submit(function(data) {
+                    this.close();
+
+                    data['id'] = for_id;
+                    data['for'] = for_type;
+
+                    wPost('set-state', data, function() {
+                        location.reload();
+                    });
+                }).open();
+            });
+            return false;
+        });
     });
 
     window.sortTable = function(selector, sort, direction, not, count) {
