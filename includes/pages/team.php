@@ -851,7 +851,6 @@ foreach ($sc_la as $sex => $content) {
 
             $i++;
         }
-        $ave = $sum/$i;
 
         echo  '<table class="chart-table">';
 
@@ -860,9 +859,9 @@ foreach ($sc_la as $sex => $content) {
         if ($bestCTIF != PHP_INT_MAX) echo '<tr><th>Bestzeit (CTIF):</th><td>',FSS::time($bestCTIF),'</td></tr>';
         if ($bestISFFR != PHP_INT_MAX) echo '<tr><th>Bestzeit (ISFFR):</th><td>',FSS::time($bestISFFR),'</td></tr>';
 
+        echo '<tr><th>Zeiten:</th><td>',count($content['scores']),'</td></tr>';
+        if ($i > 0) echo '<tr><th>Durchschnitt:</th><td>',FSS::time($sum/$i),'</td></tr>';
         echo
-                '<tr><th>Zeiten:</th><td>',count($content['scores']),'</td></tr>',
-                '<tr><th>Durchschnitt:</th><td>',FSS::time($ave),'</td></tr>',
                 '<tr><td style="text-align:center;" colspan="2">'.Chart::img('team_scores_bad_good', array($_id, 'la-'.$sex)).'</td></tr>',
               '</table>';
         echo '<p class="chart">'.Chart::img('team_scores', array($_id, 'la-'.$sex)).'</p>';

@@ -77,14 +77,15 @@ class Cache {
         shell_exec('find '.$config['base'].'chart/ -type f | egrep "\.png$" | xargs rm');
         shell_exec('find '.$config['base'].'page/ -type f | egrep "\.html$" | xargs rm');
     }
-        
+
 
     public static function generateFile($content) {
         global $config;
-        
+
         $name = $_SERVER['SCRIPT_URL'];
 
         if (preg_match('|\.php$|', $name)) return;
+        if (preg_match('|^/$|', $name)) return;
 
         file_put_contents($config['base'].preg_replace('|^/|', '', $name), $content);
     }

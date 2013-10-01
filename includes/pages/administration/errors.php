@@ -287,7 +287,7 @@ function person_to_td($id, $a = '') {
             WHERE `id` = '".$db->escape($id)."'
             LIMIT 1;");
 
-        echo '<td>'.$a.$person['name'].', '.$person['firstname'].' ('.$person['sex'].') <a href="?page=person&amp;id='.$id.'">#</a></td>';
+        echo '<td>'.$a.$person['name'].', '.$person['firstname'].' ('.$person['sex'].') '.Link::person($id, '#'),'</td>';
         return true;
     } else {
         echo '<td>Personen wurden geändert</td>';

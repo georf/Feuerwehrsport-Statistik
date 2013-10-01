@@ -366,7 +366,7 @@ foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
         foreach ($scores as $score) {
 
             echo
-            '<tr data-scoreid="',$score['score_id'],'">',
+            '<tr>',
               '<td>'.Link::event($score['event_id'], $score['event']).'</td>',
               '<td>'.Link::place($score['place_id'], $score['place']).'</td>',
               '<td>',$score['date'],'</td>',

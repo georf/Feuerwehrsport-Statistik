@@ -400,6 +400,10 @@ echo '</ol></div></div>';
 
 echo '<div class="six columns"><table class="table">';
 
+if ($competition['name']) {
+  echo '<tr><th colspan="2">Name:</th><td>'.$competition['name'],'</td></tr>';
+}
+
 echo '<tr><th colspan="2">Austragungsort:</th><td>'.Link::place($competition['place_id'], $competition['place']),'</td></tr>';
 echo '<tr><th colspan="2">Typ:</th><td>'.Link::event($competition['event_id'], $competition['event']),'</td></tr>';
 

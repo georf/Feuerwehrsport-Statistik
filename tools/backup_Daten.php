@@ -21,6 +21,7 @@ password="'.$config['database']['password'].'"
 
 $tables = array(
     'competitions',
+    'dates',
     'errors',
     'events',
     'file_uploads',

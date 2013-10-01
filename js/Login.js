@@ -418,7 +418,7 @@
 
                     if (isIn) {
                         if (!text) {
-                            $.get('info/' + $self.data('file') + '.info', function(t){
+                            $.get('/info/' + $self.data('file') + '.info', function(t){
                                 text = t;
                                 show();
                             }, 'text');
