@@ -184,6 +184,11 @@ class Log
                 else $this->content .= 'Keine Wettkämpfer';
             break;
 
+            case 'add-person':
+                $this->description = 'Person hinzugefügt';
+                $this->content = Link::fullPerson($this->raw['id'], $this->raw['name'], $this->raw['firstname']);
+            break;
+
 
             case 'set-team-location':
             case 'set-team-position':
