@@ -7,8 +7,8 @@ try {
 }
 
 
-$link_news = 'http://www.feuerwehrsport-statistik.de/?page=news&id=';
-$link_logs = 'http://www.feuerwehrsport-statistik.de/?page=logs#logId';
+$link_news = $config['url'].'page/news-%d.html';
+$link_logs = $config['url'].'page/logs.html#logId%d';
 
 new FeedLoader();
 
@@ -44,7 +44,7 @@ if (!$feed) {
                 $item = $feed->createNewItem();
 
                 $item->setTitle($new['title']);
-                $item->setLink($link_news.$new['id']);
+                $item->setLink(sprintf($link_news, $new['id']));
                 $item->setDate(strtotime($new['date']));
                 $item->setDescription($new['content']);
 
@@ -71,7 +71,7 @@ if (!$feed) {
                 $item = $feed->createNewItem();
 
                 $item->setTitle($log->description());
-                $item->setLink($link_logs.$log->id);
+                $item->setLink(sprintf($link_logs, $log->id));
                 $item->setDate($log->time());
                 $item->setDescription($log->content());
 

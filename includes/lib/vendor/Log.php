@@ -155,6 +155,12 @@ class Log
             break;
 
 
+            case 'set-team-state':
+                $this->description = 'Team einem Bundesland zugeordnet';
+                $this->content = Link::team($this->raw['team']['id'], $this->raw['team']['name']);
+            break;
+
+
             case 'set-score-wk':
                 $this->description = "Wettkämpfer geändert\n".
                     FSS::dis2name($this->raw['key']);
