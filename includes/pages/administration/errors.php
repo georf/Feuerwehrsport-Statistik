@@ -12,168 +12,184 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         LIMIT 1;");
     $post = unserialize($error['content']);
 
-    if ($post['type'] == 'person') {
-        $new_person = $db->getFirstRow("
-            SELECT *
-            FROM `persons`
-            WHERE `id` = '".$db->escape($post['new_person_id'])."'
-            LIMIT 1;");
-        $person = $db->getFirstRow("
-            SELECT *
-            FROM `persons`
-            WHERE `id` = '".$db->escape($post['person_id'])."'
-            LIMIT 1;");
-
-
-        if (Check::get('always')) {
-            $db->insertRow('persons_spelling', array(
-                'name' => $person['name'],
-                'firstname' => $person['firstname'],
-                'sex' => $person['sex'],
-                'person_id' => $new_person['id'],
+    if ($post['reason'] == 'correction') {
+        if ($post['type'] == 'person') {
+            $db->updateRow("persons", $post['person_id'], array(
+                'firstname' => $post['firstname'],
+                'name' => $post['name'],
+            ));
+        } elseif ($post['type'] == 'team') {
+            $db->updateRow("teams", $post['team_id'], array(
+                'name' => $post['name'],
+                'short' => $post['short'],
+                'type' => $post['team_type'],
             ));
         }
+    } elseif ($post['reason'] == 'together') {
+
+	    if ($post['type'] == 'person') {
+		$new_person = $db->getFirstRow("
+		    SELECT *
+		    FROM `persons`
+		    WHERE `id` = '".$db->escape($post['new_person_id'])."'
+		    LIMIT 1;");
+		$person = $db->getFirstRow("
+		    SELECT *
+		    FROM `persons`
+		    WHERE `id` = '".$db->escape($post['person_id'])."'
+		    LIMIT 1;");
 
 
-        // set scores
-        $scores = $db->getRows("
-            SELECT `id`
-            FROM `scores`
-            WHERE `person_id` = '".$person['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('scores', $score['id'], array('person_id' => $new_person['id']));
-        }
-
-        for($i = 1; $i < 7; $i++) {
-
-            // set scores
-            $scores = $db->getRows("
-                SELECT `id`
-                FROM `scores_gs`
-                WHERE `person_".$i."` = '".$person['id']."'");
-            foreach ($scores as $score) {
-                $db->updateRow('scores_gs', $score['id'], array('person_'.$i => $new_person['id']));
-            }
-        }
-
-        for($i = 1; $i < 8; $i++) {
-
-            // set scores
-            $scores = $db->getRows("
-                SELECT `id`
-                FROM `scores_la`
-                WHERE `person_".$i."` = '".$person['id']."'");
-            foreach ($scores as $score) {
-                $db->updateRow('scores_la', $score['id'], array('person_'.$i => $new_person['id']));
-            }
-        }
-
-        for($i = 1; $i < 5; $i++) {
-
-            // set scores
-            $scores = $db->getRows("
-                SELECT `id`
-                FROM `scores_fs`
-                WHERE `person_".$i."` = '".$person['id']."'");
-            foreach ($scores as $score) {
-                $db->updateRow('scores_fs', $score['id'], array('person_'.$i => $new_person['id']));
-            }
-        }
-
-        // set spelling
-        $spellings = $db->getRows("
-            SELECT `id`
-            FROM `persons_spelling`
-            WHERE `person_id` = '".$person['id']."'");
-        foreach ($spellings as $spell) {
-            $db->updateRow('persons_spelling', $spell['id'], array('person_id' => $new_person['id']));
-        }
-
-        // delete person
-        $db->deleteRow('persons', $person['id']);
-
-    } elseif ($post['type'] == 'team')  {
-        $new_team = $db->getFirstRow("
-            SELECT *
-            FROM `teams`
-            WHERE `id` = '".$db->escape($post['new_team_id'])."'
-            LIMIT 1;");
-        $team = $db->getFirstRow("
-            SELECT *
-            FROM `teams`
-            WHERE `id` = '".$db->escape($post['team_id'])."'
-            LIMIT 1;");
-
-        if (Check::get('always')) {
-            $db->insertRow('teams_spelling', array(
-                'name' => $team['name'],
-                'short' => $team['short'],
-                'team_id' => $new_team['id'],
-            ));
-        }
+		if (Check::get('always')) {
+		    $db->insertRow('persons_spelling', array(
+			'name' => $person['name'],
+			'firstname' => $person['firstname'],
+			'sex' => $person['sex'],
+			'person_id' => $new_person['id'],
+		    ));
+		}
 
 
-        // set scores
-        $scores = $db->getRows("
-            SELECT `id`
-            FROM `scores`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('scores', $score['id'], array('team_id' => $new_team['id']));
-        }
+		// set scores
+		$scores = $db->getRows("
+		    SELECT `id`
+		    FROM `scores`
+		    WHERE `person_id` = '".$person['id']."'");
+		foreach ($scores as $score) {
+		    $db->updateRow('scores', $score['id'], array('person_id' => $new_person['id']));
+		}
 
-        // set scores
-        $scores = $db->getRows("
-            SELECT `id`
-            FROM `scores_gs`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('scores_gs', $score['id'], array('team_id' => $new_team['id']));
-        }
+		for($i = 1; $i < 7; $i++) {
 
-        // set scores
-        $scores = $db->getRows("
-            SELECT `id`
-            FROM `scores_la`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('scores_la', $score['id'], array('team_id' => $new_team['id']));
-        }
+		    // set scores
+		    $scores = $db->getRows("
+			SELECT `id`
+			FROM `scores_gs`
+			WHERE `person_".$i."` = '".$person['id']."'");
+		    foreach ($scores as $score) {
+			$db->updateRow('scores_gs', $score['id'], array('person_'.$i => $new_person['id']));
+		    }
+		}
 
-        // set scores
-        $scores = $db->getRows("
-            SELECT `id`
-            FROM `scores_fs`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($scores as $score) {
-            $db->updateRow('scores_fs', $score['id'], array('team_id' => $new_team['id']));
-        }
+		for($i = 1; $i < 8; $i++) {
 
-        // set links
-        $links = $db->getRows("
-            SELECT `id`
-            FROM `links`
-            WHERE `for` = 'team'
-            AND `for_id` = '".$team['id']."'");
-        foreach ($links as $link) {
-            $db->updateRow('links', $link['id'], array('for_id' => $new_team['id']));
-        }
+		    // set scores
+		    $scores = $db->getRows("
+			SELECT `id`
+			FROM `scores_la`
+			WHERE `person_".$i."` = '".$person['id']."'");
+		    foreach ($scores as $score) {
+			$db->updateRow('scores_la', $score['id'], array('person_'.$i => $new_person['id']));
+		    }
+		}
 
-        // set spelling
-        $spellings = $db->getRows("
-            SELECT `id`
-            FROM `teams_spelling`
-            WHERE `team_id` = '".$team['id']."'");
-        foreach ($spellings as $spell) {
-            $db->updateRow('teams_spelling', $spell['id'], array('team_id' => $new_team['id']));
-        }
+		for($i = 1; $i < 5; $i++) {
+
+		    // set scores
+		    $scores = $db->getRows("
+			SELECT `id`
+			FROM `scores_fs`
+			WHERE `person_".$i."` = '".$person['id']."'");
+		    foreach ($scores as $score) {
+			$db->updateRow('scores_fs', $score['id'], array('person_'.$i => $new_person['id']));
+		    }
+		}
+
+		// set spelling
+		$spellings = $db->getRows("
+		    SELECT `id`
+		    FROM `persons_spelling`
+		    WHERE `person_id` = '".$person['id']."'");
+		foreach ($spellings as $spell) {
+		    $db->updateRow('persons_spelling', $spell['id'], array('person_id' => $new_person['id']));
+		}
+
+		// delete person
+		$db->deleteRow('persons', $person['id']);
+
+	    } elseif ($post['type'] == 'team')  {
+		$new_team = $db->getFirstRow("
+		    SELECT *
+		    FROM `teams`
+		    WHERE `id` = '".$db->escape($post['new_team_id'])."'
+		    LIMIT 1;");
+		$team = $db->getFirstRow("
+		    SELECT *
+		    FROM `teams`
+		    WHERE `id` = '".$db->escape($post['team_id'])."'
+		    LIMIT 1;");
+
+		if (Check::get('always')) {
+		    $db->insertRow('teams_spelling', array(
+			'name' => $team['name'],
+			'short' => $team['short'],
+			'team_id' => $new_team['id'],
+		    ));
+		}
 
 
-        // delete team
-        $db->deleteRow('teams', $team['id']);
+		// set scores
+		$scores = $db->getRows("
+		    SELECT `id`
+		    FROM `scores`
+		    WHERE `team_id` = '".$team['id']."'");
+		foreach ($scores as $score) {
+		    $db->updateRow('scores', $score['id'], array('team_id' => $new_team['id']));
+		}
+
+		// set scores
+		$scores = $db->getRows("
+		    SELECT `id`
+		    FROM `scores_gs`
+		    WHERE `team_id` = '".$team['id']."'");
+		foreach ($scores as $score) {
+		    $db->updateRow('scores_gs', $score['id'], array('team_id' => $new_team['id']));
+		}
+
+		// set scores
+		$scores = $db->getRows("
+		    SELECT `id`
+		    FROM `scores_la`
+		    WHERE `team_id` = '".$team['id']."'");
+		foreach ($scores as $score) {
+		    $db->updateRow('scores_la', $score['id'], array('team_id' => $new_team['id']));
+		}
+
+		// set scores
+		$scores = $db->getRows("
+		    SELECT `id`
+		    FROM `scores_fs`
+		    WHERE `team_id` = '".$team['id']."'");
+		foreach ($scores as $score) {
+		    $db->updateRow('scores_fs', $score['id'], array('team_id' => $new_team['id']));
+		}
+
+		// set links
+		$links = $db->getRows("
+		    SELECT `id`
+		    FROM `links`
+		    WHERE `for` = 'team'
+		    AND `for_id` = '".$team['id']."'");
+		foreach ($links as $link) {
+		    $db->updateRow('links', $link['id'], array('for_id' => $new_team['id']));
+		}
+
+		// set spelling
+		$spellings = $db->getRows("
+		    SELECT `id`
+		    FROM `teams_spelling`
+		    WHERE `team_id` = '".$team['id']."'");
+		foreach ($spellings as $spell) {
+		    $db->updateRow('teams_spelling', $spell['id'], array('team_id' => $new_team['id']));
+		}
+
+
+		// delete team
+		$db->deleteRow('teams', $team['id']);
+	    }
+
+	}
     }
-
-}
 if (isset($_GET['delete']) && Check::isIn($_GET['delete'], 'errors')) {
     $db->deleteRow('errors', $_GET['delete'], 'id', false);
 }
@@ -203,6 +219,20 @@ foreach($errors as $error) {
         switch ($post['reason']) {
 
 
+            case 'correction':
+                $ok = true;
+
+                echo '<td>Vorname: '.$post['firstname'].'<br/>Name: '.$post['name'].'</td>';
+                if (!person_to_td($post['person_id'])) $ok = false;
+
+                if ($ok) {
+                    echo '<td><a href="?page=administration&amp;admin=errors&amp;id='.$error['id'].'">OK</a> ';
+                    echo '</td>';
+                } else {
+                    echo '<td></td>';
+                }
+            break;
+
             case 'together':
                 $ok = true;
 
@@ -231,8 +261,20 @@ foreach($errors as $error) {
     } elseif ($post['type'] == 'team') {
 
         switch ($post['reason']) {
+            case 'wrong':
+            case 'correction':
+                $ok = true;
+                echo '<td>Name: '.$post['name'].'<br/>Kurz: '.$post['short'].'<br/>Typ: '.$post['team_type'].'</td>';
+                if (!team_to_td($post['team_id'])) $ok = false;
 
+                if ($ok) {
+                    echo '<td><a href="?page=administration&amp;admin=errors&amp;id='.$error['id'].'">OK</a> ';
+                    echo '</td>';
 
+                } else {
+                    echo '<td></td>';
+                }
+            break;
             case 'together':
                 $ok = true;
 

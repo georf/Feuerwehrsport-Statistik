@@ -26,7 +26,7 @@ $(function() {
                 [
                     ['Radio', 'what', 'Was ist passiert?', null, null, {options: [
                         { value: 'together', display: 'Team ist doppelt vorhanden'},
-                        { value: 'wrong', display: 'Team ist falsch geschrieben'},
+                        { value: 'correction', display: 'Team ist falsch geschrieben'},
                         { value: 'other', display: 'Etwas anderes'}
                     ]}]
                 ], 'Auswahl des Fehlers', 'Bitte wählen Sie das Problem aus:', {titleOk:'Weiter'})
@@ -35,12 +35,11 @@ $(function() {
 
                 this.close();
 
-                if (selected == 'wrong') {
+                if (selected == 'correction') {
                     FormWindow.create([
                         ['Text', 'name', 'Name', global('team-name'), 'Vollständiger Name'],
                         ['Text', 'short', 'Abkürzung', global('team-short'), 'Kurzer Name (maximal 10 Zeichen)'],
-                        ['Text', 'website', 'Webseite', global('team-website'), 'Webseite der Mannschaft falls vorhanden'],
-                        ['Select', 'type', 'Typ der Mannschaft', global('team-type'), null, {options: [
+                        ['Select', 'team_type', 'Typ der Mannschaft', global('team-type'), null, {options: [
                             { value: 'Team', display: 'Zusammenschluss (Team)'},
                             { value: 'Feuerwehr', display: 'Einzelne Feuerwehr'}
                         ]}]
