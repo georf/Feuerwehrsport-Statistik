@@ -3,7 +3,7 @@
 if (isset($_POST['step'])) {
 
     if ($_POST['step'] == 'test') {
-        
+
         $rows = array();
 
         for ($i=0; $i < count($_POST['team']); $i++) {
@@ -36,7 +36,7 @@ if (isset($_POST['step'])) {
             }
         }
 
-        Chart::clean();
+        //Chart::clean();
 
         echo 'SUCCESS ---- SUCCESS';
 
