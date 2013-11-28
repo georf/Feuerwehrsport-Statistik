@@ -193,7 +193,12 @@ class FSS
             'SN' => 'Sachsen',
             'ST' => 'Sachsen-Anhalt',
             'SH' => 'Schleswig-Holstein',
-            'TH' => 'Thüringen'
+            'TH' => 'Thüringen',
+
+            'CZ' => 'Tschechien',
+            'DE' => 'Deutschland',
+            'AT' => 'Österreich',
+            'PL' => 'Polen',
         );
 
         if (isset($states[$short])) return $states[$short];

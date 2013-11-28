@@ -493,72 +493,6 @@ $competitions = $db->getRows("
 ");
 
 
-// Team - Logo
-if ($team['logo']) {
-    echo '<p style="float:left;margin-right:20px;"><img src="/'.$config['logo-path'].$team['logo'].'" alt="'.htmlspecialchars($team['short']).'"/></p>';
-}
-
-// Verteilung Geschlechter
-echo '<p style="float:right;margin-right:20px;">'.Chart::img('team_sex', array($team['id'])).'</p>';
-
-// Kein Team Logo
-if (empty($team['logo'])) {
-    echo '<p style="margin-right:80px;border:3px solid #FF7D6E; background:#FFD8D3; padding:2px;float:right">Es fehlt noch ein Logo für dieses Team.<br/>Sende doch ein Logo zu!<a class="helpinfo" data-file="logosenden">&nbsp;</a></p>';
-}
-
-Title::set(htmlspecialchars($team['name']));
-// Überschrift
-echo '<h1>',htmlspecialchars($team['name']),'</h1>';
-echo '<table>
-<tr><th>Mitglieder:</th><td>'.count($members).'</td></tr>
-<tr><th>Webseite:</th><td>';
-
-$links = $db->getRows("
-  SELECT *
-  FROM `links`
-  WHERE `for_id` = '".$id."'
-  AND `for` = 'team'
-");
-
-foreach ($links as $link) {
-    echo '<a href="',htmlspecialchars($link['url']),'">',htmlspecialchars($link['name']),'</a><br/>';
-}
-echo '<span class="bt applications-internet-add" id="add-link" data-for-id="'.$id.'" data-for-table="team" title="Link hinzufügen"></span>';
-echo '</td></tr>
-<tr><th>Bundesland/Land:</th><td>'.FSS::stateToText($team['state']).' <img alt="" src="/styling/images/configure.png" id="select-state" data-for-id="'.$id.'" data-for-type="team" data-current="'.$team['state'].'" title="Bundesland ändern" style="cursor:pointer;"/></td></tr>
-</table>';
-
-
-echo '<h2>Wettkämpfer</h2>';
-echo
-  '<table class="datatable datatable-sort-members"><thead><tr>',
-    '<th style="width:22%">Name</th>',
-    '<th style="width:22%">Vorname</th>',
-    '<th style="width:22%">Geschlecht</th>',
-    '<th style="width:5%">HB</th>',
-    '<th style="width:5%">GS</th>',
-    '<th style="width:5%">LA</th>',
-    '<th style="width:5%">FS</th>',
-    '<th style="width:5%">HL</th>',
-    '<th style="width:16%"></th>',
-  '</tr></thead>',
-  '<tbody>';
-foreach ($members as $pid => $member) {
-    echo
-        '<tr data-person-id="',$pid,'" data-mem-id="',$member['mem_id'],'">',
-          '<td>',htmlspecialchars($member['name']),'</td>',
-          '<td>',htmlspecialchars($member['firstname']),'</td>',
-          '<td>',FSS::sex($member['sex']),'</td>',
-          '<td>',$member['HB'],'</td>',
-          '<td>',$member['GS'],'</td>',
-          '<td>',$member['LA'],'</td>',
-          '<td>',$member['FS'],'</td>',
-          '<td>',$member['HL'],'</td>',
-          '<td>'.Link::person($pid, 'Details', $member['name'], $member['firstname']).'</td>',
-        '</tr>';
-}
-echo '</tbody></table>';
-
 echo '<h2>Wettkämpfe</h2>';
 
 echo
@@ -584,8 +518,61 @@ foreach ($competitions as $competition) {
           '<td>',$competition['gs'],'</td>',
           '<td>',$competition['la'],'</td>',
           '<td>',$competition['fs'],'</td>',
-          '<td>'.Link::competition($full['id']).'</td>',
-        '</tr>';
+          '<td>'.Link::competition($full['id']).'</td>';
+
+    echo '<td>';
+    echo FSS::time($db->getFirstRow("
+        SELECT MIN(`time`) AS `time` FROM `scores_la` s WHERE `team_id`=2 AND `competition_id` = '".$competition['competition_id']."'
+        AND `sex` = 'female'
+    ", 'time'));
+    echo '</td>';
+    echo '<td>';
+    echo FSS::time($db->getFirstRow("
+        SELECT MIN(`time`) AS `time` FROM `scores_la` s WHERE `team_id`=2 AND `competition_id` = '".$competition['competition_id']."'
+        AND `sex` = 'male'
+    ", 'time'));
+    echo '</td>';
+    echo '<td>';
+    echo FSS::time($db->getFirstRow("
+        SELECT MIN(`time`) AS `time` FROM `scores_fs` s WHERE `team_id`=2 AND `competition_id` = '".$competition['competition_id']."'
+        AND `sex` = 'female'
+    ", 'time'));
+    echo '</td>';
+    echo '<td>';
+    echo FSS::time($db->getFirstRow("
+        SELECT MIN(`time`) AS `time` FROM `scores_fs` s WHERE `team_id`=2 AND `competition_id` = '".$competition['competition_id']."'
+        AND `sex` = 'male'
+    ", 'time'));
+    echo '</td>';
+    echo '<td>';
+    echo FSS::time($db->getFirstRow("
+        SELECT MIN(`time`) AS `time` FROM `scores_gs` s WHERE `team_id`=2 AND `competition_id` = '".$competition['competition_id']."'
+    ", 'time'));
+    echo '</td>';
+
+    echo '<td>';
+    $row = $db->getFirstRow("
+        SELECT `time`, firstname, name FROM `x_scores_female` s WHERE time is not null and `team_id`=2 AND `competition_id` = '".$competition['competition_id']."' AND discipline = 'HB' order by time
+    ");
+    echo FSS::time($row['time']),' '.$row['firstname']. ' '.$row['name'];
+    echo '</td>';
+
+    echo '<td>';
+    $row = $db->getFirstRow("
+        SELECT `time`, firstname, name FROM `x_scores_male` s WHERE time is not null and `team_id`=2 AND `competition_id` = '".$competition['competition_id']."' AND discipline = 'HB' order by time
+    ");
+    echo FSS::time($row['time']),' '.$row['firstname']. ' '.$row['name'];
+    echo '</td>';
+
+    echo '<td>';
+    $row = $db->getFirstRow("
+        SELECT `time`, firstname, name FROM `x_scores_male` s WHERE time is not null and `team_id`=2 AND `competition_id` = '".$competition['competition_id']."' AND discipline = 'HL' order by time
+    ");
+    echo FSS::time($row['time']),' '.$row['firstname']. ' '.$row['name'];
+    echo '</td>';
+
+
+        echo '</tr>';
 }
 echo '</tbody></table>';
 
@@ -657,7 +644,7 @@ foreach ($team_scores as $fullKey => $tscores) {
         $competition = $tscore['competition'];
         foreach ($tscore['teams'] as $t) {
             echo '<tr>';
-            echo '<td>'.$competition['date'].'<br/>'.Link::competition($competition['id'], $competition['event'], $competition['place']).'</td>';
+            echo '<td>'.$competition['date'].'</td><td>'.Link::competition($competition['id'], $competition['event'], $competition['place']).'</td>';
             echo '<td>'.FSS::time($t['time']).'</td>';
             echo '<td>'.FSS::time($t['time68']).'</td>';
 

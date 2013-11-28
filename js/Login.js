@@ -780,7 +780,11 @@
                {value:'SN',display:'Sachsen'},
                {value:'ST',display:'Sachsen-Anhalt'},
                {value:'SH',display:'Schleswig-Holstein'},
-               {value:'TH',display:'Thüringen'}
+               {value:'TH',display:'Thüringen'},
+               {value:'CZ',display:'Tschechien'},
+               {value:'DE',display:'Deutschland'},
+               {value:'AT',display:'Österreich'},
+               {value:'PL',display:'Polen'}
             ];
 
             checkLogin(function() {
