@@ -1,55 +1,43 @@
 <?php
-if (!Check::post('key', 'scoreId')) throw new Exception('no score id given');
 
-$table = false;
-$wks = false;
-if ($_POST['key'] === 'gs') {
+$discipline = Check2::except()->post('discipline')->isDiscipline();
+
+switch ($discipline) {
+  case 'gs':
     $table = 'scores_gs';
     $wks = 7;
-} elseif ($_POST['key'] === 'fs') {
+    break;
+  case 'fs':
     $table = 'scores_fs';
     $wks = 5;
-} elseif ($_POST['key'] === 'la') {
+    break;
+  case 'la';
     $table = 'scores_la';
     $wks = 8;
+    break;
+  default:
+    throw new Exception('Bad discipline');
 }
+$score = Check2::except()->post('score_id')->isIn($table, 'row');
 
-if ($table === false || $wks === false) throw new Exception();
-
-
-if (!Check::isIn($_POST['scoreId'], $table))  throw new Exception('score id not found');
-
-$score = FSS::tableRow($table, $_POST['scoreId']);
 $update = false;
-
 for ($i = 1; $i < $wks; $i++) {
-    if (Check::post('person_'.$i)) {
-        if (Check::isIn($_POST['person_'.$i], 'persons')
-            && $score['person_'.$i] != $_POST['person_'.$i]) {
-
-            $db->updateRow($table, $_POST['scoreId'], array(
-                'person_'.$i => $_POST['person_'.$i]
-            ));
-            $update = true;
-        } elseif ($_POST['person_'.$i] == 'NULL'
-            && $score['person_'.$i] != null) {
-
-            $db->updateRow($table, $_POST['scoreId'], array(
-                'person_'.$i => null
-            ));
-            $update = true;
-        }
-    }
+  $person_id = Check2::value()->post('person_'.$i)->isIn('persons', true);
+  if ($person_id && $score['person_'.$i] != $person_id) {
+    $db->updateRow($table, $score['id'], array(
+      'person_'.$i => $person_id
+    ));
+    $update = true;
+  }
 }
-
 
 if ($update) {
-    $score = FSS::tableRow($table, $_POST['scoreId']);
-    Log::insert('set-score-wk', array(
-        'key' => $_POST['key'],
-        'score' => $score,
-        'competition' => FSS::competition($score['competition_id'])
-    ));
+  $score = FSS::tableRow($table, $score['id']);
+  Log::insert('set-score-wk', array(
+    'key' => $discipline,
+    'score' => $score,
+    'competition' => FSS::competition($score['competition_id'])
+  ));
 }
 
 $output['success'] = true;

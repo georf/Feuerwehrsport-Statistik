@@ -1,67 +1,56 @@
 <?php
-if (!Check::post('key', 'scoreId')) throw new Exception('no score id given');
+$score_id   = Check2::except()->post('score_id')->present();
+$discipline = Check2::except()->post('discipline')->isIn(array('zk', 'fs', 'gs', 'la'));
 
 $score = false;
 $scores = false;
 
-if ($_POST['key'] === 'zk') {
-    if (!Check::isIn($_POST['scoreId'], 'scores'))  throw new Exception('score id not found');
-
-    $score = FSS::tableRow('scores', $_POST['scoreId']);
-
-    $scores = $db->getRows("
-        SELECT *
-        FROM `scores`
-        WHERE `person_id` = '".$score['person_id']."'
-        AND `competition_id` = '".$score['competition_id']."'
-    ");
-} elseif ($_POST['key'] === 'gs') {
-    if (!Check::isIn($_POST['scoreId'], 'scores_gs'))  throw new Exception('score id not found');
-
-    $score = FSS::tableRow('scores_gs', $_POST['scoreId']);
-
-    $scores = $db->getRows("
-        SELECT *
-        FROM `scores_gs`
-        WHERE `team_id` = '".$score['team_id']."'
-        AND `team_number` = '".$score['team_number']."'
-        AND `competition_id` = '".$score['competition_id']."'
-    ");
-} elseif ($_POST['key'] === 'fs') {
-    if (!Check::isIn($_POST['scoreId'], 'scores_fs'))  throw new Exception('score id not found');
-
-    $score = FSS::tableRow('scores_fs', $_POST['scoreId']);
-
-    $scores = $db->getRows("
-        SELECT *
-        FROM `scores_fs`
-        WHERE `team_id` = '".$score['team_id']."'
-        AND `team_number` = '".$score['team_number']."'
-        AND `sex` = '".$score['sex']."'
-        AND `competition_id` = '".$score['competition_id']."'
-    ");
-} elseif ($_POST['key'] === 'la') {
-    if (!Check::isIn($_POST['scoreId'], 'scores_la'))  throw new Exception('score id not found');
-
-    $score = FSS::tableRow('scores_la', $_POST['scoreId']);
-
-    $scores = $db->getRows("
-        SELECT *
-        FROM `scores_la`
-        WHERE `team_id` = '".$score['team_id']."'
-        AND `team_number` = '".$score['team_number']."'
-        AND `sex` = '".$score['sex']."'
-        AND `competition_id` = '".$score['competition_id']."'
-    ");
+if ($discipline === 'zk') {
+  $score = Check2::except()->post('score_id')->isIn('scores', 'row');
+  $scores = $db->getRows("
+    SELECT *
+    FROM `scores`
+    WHERE `person_id` = '".$score['person_id']."'
+    AND `competition_id` = '".$score['competition_id']."'
+  ");
+} elseif ($discipline === 'gs') {
+  $score = Check2::except()->post('score_id')->isIn('scores_gs', 'row');
+  $scores = $db->getRows("
+    SELECT *
+    FROM `scores_gs`
+    WHERE `team_id` = '".$score['team_id']."'
+    AND `team_number` = '".$score['team_number']."'
+    AND `competition_id` = '".$score['competition_id']."'
+  ");
+} elseif ($discipline === 'fs') {
+  $score = Check2::except()->post('score_id')->isIn('scores_fs', 'row');
+  $scores = $db->getRows("
+    SELECT *
+    FROM `scores_fs`
+    WHERE `team_id` = '".$score['team_id']."'
+    AND `team_number` = '".$score['team_number']."'
+    AND `sex` = '".$score['sex']."'
+    AND `competition_id` = '".$score['competition_id']."'
+  ");
+} elseif ($discipline === 'la') {
+  $score = Check2::except()->post('score_id')->isIn('scores_la', 'row');
+  $scores = $db->getRows("
+    SELECT *
+    FROM `scores_la`
+    WHERE `team_id` = '".$score['team_id']."'
+    AND `team_number` = '".$score['team_number']."'
+    AND `sex` = '".$score['sex']."'
+    AND `competition_id` = '".$score['competition_id']."'
+  ");
 }
 
-if ($score === false || $scores === false) throw new Exception();
+if ($scores === false) throw new Exception();
 
 $score['timeHuman'] = FSS::time($score['time']);
 $output['score'] = $score;
 
-foreach ($scores as $key => $score) {
-    $scores[$key]['timeHuman'] = FSS::time($score['time']);
+foreach ($scores as $discipline => $score) {
+    $scores[$discipline]['timeHuman'] = FSS::time($score['time']);
 }
 $output['scores'] = $scores;
 $output['success'] = true;

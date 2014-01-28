@@ -1,10 +1,7 @@
 <?php
 
 /**
- * Implements AbstractDatabase using MySQL
- *
- * @author Sebastian Gaul <sebastian@mgvmedia.com>
- *
+ * Implements Database using MySQL
  */
 class Database {
 

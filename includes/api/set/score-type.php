@@ -1,12 +1,14 @@
 <?php
-if (!Check::post('id', 'score_type_id')
-|| !Check::isIn($_POST['id'], 'competitions')
-|| $_POST['score_type_id'] != 0  && !Check::isIn($_POST['score_type_id'], 'score_types')) throw new Exception("bad input");
 
-$db->updateRow('competitions', $_POST['id'], array(
-    'score_type_id' => $_POST['score_type_id']
+$competition_id = Check2::except()->post('competition_id')->isIn('competitions');
+$score_type_id  = Check2::except()->post('score_type_id')->isIn('score_types', true);
+
+$db->updateRow('competitions', $competition_id, array(
+  'score_type_id' => $score_type_id
 ));
 
 Log::insert('set-score-type', array(
-    'competition' => FSS::tableRow('competitions', $_POST['id'])
+  'competition' => FSS::tableRow('competitions', $competition_id)
 ));
+
+$output['success'] = true;

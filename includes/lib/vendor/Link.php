@@ -68,9 +68,31 @@ class Link
         return self::page_a('news-'.$id, $text, $title);
     }
 
+    public static function bestScoresOfYear($year, $name = false, $title = false) {
+        if (!$name) $name = $year;
+        if (!$title) $title = 'Bestzeiten des Jahres '.$year;
+        return self::page_a('best-scores-of-year-'.$year, $name, $title);
+    }
+
+    public static function bestPerformanceOfYear($year, $name = false, $title = false) {
+        if (!$name) $name = $year;
+        if (!$title) $title = 'Bestleistungen des Jahres '.$year;
+        return self::page_a('best-performance-of-year-'.$year, $name, $title);
+    }
+
     public static function singlediscipline($year, $title = false) {
-        if (!$title) $title = 'Einzelergebnisse für das Jahr '.$year;
-        return self::page_a('singlediscipline-'.$year, $year, $title);
+        return self::bestPerformanceOfYear($year, false, $title);
+    }
+
+    public static function year($year, $text = false, $title = false) {
+        if (!$text) $text = $year;
+        if (!$title) $title = "Überblick über das Jahr ".$year;
+        return self::page_a('year-'.$year, $text, $title);
+    }
+
+    public static function years($text = false) {
+        if (!$text) $text = 'Jahre';
+        return self::page_a('years', $text);
     }
 
     public static function date($id, $name = false) {
@@ -90,8 +112,13 @@ class Link
         return self::page_a('dcup_single-'.$year.'-'.$type, $display, $title);
     }
 
+    public static function admin_page_a($page, $name) {
+        global $config;
+        return self::a($config['url'].'?page=administration&admin='.$page, $name);        
+    }
+
     public static function a($url, $name, $title = false) {
         $html_title = (!$title)? '' : ' title="'.htmlspecialchars($title).'"';
-        return '<a href="'.htmlspecialchars($url).'"'.$title.'>'.htmlspecialchars($name).'</a>';
+        return '<a href="'.htmlspecialchars($url).'"'.$html_title.'>'.htmlspecialchars($name).'</a>';
     }
 }

@@ -84,7 +84,7 @@ var TeamInput = function(rowHandler) {
 
 
         checkLogin(function() {
-            wPost('get-teams', {personId: personId}, function( data ) {
+            wPost('get-teams', {person_id: personId}, function( data ) {
                 var i, l,
                     teams = data.teams;
                 var teamOption = true;

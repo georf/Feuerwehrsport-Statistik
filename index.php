@@ -48,17 +48,7 @@ try {
 
     if (!$pageFound) throw new PageNotFound();
 
-    $path = 'js/pages/';
-
-    $vz = opendir($path);
-    while ($file = readdir($vz)) {
-        if (is_file($path.$file) && $file == $_page.'.js') {
-            echo '<script type="text/javascript" src="/'.$path.$file.'"></script>';
-            break;
-        }
-    }
-    closedir($vz);
-
+    echo Javascript::scriptTag('js/pages/', $_page);
 
     include(__DIR__.'/styling/footer.php');
 

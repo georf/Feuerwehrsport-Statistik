@@ -1,16 +1,17 @@
 <?php
-if (!Check::post('team', 'lat', 'lon')) throw new Exception('no valid input');
-if (!Check::isIn($_POST['team'], 'teams')) throw new Exception('no valid team');
+$team_id = Check2::except()->post('team_id')->isIn('teams');
+$lat = Check2::except()->post('lat')->present();
+$lon = Check2::except()->post('lon')->present();
 
-$db->updateRow('teams', $_POST['team'], array(
-    'lat' => $_POST['lat'],
-    'lon' => $_POST['lon'],
+$db->updateRow('teams', $team_id, array(
+  'lat' => $lat,
+  'lon' => $lon,
 ));
 
-Map::downloadStaticMap('teams', $_POST['team']);
+Map::downloadStaticMap('teams', $team_id);
 
 Log::insert('set-team-location', array(
-    'team' => FSS::tableRow('teams', $_POST['team'])
+  'team' => FSS::tableRow('teams', $team_id)
 ));
 
 $output['success'] = true;

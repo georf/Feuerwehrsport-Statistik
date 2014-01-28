@@ -30,6 +30,16 @@ if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['i
         ", 'count');
         $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
     }
+} elseif (Check::get('name', 'id') && $_GET['name'] == 'year' && is_numeric($_GET['id'])) {
+    for ($i = 1; $i < 13; $i++) {
+        $months[$i] = $db->getFirstRow("
+            SELECT COUNT(*) AS `count`
+            FROM `competitions`
+            WHERE MONTH(`date`) = '".$i."'
+            AND YEAR(`date`) = '".$db->escape($_GET['id'])."'
+        ", 'count');
+        $labels[$i] = strftime('%b', mktime(1,1,1,$i,1,2000));
+    }
 } else {
     for ($i = 1; $i < 13; $i++) {
         $months[$i] = $db->getFirstRow("

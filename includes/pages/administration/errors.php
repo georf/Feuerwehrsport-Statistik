@@ -347,7 +347,7 @@ function team_to_td($id, $a = '') {
             WHERE `id` = '".$db->escape($id)."'
             LIMIT 1;");
 
-        echo '<td>'.$a.$team['name'].'  ('.$team['type'].') <a href="?page=team&amp;id='.$id.'">#</a></td>';
+        echo '<td>'.$a.$team['name'].'  ('.$team['type'].') '.Link::team($id, '#'),'</td>';
         return true;
     } else {
         echo '<td>Team wurde geändert</td>';

@@ -166,7 +166,7 @@ $('#add-score-type').click(function() {
                 w.submit(function(data) {
                     this.close();
 
-                    data.id = <?=$_id?>;
+                    data.competition_id = <?=$_id?>;
 
                     wPost('set-score-type', data, function() {
                         location.reload();

@@ -1,9 +1,9 @@
 <?php
-if (!Check::post('personId') || !Check::isIn($_POST['personId'], 'persons')) throw new Exception();
 
-$output = $db->getFirstRow("
-    SELECT *
-    FROM `persons`
-    WHERE `id` = '".$_POST['personId']."'
-    LIMIT 1");
+$person_id = Check2::except()->post('person_id')->isIn('persons');
+$output['person'] = $db->getFirstRow("
+  SELECT *
+  FROM `persons`
+  WHERE `id` = '".$person_id."'
+  LIMIT 1");
 $output['success'] = true;

@@ -107,10 +107,10 @@ foreach ($missed as $m) {
         <?=Chart::img('overview_best', false, true, 'overview_best')?>
     </div>
 </div>
-<h2 class="toToc">Super Leistungen von diesem Jahr</h2>
+<h2 class="toToc">Super Leistungen vom Jahr 2013</h2>
 <?php
 
-$_year = date('Y');
+$_year = 2013;
 
 $disciplines = array(
     array('hb', 'female'),
@@ -202,7 +202,7 @@ foreach ($disciplines as $d) {
             $ss[] = Link::competition($s['competition_id'], FSS::time($s['time']), $s['event']);
         }
 
-        echo '<td>'.implode(', ', $ss).'</td></tr><tr>';
+        echo '<td style="font-size:0.9em">'.implode(', ', $ss).'</td></tr><tr>';
 
         echo '<td colspan="2"><em>',round($p['calc']/10).' Punkte</em></td><td>Durchschnitt: <strong>'.FSS::time($p['avg']).'</strong></td>';
 
@@ -384,7 +384,7 @@ foreach ($sexes as $sex) {
             $ss[] = Link::competition($s['competition_id'], FSS::time($s['time']), $s['event']);
         }
 
-        echo '<td>'.implode(', ', $ss).'</td></tr><tr>';
+        echo '<td style="font-size:0.9em">'.implode(', ', $ss).'</td></tr><tr>';
 
         echo '<td colspan="2"><em>',round($p['calc']/10).' Punkte</em></td><td>Durchschnitt: <strong>'.FSS::time($p['avg']).'</strong></td>';
 
@@ -398,7 +398,7 @@ foreach ($sexes as $sex) {
 echo '<br class="clear"/>';
 
 echo '<div class="six columns">';
-echo '<p>Die einzelnen Disziplinen können für jedes Jahr separat angesehen werden. Dort wird auch die Punkteberechnung erklärt.</p>';
+echo '<p>Zu '.Link::years('jedem Jahr').' können sich die Statistiken auch separat angesehen werden. Diese Statistiken wird auch in Zukunft ausgeweitet.</p>';
 echo '</div>';
 echo '<div class="seven columns">';
 echo '<table style="width:100%">';
@@ -409,10 +409,10 @@ $years = $db->getRows("
     ORDER BY `year` DESC
 ");
 for ( $i = 0; $i < count($years); $i = $i+4) {
-    echo '<tr><td>'.Link::singlediscipline($years[$i]['year']).' ('.$years[$i]['count'].')</td>';
-    if (isset($years[$i+1])) echo '<td>'.Link::singlediscipline($years[$i+1]['year']).' ('.$years[$i+1]['count'].')</td>';
-    if (isset($years[$i+2])) echo '<td>'.Link::singlediscipline($years[$i+2]['year']).' ('.$years[$i+2]['count'].')</td>';
-    if (isset($years[$i+3])) echo '<td>'.Link::singlediscipline($years[$i+3]['year']).' ('.$years[$i+3]['count'].')</td>';
+    echo '<tr><td>'.Link::year($years[$i]['year']).' ('.$years[$i]['count'].')</td>';
+    if (isset($years[$i+1])) echo '<td>'.Link::year($years[$i+1]['year']).' ('.$years[$i+1]['count'].')</td>';
+    if (isset($years[$i+2])) echo '<td>'.Link::year($years[$i+2]['year']).' ('.$years[$i+2]['count'].')</td>';
+    if (isset($years[$i+3])) echo '<td>'.Link::year($years[$i+3]['year']).' ('.$years[$i+3]['count'].')</td>';
     echo '</tr>';
 }
 echo '</table>';

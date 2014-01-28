@@ -70,6 +70,8 @@ class Cache {
     {
         global $db, $config;
 
+        if (isset($config['no-clean']) && $config['no-clean']) return;
+
         $db->query("TRUNCATE TABLE `cache`");
         TempDB::clean();
         TempDB::generate('x_team_numbers');

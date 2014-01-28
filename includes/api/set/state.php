@@ -1,17 +1,17 @@
 <?php
-if (!Check::post('for', 'id', 'state')) throw new Exception('no valid input');
-if (!in_array($_POST['for'], array('team'))) throw new Exception('no valid input');
-if (!Check::isIn($_POST['id'], 'teams')) throw new Exception('no valid team');
 
-$state = (FSS::stateToText($_POST['state']) == $_POST['state'])? NULL : $_POST['state'];
+$for   = Check2::except()->post('for')->isIn(array('team'));
+$table = $for.'s';
+$id    = Check2::except()->post('id')->isIn($table);
+$state = Check2::except()->post('state')->getVal();
+$state = (FSS::stateToText($state) == $state)? NULL : $state;
 
-
-$db->updateRow('teams', $_POST['id'], array(
-    'state' => $state
+$db->updateRow($table, $id, array(
+  'state' => $state
 ));
 
-Log::insert('set-team-state', array(
-    'team' => FSS::tableRow('teams', $_POST['id'])
+Log::insert('set-'.$for.'-state', array(
+  'team' => FSS::tableRow($table, $id)
 ));
 
 $output['success'] = true;

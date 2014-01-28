@@ -1,31 +1,27 @@
 <?php
-if (!Check::post('date', 'name', 'place_id', 'event_id', 'description')) throw new Exception('bad input');
 
-$disciplines = array('hl', 'hb', 'la', 'gs', 'fs');
+$date        = Check2::except()->post('date')->isDate();
+$place_id    = Check2::except()->post('place_id')->isIn('places', true);
+$event_id    = Check2::except()->post('event_id')->isIn('events', true);
+$name        = Check2::except()->post('name')->present();
+$description = Check2::except()->post('description')->present();
+
 $provided = array();
-foreach ($disciplines as $dis) {
-    if (Check::post($dis) && $_POST[$dis] == 'true') {
-        $provided[] = strtoupper($dis);
-    }
+foreach (FSS::$disciplines as $dis) {
+  if (Check2::value()->post($dis)->getVal() == 'true') {
+    $provided[] = strtoupper($dis);
+  }
 }
 sort($provided);
 
-$place_id = $_POST['place_id'];
-if (!Check::isIn($place_id, 'places')) $place_id = NULL;
-
-$event_id = $_POST['event_id'];
-if (!Check::isIn($event_id, 'events')) $event_id = NULL;
-
-$result = $db->insertRow('dates', array(
-    'date' => $_POST['date'],
-    'name' => $_POST['name'],
-    'place_id' => $place_id,
-    'event_id' => $event_id,
-    'description' => $_POST['description'],
-    'disciplines' => implode(',', $provided)
+$result_id = $db->insertRow('dates', array(
+  'date'        => $date,
+  'name'        => $name,
+  'place_id'    => $place_id,
+  'event_id'    => $event_id,
+  'description' => $description,
+  'disciplines' => implode(',', $provided)
 ));
 
-// generate log
-Log::insert('add-date', FSS::tableRow('dates', $result));
-
+Log::insert('add-date', FSS::tableRow('dates', $result_id));
 $output['success'] = true;

@@ -32,6 +32,17 @@ if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['i
         ", 'count');
         $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
     }
+} elseif (Check::get('name', 'id') && $_GET['name'] == 'year' && is_numeric($_GET['id'])) {
+    for ($i = 1; $i < 8; $i++) {
+        $c = $i%7+1;
+        $months[$i] = $db->getFirstRow("
+            SELECT COUNT(*) AS `count`
+            FROM `competitions`
+            WHERE DAYOFWEEK(`date`) = '".$c."'
+            AND YEAR(`date`) = '".$db->escape($_GET['id'])."'
+        ", 'count');
+        $labels[$i] = strftime('%a', mktime(1,1,1,4,$c,2012));
+    }
 } else {
     for ($i = 1; $i < 8; $i++) {
         $c = $i%7+1;

@@ -1,24 +1,18 @@
 <?php
-if (!Check::post('teamNumber', 'scoreId')) throw new Exception('no score id given');
 
+$score_id    = Check2::except()->post('score_id')->isIn('scores');
+$team_number = Check2::except()->post('team_number')->isNumber();
 
-if (!Check::isIn($_POST['scoreId'], 'scores'))  throw new Exception('score id not found');
-if (!is_numeric($_POST['teamNumber']))  throw new Exception('team number not found');
+$db->updateRow('scores', $score_id, array('team_number' => $team_number));
 
-$id = $_POST['scoreId'];
-
-$db->updateRow('scores', $id, array('team_number' => trim($_POST['teamNumber'])));
-
-
-$score = FSS::tableRow('scores', $id);
+$score = FSS::tableRow('scores', $score_id);
 $person = FSS::tableRow('persons', $score['person_id']);
 $team = null;
 if ($score['team_id']) $team = FSS::tableRow('teams', $score['team_id']);
 
 Log::insert('set-score-team-number', array(
-    'person' => $person,
-    'score' => $score,
-    'team' => $team,
+  'person' => $person,
+  'score' => $score,
+  'team' => $team,
 ));
-
 $output['success'] = true;

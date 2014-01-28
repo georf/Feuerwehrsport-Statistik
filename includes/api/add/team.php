@@ -1,16 +1,14 @@
 <?php
 
-if (!Check::post('name', 'short', 'type')) throw new Exception('need more infos');
-if (empty($_POST['name'])) throw new Exception('name is empty');
-if (empty($_POST['short'])) throw new Exception('short is empty');
-if (!in_array($_POST['type'], array('Team','Feuerwehr'))) throw new Exception('type is bad');
+$name  = Check2::except()->post('name')->present();
+$type  = Check2::except()->post('type')->isIn(array('Team', 'Feuerwehr'));
+$short = Check2::except()->post('short')->present();
 
-$newid = $db->insertRow('teams', array(
-    'name' => $_POST['name'],
-    'short' => $_POST['short'],
-    'type' => $_POST['type'],
+$result_id = $db->insertRow('teams', array(
+  'name'  => $name,
+  'short' => $short,
+  'type'  => $type,
 ));
 
-
-Log::insert('add-team', FSS::tableRow('teams', $newid));
+Log::insert('add-team', FSS::tableRow('teams', $result_id));
 $output['success'] = true;

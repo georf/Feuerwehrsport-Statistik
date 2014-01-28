@@ -34,6 +34,8 @@ if (!isset($_SESSION['loggedin'])) {
 <?php
 } else {
 
+    echo '<link rel="stylesheet" type="text/css" href="/styling/css/administration.css"/>';
+
     if (isset($_GET['admin'])) {
         $_admin = $_GET['admin'];
     } else {
@@ -50,4 +52,6 @@ if (!isset($_SESSION['loggedin'])) {
         }
     }
     closedir($vz2);
+
+    echo Javascript::scriptTag('js/pages/administration/', $_admin);
 }

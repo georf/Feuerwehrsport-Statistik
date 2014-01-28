@@ -57,4 +57,20 @@ class Check
             return false;
         }
     }
+
+    public static function isAdmin() {
+      return isset($_SESSION['loggedin']);
+    }
+
+    public static function isSex($sex) {
+        return in_array($sex, array('male', 'female'));
+    }
+
+    public static function isDiscipline($discipline) {
+        return in_array($discipline, array('hl', 'hb', 'la', 'gs', 'fs'));
+    }
+
+    public static function isDate($date) {
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $date);
+    }
 }

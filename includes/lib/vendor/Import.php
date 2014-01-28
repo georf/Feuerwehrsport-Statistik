@@ -112,4 +112,26 @@ class Import {
         return ($correct)?'correct':'notcorrect';
     }
 
+    public static function getPerson($name, $firstname, $sex) {
+      global $db;
+      $result_search = $db->getFirstRow("
+        SELECT *
+        FROM `persons`
+        WHERE `name` LIKE '".$db->escape($name)."'
+        AND `firstname` LIKE '".$db->escape($firstname)."'
+        AND `sex` = '".$db->escape($sex)."'");
+
+      if (!$result_search) {
+        $result_search = $db->getFirstRow("
+          SELECT `p`.`name`,`p`.`firstname`
+          FROM `persons_spelling` `s`
+          INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+          WHERE `s`.`name` = '".$db->escape($name)."'
+          AND `s`.`firstname` = '".$db->escape($firstname)."'
+          AND `s`.`sex` = '".$db->escape($sex)."'");
+      }
+      return $result_search;
+    }
+
+
 }

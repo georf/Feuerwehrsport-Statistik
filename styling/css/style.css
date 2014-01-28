@@ -470,3 +470,7 @@ border-top:1px solid black;
 .right-line {
 border-right: 1px solid black;
 }
+
+.top-right{
+float:right;
+}

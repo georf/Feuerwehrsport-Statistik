@@ -22,6 +22,12 @@ if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['i
         FROM `competitions`
         WHERE `place_id` = '".$db->escape($_GET['id'])."'
     ");
+} elseif (Check::get('name', 'id') && $_GET['name'] == 'year' && is_numeric($_GET['id'])) {
+    $competitions = $db->getRows("
+        SELECT `id`
+        FROM `competitions`
+        WHERE YEAR(`date`) = '".$db->escape($_GET['id'])."'
+    ");
 } else {
     $competitions = $db->getRows("
         SELECT `id`

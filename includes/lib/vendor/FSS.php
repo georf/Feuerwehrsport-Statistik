@@ -2,6 +2,9 @@
 
 class FSS
 {
+
+    public static $disciplines = array('hl', 'hb', 'la', 'gs', 'fs');
+    
     const INVALID = 99999999;
 
     private static $competitionTeamNumbers = false;
@@ -170,6 +173,14 @@ class FSS
         if ($tall == 'blue') $n = 'blue-';
         elseif ($tall) $n = 'tall-';
         return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'" title="'.self::dis2name($key).'"/>';
+    }
+
+    public static function isSingleDiscipline($key) {
+        return in_array(strtolower($key), array('hl', 'hb'));
+    }
+
+    public static function inGroupDiscipline($key) {
+        return !self::isSingleDiscipline($key);
     }
 
     public static function countNoEmpty($count) {

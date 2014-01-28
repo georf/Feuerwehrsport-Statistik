@@ -257,10 +257,23 @@
         };
     };
 
+    window.disciplines = {
+        la: "Löschangriff",
+        fs: "Feuerwehrstafette",
+        gs: "Gruppenstafette",
+        hl: "Hakenleitersteigen",
+        hb: "Hindernisbahn",
+    };
+
+    window.sexes = {
+        male: "männlich",
+        female: "weiblich"
+    }
+
 
     window.laMembers = function( scoreId ) {
         checkLogin(function() {
-            wPost('get-score-information', {scoreId: scoreId, key: 'la'}, function(data) {
+            wPost('get-score-information', {score_id: scoreId, discipline: 'la'}, function(data) {
                 var scores = data.scores;
                 wPost('get-persons', {sex: scores[0].sex}, function(data) {
                     var persons = data.persons;
@@ -290,7 +303,7 @@
                         };
                         var i;
                         for (i = 0; i < data.la_score.length; i++) {
-                            data.la_score[i].key = 'la';
+                            data.la_score[i].discipline = 'la';
                             wPost('set-score-wk', data.la_score[i], function(data) {
                                 checkReady();
                             });
@@ -306,7 +319,7 @@
 
     window.fsMembers = function( scoreId ) {
         checkLogin(function() {
-            wPost('get-score-information', {scoreId: scoreId, key: 'fs'}, function(data) {
+            wPost('get-score-information', {score_id: scoreId, discipline: 'fs'}, function(data) {
                 var scores = data.scores;
                 wPost('get-persons', {sex: scores[0].sex}, function(data) {
                     var persons = data.persons;
@@ -339,7 +352,7 @@
                         };
                         var i;
                         for (i = 0; i < data.fs_score.length; i++) {
-                            data.fs_score[i].key = 'fs';
+                            data.fs_score[i].discipline = 'fs';
                             wPost('set-score-wk', data.fs_score[i], function(data) {
                                 checkReady();
                             });
@@ -352,10 +365,33 @@
         });
     };
 
+    window.getCompetitions = function (callback) {
+      checkLogin(function() {
+        wPost('get-competitions', {}, function(data) {
+          callback(data.competitions);
+        });
+      });
+    };
+
+    window.getPlaces = function (callback) {
+      checkLogin(function() {
+        wPost('get-places', {}, function(data) {
+          callback(data.places);
+        });
+      });
+    };
+
+    window.getEvents = function (callback) {
+      checkLogin(function() {
+        wPost('get-events', {}, function(data) {
+          callback(data.events);
+        });
+      });
+    };
 
     window.gsMembers = function( scoreId ) {
         checkLogin(function() {
-            wPost('get-score-information', {scoreId: scoreId, key: 'gs'}, function(data) {
+            wPost('get-score-information', {score_id: scoreId, discipline: 'gs'}, function(data) {
                 var scores = data.scores;
                 wPost('get-persons', {sex: 'female'}, function(data) {
                     var persons = data.persons;
@@ -385,7 +421,7 @@
                         };
                         var i;
                         for (i = 0; i < data.gs_score.length; i++) {
-                            data.gs_score[i].key = 'gs';
+                            data.gs_score[i].discipline = 'gs';
                             wPost('set-score-wk', data.gs_score[i], function(data) {
                                 checkReady();
                             });
@@ -504,7 +540,7 @@
 
             $bt.click(function() {
                 checkLogin(function() {
-                    wPost('get-score-information', {scoreId: scoreId, key: 'zk'}, function( scoreData ) {
+                    wPost('get-score-information', {score_id: scoreId, discipline: 'zk'}, function( scoreData ) {
                         if (!scoreData.success) return false;
 
                         var personId = scoreData.score.person_id;
@@ -591,15 +627,15 @@
 
             $bt.click(function() {
                 checkLogin(function() {
-                    wPost('get-score-information', {scoreId: scoreId, key: 'zk'}, function( scoreData ) {
+                    wPost('get-score-information', {score_id: scoreId, discipline: 'zk'}, function( scoreData ) {
                         if (!scoreData.success) return false;
 
                         var personId = scoreData.score.person_id;
 
-                        wPost('get-person', {personId: personId}, function ( person ) {
+                        wPost('get-person', {person_id: personId}, function ( person ) {
                             if (!person.success) return false;
 
-                            wPost('get-teams', {personId: personId}, function( data ) {
+                            wPost('get-teams', {person_id: personId}, function( data ) {
                                 var i, l, text,
                                 teams = data.teams;
 
@@ -666,7 +702,7 @@
 
             checkLogin(function() {
                 var w = new FormWindow([
-                    ['Text', 'name', 'Name', '', 'Beschreibung des Links'],
+                    ['Text', 'name', 'Name', 'Bericht und Ergebnisse', 'Beschreibung des Links'],
                     ['Text', 'url', 'Link', 'http://']
                 ], 'Link hinzufügen');
                 w.submit(function(data) {

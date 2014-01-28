@@ -1,26 +1,20 @@
 <?php
 
-if (!Check::post('name', 'url', 'id', 'for')) throw new Exception("bad request");
-if (!in_array($_POST['for'], array('competition', 'team', 'date'))) throw new Exception("for is bad");
+$name = Check2::except()->post('name')->present();
+$for  = Check2::except()->post('for')->isIn(array('competition', 'team', 'date'));
+$id   = Check2::except()->post('id')->isIn($for.'s');
+$url  = Check2::except()->post('url')->present();
 
-$table = $_POST['for'].'s';
-if (!Check::isIn($_POST['id'], $table)) throw new Exception("id not found");
-
-$_name = $_POST['name'];
-$_url = $_POST['url'];
-
-if (!preg_match('|^https?://|', $_url)) {
-    $_url = 'http://'.$_url;
+if (!preg_match('|^https?://|', $url)) {
+  $url = 'http://'.$url;
 }
 
-$result = $db->insertRow('links', array(
-  'for_id' => $_POST['id'],
-  'for'    => $_POST['for'],
-  'name'   => $_POST['name'],
-  'url'    => $_url,
+$result_id = $db->insertRow('links', array(
+  'name'   => $name,
+  'for'    => $for,
+  'for_id' => $id,
+  'url'    => $url,
 ));
 
+Log::insert('add-link', FSS::tableRow('links', $result_id));
 $output['success'] = true;
-
-// generate log
-Log::insert('add-link', FSS::tableRow('links', $result));

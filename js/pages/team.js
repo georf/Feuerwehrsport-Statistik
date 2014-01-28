@@ -130,7 +130,7 @@ $(function() {
                         wPost('set-team-location', {
                             lat: editMarker.getLatLng().lat,
                             lon: editMarker.getLatLng().lng,
-                            team: global('team-id')
+                            team_id: global('team-id')
                         }, function( data ) {
                             if (data.success) {
                                 location.reload();
@@ -162,7 +162,7 @@ $(function() {
                     wPost('set-team-location', {
                         lat: editMarker.getLatLng().lat,
                         lon: editMarker.getLatLng().lng,
-                        team: global('team-id')
+                        team_id: global('team-id')
                     }, function( data ) {
                         if (data.success) {
                             location.reload();

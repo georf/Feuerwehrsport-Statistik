@@ -2,7 +2,7 @@
 <?php (PHP_SAPI === 'cli') || exit();
 
 // read config file
-require_once(__DIR__.'/../lib/config.php');
+require_once(__DIR__.'/../includes/lib/config.php');
 
 // create mysql-config-file
 $tmpName = '/tmp/backup_'.md5(time());

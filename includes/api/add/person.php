@@ -1,17 +1,14 @@
 <?php
 
-if (!Check::post('name', 'firstname', 'sex')) throw new Exception('need more infos');
-if (empty($_POST['name'])) throw new Exception('name is empty');
-if (empty($_POST['firstname'])) throw new Exception('firstname is empty');
-if (empty($_POST['sex'])) throw new Exception('sex is empty');
-if (!in_array($_POST['sex'], array('female','male'))) throw new Exception('sex is bad');
+$name      = Check2::except()->post('name')->present();
+$firstname = Check2::except()->post('firstname')->present();
+$sex       = Check2::except()->post('sex')->isSex();
 
-$newid = $db->insertRow('persons', array(
-    'name' => $_POST['name'],
-    'firstname' => $_POST['firstname'],
-    'sex' => $_POST['sex'],
+$result_id = $db->insertRow('persons', array(
+  'name'      => $name,
+  'firstname' => $firstname,
+  'sex'       => $sex,
 ));
 
-
-Log::insert('add-person', FSS::tableRow('persons', $newid));
+Log::insert('add-person', FSS::tableRow('persons', $result_id));
 $output['success'] = true;
