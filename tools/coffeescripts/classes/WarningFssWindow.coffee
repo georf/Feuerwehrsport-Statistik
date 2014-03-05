@@ -1,7 +1,6 @@
 #= require FssWindow
-#= require FssFormRow
 
-class WariningFssWindow extends FssWindow
+class @WarningFssWindow extends FssWindow
   constructor: (title) ->
     super(title)
     @add(new FssFormRow($('<div/>').addClass("warning-fss-window")))
