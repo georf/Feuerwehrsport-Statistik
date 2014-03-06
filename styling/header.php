@@ -41,6 +41,7 @@
 <li><a href="/page/years.html">Jahre</a></li>
 <li class="divider"></li>
 <li class="dropdown-header">Interessantes</li>
+<li><a href="/page/best-of.html">100 Bestzeiten</a></li>
 <li><a href="/page/year-2013.html">Statistiken 2013</a></li>
 <li><a href="/page/logs.html">Letzte Änderungen</a></li>
 </ul>
