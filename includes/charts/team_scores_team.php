@@ -28,7 +28,7 @@ TempDB::generate('x_full_competitions');
 $competitions = $db->getRows("
     SELECT *
     FROM `x_full_competitions`
-    WHERE `score_type_id` != 0
+    WHERE `score_type_id` IS NOT NULL
     ORDER BY `date`
 ");
 $competitionScores = array();
