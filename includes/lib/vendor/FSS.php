@@ -107,6 +107,10 @@ class FSS
         return ($sex === 'female')? 'weiblich':'männlich';
     }
 
+    public static function sexSymbol($sex) {
+        return ($sex === 'female')? '♀' : '♂';
+    }
+
     public static function palette($sex) {
         if ($sex === 'female') {
             return array("R"=>229,"G"=>11,"B"=>11,"Alpha"=>80);
