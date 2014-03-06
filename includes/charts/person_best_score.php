@@ -174,6 +174,3 @@ $myPicture->drawThreshold($Mean,array("WriteCaption"=>TRUE,"Caption"=>"Durchschn
 
 /* Render the picture */
 $myPicture->stroke();
-
-/* Render the picture */
-$myPicture->stroke();
