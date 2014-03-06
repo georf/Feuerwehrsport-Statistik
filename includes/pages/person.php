@@ -181,7 +181,7 @@ foreach ($disciplines as $disciplineConf) {
     $toc->link($discipline, FSS::dis2name($discipline));
   }
 }
-$toc->link('team', 'Mannschaft');
+$toc->link('mannschaft', 'Mannschaft');
 $toc->link('fehler', 'Fehler melden');
 
 $teamLogos = '';
