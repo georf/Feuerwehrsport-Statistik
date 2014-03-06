@@ -65,7 +65,7 @@ $('#report-error').click (ev) ->
         .add(new FssFormRowTextarea('description', 'Beschreibung', ''))
         .on('submit', (data) ->
           data.reason = selected
-          data.type = 'person'
+          data.type = 'team'
           data.teamId = teamId
           Fss.addError(data)
         )
