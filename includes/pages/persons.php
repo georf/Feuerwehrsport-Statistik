@@ -1,111 +1,81 @@
 <?php
-Title::set('Wettkämpfer');
-
 TempDB::generate('x_scores_hbm');
 TempDB::generate('x_scores_hbf');
 TempDB::generate('x_scores_hl');
 
-echo '<h1>Wettkämpfer</h1>';
+echo Bootstrap::row()
+  ->col(Title::set('Wettkämpfer'), 9)
+  ->col(TableOfContents::get()
+    ->link('female', 'Weiblich')
+    ->link('male', 'Männlich')
+    ->link('personhinzufuegen', 'Person hinzufügen')
+  , 3);
 
 $sexs = array(
-    'female' => 'Weiblich',
-    'male' => 'Männlich',
+  'female' => 'Weiblich',
+  'male' => 'Männlich',
 );
 
 foreach ($sexs as $sex => $title) {
-    $persons = $db->getRows("
-        SELECT *
-        FROM `persons`
-        WHERE `sex` = '".$sex."'
-    ");
-
-    foreach ($persons as $key => $person) {
-        $persons[$key]['hb'] = $db->getFirstRow("
-            SELECT COUNT(`id`) AS `count`
-            FROM `x_scores_hb".substr($sex,0,1)."`
-            WHERE `person_id` = '".$person['id']."'
-        ", 'count');
-
-        if ($sex === 'male') {
-            $persons[$key]['hl'] = $db->getFirstRow("
-                SELECT COUNT(`id`) AS `count`
-                FROM `x_scores_hl`
-                WHERE `person_id` = '".$person['id']."'
-            ", 'count');
-        } else {
-            $persons[$key]['gs'] = $db->getFirstRow("
-                SELECT COUNT(`id`) AS `count`
-                FROM `scores_gs`
-                WHERE `person_1` = '".$person['id']."'
-                OR `person_2` = '".$person['id']."'
-                OR `person_3` = '".$person['id']."'
-                OR `person_4` = '".$person['id']."'
-                OR `person_5` = '".$person['id']."'
-                OR `person_6` = '".$person['id']."'
-            ", 'count');
-        }
-
-        $persons[$key]['la'] = $db->getFirstRow("
-            SELECT COUNT(`id`) AS `count`
-            FROM `scores_la`
-            WHERE `person_1` = '".$person['id']."'
-            OR `person_2` = '".$person['id']."'
-            OR `person_3` = '".$person['id']."'
-            OR `person_4` = '".$person['id']."'
-            OR `person_5` = '".$person['id']."'
-            OR `person_6` = '".$person['id']."'
-            OR `person_7` = '".$person['id']."'
-        ", 'count');
-
-        $persons[$key]['fs'] = $db->getFirstRow("
-            SELECT COUNT(`id`) AS `count`
-            FROM `scores_fs`
-            WHERE `person_1` = '".$person['id']."'
-            OR `person_2` = '".$person['id']."'
-            OR `person_3` = '".$person['id']."'
-            OR `person_4` = '".$person['id']."'
-        ", 'count');
-    }
-
-    echo '<h2>'.$title.'</h2>
-        <table class="datatable">
-            <thead>
-              <tr>
-                <th style="width:25%">Name</th>
-                <th style="width:25%">Vorname</th>
-                <th style="width:9%">HB</th>
-                <th style="width:9%">'.(($sex === 'male')? 'HL':'GS').'</th>
-                <th style="width:9%">LA</th>
-                <th style="width:9%">FS</th>
-                <th style="width:13%"></th>
-              </tr>
-            </thead>
-            <tbody>';
-
-    foreach ($persons as $person) {
-
-        echo
-            '<tr><td>',
-                htmlspecialchars($person['name']),
-            '</td><td>',
-                htmlspecialchars($person['firstname']),
-            '</td><td>',
-                ($person['hb'] == 0)? '' : $person['hb'],
-            '</td><td>',
-                ($person[($sex === 'male')? 'hl':'gs'] == 0)? '' : $person[($sex === 'male')? 'hl':'gs'],
-            '</td><td>',
-                ($person['la'] == 0)? '' : $person['la'],
-            '</td><td>',
-                ($person['fs'] == 0)? '' : $person['fs'],
-            '</td><td>',
-                Link::person($person['id'], 'Details', $person['name'], $person['firstname']),
-            '</td></tr>';
-    }
-
-    echo '</tbody></table>';
+  echo Title::h2($title, $sex);
+  $persons = $db->getRows("
+    SELECT `id`, `name`, `firstname`,
+    (
+      SELECT COUNT(`id`) AS `count`
+      FROM `x_scores_hb".substr($sex,0,1)."`
+      WHERE `person_id` = `p`.`id`
+    ) AS `hb`,
+    (
+      SELECT COUNT(`id`) AS `count`
+      FROM `scores_la`
+      WHERE `person_1` = `p`.`id`
+      OR `person_2` = `p`.`id`
+      OR `person_3` = `p`.`id`
+      OR `person_4` = `p`.`id`
+      OR `person_5` = `p`.`id`
+      OR `person_6` = `p`.`id`
+      OR `person_7` = `p`.`id`
+    ) AS `la`,
+    (
+      SELECT COUNT(`id`) AS `count`
+      FROM `scores_fs`
+      WHERE `person_1` = `p`.`id`
+      OR `person_2` = `p`.`id`
+      OR `person_3` = `p`.`id`
+      OR `person_4` = `p`.`id`
+    ) AS `fs`,
+    (
+      SELECT COUNT(`id`) AS `count`
+      ".(($sex === 'male')?"
+      FROM `x_scores_hl`
+      WHERE `person_id` = `p`.`id`
+      ":"
+      FROM `scores_gs`
+      WHERE `person_1` = `p`.`id`
+      OR `person_2` = `p`.`id`
+      OR `person_3` = `p`.`id`
+      OR `person_4` = `p`.`id`
+      OR `person_5` = `p`.`id`
+      OR `person_6` = `p`.`id`
+      ")."
+    ) AS `fourth`
+    FROM `persons` `p`
+    WHERE `sex` = '".$sex."'
+  ");
+  echo Bootstrap::row()->col(CountTable::build($persons)
+    ->col('Name', 'name', 15)
+    ->col('Vorname', 'firstname', 15)
+    ->col('HB', function ($row) { return FSS::countNoEmpty($row['hb']); }, 5) 
+    ->col(($sex === 'male')?'HL':'GS', function ($row) { return FSS::countNoEmpty($row['fourth']); }, 5)
+    ->col('LA', function ($row) { return FSS::countNoEmpty($row['la']); }, 5)
+    ->col('FS', function ($row) { return FSS::countNoEmpty($row['fs']); }, 5)
+    ->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 7)
+  , 12);
 }
 
-?>
-<h2>Neue Person hinzufügen</h2>
-<p class="six columns">Ist eine Person die du kennst noch nicht eingetragen? Dann trage sie doch schnell ins System ein!</p>
-<p><button id="add-person">Person hinzufügen</button></p>
+echo Title::h2('Neue Person hinzufügen', 'personhinzufuegen');
+echo Bootstrap::row()->col(
+  '<p class="six columns">Ist eine Person die du kennst noch nicht eingetragen? Dann trage sie doch schnell ins System ein!</p>'.
+  '<p><button id="add-person">Person hinzufügen</button></p>'
+  , 5)
+  ->col('<img src="/styling/images/system-users.png" alt=""/>', 3);

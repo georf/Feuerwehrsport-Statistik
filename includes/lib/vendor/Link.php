@@ -7,6 +7,9 @@ class Link
         return '<a href="'.$config['url'].'page/competition-'.$id.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($text).'</a>';
     }
 
+    public static function competitions($name = "Wettkämpfe", $title = "Wettkämpfe anzeigen") {
+        return self::page_a('competitions', $name, $title);
+    }
 
     public static function place($id, $name = false, $title = 'Details zu diesem Wettkampfort anzeigen') {
         global $config;
@@ -17,6 +20,9 @@ class Link
         return '<a href="'.$config['url'].'page/place-'.$id.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
     }
 
+    public static function places($name = "Wettkampforte", $title = "Wettkampforte anzeigen") {
+        return self::page_a('places', $name, $title);
+    }
 
     public static function event($id, $name = false, $title = 'Details zu diesem Wettkampftyp anzeigen') {
         global $config;
@@ -25,6 +31,10 @@ class Link
             $name = $event['name'];
         }
         return '<a href="'.$config['url'].'page/event-'.$id.'.html" title="'.htmlspecialchars($title).'">'.htmlspecialchars($name).'</a>';
+    }
+
+    public static function events($name = "Wettkampftypen", $title = 'Wettkampftypen anzeigen') {
+        return self::page_a('events', $name, $title);
     }
 
     public static function team($id, $name = false, $title = 'Details zu diesem Team anzeigen') {
@@ -121,4 +131,32 @@ class Link
         $html_title = (!$title)? '' : ' title="'.htmlspecialchars($title).'"';
         return '<a href="'.htmlspecialchars($url).'"'.$html_title.'>'.htmlspecialchars($name).'</a>';
     }
+
+  public static function linksForTeam($id) {
+    return self::linksFor('team', $id);
+  }
+
+  public static function linksFor($for, $id) {
+    global $db;
+    $links = array();
+    foreach ($db->getRows("
+      SELECT `url`, `name`
+      FROM `links`
+      WHERE `for_id` = '".$id."'
+      AND `for` = 'team'
+    ") as $link) {
+      $links[] = self::a($link['url'], $link['name']);
+    }
+    return $links;
+  }
+
+  public static function actionIcon($icon, $id, $title, $data) {
+    $output = '<span class="action-icon" id="'.$id.'" title="'.htmlspecialchars($title).'"';
+
+    foreach ($data as $key => $value) {
+      $output .= ' data-'.$key.'="'.$value.'"';
+    }
+    $output .= '><img src="/styling/images/'.$icon.'.png" alt=""/></span>';
+    return $output;
+  }
 }

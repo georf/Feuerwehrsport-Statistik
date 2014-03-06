@@ -12,6 +12,8 @@ include(__DIR__.'/styling/header.php');
 $header = ob_get_contents();
 ob_end_clean();
 
+$footerTags = array();
+
 try {
     if (isset($_GET['page'])) {
         $_page = $_GET['page'];
@@ -48,7 +50,7 @@ try {
 
     if (!$pageFound) throw new PageNotFound();
 
-    echo Javascript::scriptTag('js/pages/', $_page);
+    $footerTags[] = Javascript::scriptTag('js/pages/', $_page);
 
     include(__DIR__.'/styling/footer.php');
 

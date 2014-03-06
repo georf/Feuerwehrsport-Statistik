@@ -62,7 +62,7 @@ class Database {
 	 * @param string $mysqlQuery
 	 * @return array
 	 */
-	public function getRows($mysqlQuery) {
+	public function getRows($mysqlQuery, $onlyCol = false) {
 
 		$result = $this->query($mysqlQuery);
 
@@ -72,7 +72,8 @@ class Database {
 
 		$rows = array();
 		while ($row = mysql_fetch_assoc($result)) {
-			$rows[] = $row;
+			if ($onlyCol) $rows[] = $row[$onlyCol];
+			else 					$rows[] = $row;
 		}
 		return $rows;
 	}

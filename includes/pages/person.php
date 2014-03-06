@@ -1,547 +1,325 @@
 <?php
 
-if (!isset($_GET['id']) || !Check::isIn($_GET['id'], 'persons')) throw new PageNotFound();
-$_id = $_GET['id'];
-
-
-$person = $db->getFirstRow("
-    SELECT *
-    FROM `persons`
-    WHERE `id` = '".$db->escape($_id)."'
-");
-
+$person = Check2::page()->get('id')->isIn('persons', 'row');
 $id = $person['id'];
 
-echo dataDiv($person, 'person');
-
-
-$teams = $db->getRows("
-    SELECT `t`.*, COUNT(`i`.`key`) AS `count`,
-        0 AS 'hb',0 AS 'hl',0 AS 'gs',0 AS 'fs',0 AS 'la'
-    FROM (
-            SELECT `team_id`,CONCAT('HB',`id`) AS `key`
-            FROM `scores`
-            WHERE `person_id` = '".$id."'
-            AND `discipline` = 'HB'
-        UNION
-            SELECT `team_id`,CONCAT('HL',`id`) AS `key`
-            FROM `scores`
-            WHERE `person_id` = '".$id."'
-            AND `discipline` = 'HL'
-        UNION
-            SELECT `team_id`,CONCAT('GS',`id`) AS `key`
-            FROM `scores_gs`
-            WHERE `person_1` = '".$id."'
-            OR `person_2` = '".$id."'
-            OR `person_3` = '".$id."'
-            OR `person_4` = '".$id."'
-            OR `person_5` = '".$id."'
-            OR `person_6` = '".$id."'
-        UNION
-            SELECT `team_id`,CONCAT('LA',`id`) AS `key`
-            FROM `scores_la`
-            WHERE `person_1` = '".$id."'
-            OR `person_2` = '".$id."'
-            OR `person_3` = '".$id."'
-            OR `person_4` = '".$id."'
-            OR `person_5` = '".$id."'
-            OR `person_6` = '".$id."'
-            OR `person_7` = '".$id."'
-        UNION
-            SELECT `team_id`,CONCAT('FS',`id`) AS `key`
-            FROM `scores_fs`
-            WHERE `person_1` = '".$id."'
-            OR `person_2` = '".$id."'
-            OR `person_3` = '".$id."'
-            OR `person_4` = '".$id."'
-    ) `i`
-    INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
-    GROUP BY `team_id`
+TempDB::generate('x_full_competitions');
+$teamsUnsorted = $db->getRows("
+  SELECT `t`.*, COUNT(`i`.`team_id`) AS `count`,
+    SUM(`i`.`hb`) AS `hb`,
+    SUM(`i`.`hl`) AS `hl`,
+    SUM(`i`.`gs`) AS `gs`,
+    SUM(`i`.`fs`) AS `fs`,
+    SUM(`i`.`la`) AS `la`
+  FROM (
+      SELECT `team_id`,
+      1 AS `hb`, 0 AS `hl`, 0 AS `gs`, 0 AS `fs`, 0 AS `la`
+      FROM `scores`
+      WHERE `person_id` = '".$id."'
+      AND `discipline` = 'HB'
+    UNION ALL
+      SELECT `team_id`,
+      0 AS `hb`, 1 AS `hl`, 0 AS `gs`, 0 AS `fs`, 0 AS `la`
+      FROM `scores`
+      WHERE `person_id` = '".$id."'
+      AND `discipline` = 'HL'
+    UNION ALL
+      SELECT `team_id`,
+      0 AS `hb`, 0 AS `hl`, 1 AS `gs`, 0 AS `fs`, 0 AS `la`
+      FROM `scores_gs`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+      OR `person_5` = '".$id."'
+      OR `person_6` = '".$id."'
+    UNION ALL
+      SELECT `team_id`,
+      0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 0 AS `fs`, 1 AS `la`
+      FROM `scores_la`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+      OR `person_5` = '".$id."'
+      OR `person_6` = '".$id."'
+      OR `person_7` = '".$id."'
+    UNION ALL
+      SELECT `team_id`,
+      0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 1 AS `fs`, 0 AS `la`
+      FROM `scores_fs`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+  ) `i`
+  INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
+  GROUP BY `team_id`
 ");
+$teams = array();
+foreach ($teamsUnsorted as $team) $teams[$team['id']] = $team;
 
+$disciplines = array(
+  array('hb', false),
+  array('hl', false, 'male'),
+  array('zk', false, 'male'),
+  array('fs', true),
+  array('gs', true,  'female'),
+  array('la', true),
+);
+$scores = array();
 
-$hb = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
+echo Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']));
+$toc = TableOfContents::get();
+foreach ($disciplines as $disciplineConf) {
+  $discipline = $disciplineConf[0];
+  $scores[$discipline] = array();
+  if (count($discipline) > 3 && $discipline[2] != $person['sex']) continue;
+
+  if (in_array($discipline, array('hl', 'hb'))) {
+    $scores[$discipline] = $db->getRows("
+      SELECT
+        `c`.`place_id`,`c`.`place`,
+        `c`.`event_id`,`c`.`event`,
         `c`.`score_type_id`,
         `s`.`competition_id`,`c`.`date`,
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`
-    FROM `scores` `s`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    WHERE `person_id` = '".$id."'
-    AND `discipline` = 'HB'
-    ORDER BY `date` DESC
-");
-
-$hl = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
-        `c`.`score_type_id`,
-        `s`.`competition_id`,`c`.`date`,
-        `s`.`time`,`s`.`team_id`,
-        `s`.`id` AS `score_id`,`s`.`team_number`
-    FROM `scores` `s`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    WHERE `person_id` = '".$id."'
-    AND `discipline` = 'HL'
-    ORDER BY `date` DESC
-");
-
-$zk = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
+      FROM `scores` `s`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `person_id` = '".$id."'
+      AND `discipline` LIKE '".$discipline."'
+    ");
+  } elseif ($discipline == 'zk') {
+    $scores[$discipline] = $db->getRows("
+      SELECT
+        `c`.`place_id`,`c`.`place`,
+        `c`.`event_id`,`c`.`event`,
         `c`.`score_type_id`,
         `hb`.`competition_id`,`c`.`date`,
         `hb`.`time` AS `hb`,
         `hl`.`time` AS `hl`,
         `hb`.`time` + `hl`.`time` AS `time`
-    FROM (
+      FROM (
         SELECT `time`,`competition_id`
         FROM `scores`
         WHERE `person_id` = '".$id."'
         AND `discipline` = 'HB'
         AND `time` IS NOT NULL
         ORDER BY `time`
-    ) `hb`
-    INNER JOIN (
+      ) `hb`
+      INNER JOIN (
         SELECT `time`,`competition_id`
         FROM `scores`
         WHERE `person_id` = '".$id."'
         AND `discipline` = 'HL'
         AND `time` IS NOT NULL
         ORDER BY `time`
-    ) `hl` ON `hl`.`competition_id` = `hb`.`competition_id`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `hb`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    GROUP BY `c`.`id`
-    ORDER BY `date` DESC
-");
-
-$gs = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
+      ) `hl` ON `hl`.`competition_id` = `hb`.`competition_id`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `hb`.`competition_id`
+      GROUP BY `c`.`id`
+    ");
+  } elseif ($discipline == 'gs') {
+    $scores[$discipline] = $db->getRows("
+      SELECT
+        `c`.`place_id`,`c`.`place`,
+        `c`.`event_id`,`c`.`event`,
         `c`.`score_type_id`,
         `s`.`competition_id`,`c`.`date`,
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`,
         `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`
-    FROM `scores_gs` `s`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    WHERE `person_1` = '".$id."'
-    OR `person_2` = '".$id."'
-    OR `person_3` = '".$id."'
-    OR `person_4` = '".$id."'
-    OR `person_5` = '".$id."'
-    OR `person_6` = '".$id."'
-    ORDER BY `date` DESC
-");
-
-$la = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
+      FROM `scores_gs` `s`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+      OR `person_5` = '".$id."'
+      OR `person_6` = '".$id."'
+    ");
+  } elseif ($discipline == 'la') {
+    $scores[$discipline] = $db->getRows("
+      SELECT
+        `c`.`place_id`,`c`.`place`,
+        `c`.`event_id`,`c`.`event`,
         `c`.`score_type_id`,
         `s`.`competition_id`,`c`.`date`,
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`,
         `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`,`s`.`person_7`
-    FROM `scores_la` `s`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    WHERE `person_1` = '".$id."'
-    OR `person_2` = '".$id."'
-    OR `person_3` = '".$id."'
-    OR `person_4` = '".$id."'
-    OR `person_5` = '".$id."'
-    OR `person_6` = '".$id."'
-    OR `person_7` = '".$id."'
-    ORDER BY `date` DESC
-");
-
-$fs = $db->getRows("
-    SELECT
-        `c`.`place_id`,`p`.`name` AS `place`,
-        `c`.`event_id`,`e`.`name` AS `event`,
+      FROM `scores_la` `s`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+      OR `person_5` = '".$id."'
+      OR `person_6` = '".$id."'
+      OR `person_7` = '".$id."'
+    ");
+  } elseif ($discipline == 'fs') {
+    $scores[$discipline] = $db->getRows("
+      SELECT
+        `c`.`place_id`,`c`.`place`,
+        `c`.`event_id`,`c`.`event`,
         `c`.`score_type_id`,
         `s`.`competition_id`,`c`.`date`,
         `s`.`time`,`s`.`team_id`,
         `s`.`id` AS `score_id`,`s`.`team_number`,
         `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`
-    FROM `scores_fs` `s`
-    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
-    WHERE `person_1` = '".$id."'
-    OR `person_2` = '".$id."'
-    OR `person_3` = '".$id."'
-    OR `person_4` = '".$id."'
-    ORDER BY `date` DESC
-");
+      FROM `scores_fs` `s`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `person_1` = '".$id."'
+      OR `person_2` = '".$id."'
+      OR `person_3` = '".$id."'
+      OR `person_4` = '".$id."'
+    ");
+  }
 
-
-$disEinzel = array(
-    'hl' => $hl,
-    'hb' => $hb,
-    'zk' => $zk,
-);
-
-$disGruppe = array(
-    'gs' => $gs,
-    'la' => $la,
-    'fs' => $fs,
-);
-
-
-Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']));
-echo '<h1>',htmlspecialchars($person['firstname']),' ',htmlspecialchars($person['name']),'</h1>';
-echo '<div class="sixteen columns clearfix">';
-
-
-echo '<div class="four columns">',
-    '<div class="toc">',
-        '<h5>Inhaltsverzeichnis</h5>',
-        '<ol>';
-
-foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
-    if (count($scores) > 0) {
-        $name = FSS::dis2name($key);
-        echo '<li><a href="#dis-',FSS::name2id($name),'">',$name,'</a></li>';
-    }
+  if (count($scores[$discipline])) {
+    $toc->link($discipline, FSS::dis2name($discipline));
+  }
 }
+$toc->link('team', 'Mannschaft');
+$toc->link('fehler', 'Fehler melden');
 
-echo        '<li><a href="#team">Mannschaft</a></li>',
-            '<li><a href="#fehler">Fehler melden</a></li>',
-        '</ol>',
-    '</div></div>';
-
-echo '<div class="four columns">'.Chart::img('person_overview', array($_id), true, 'person_overview').'</div>';
-
-
-if (count($teams)) {
-    $t = array();
-
-    echo '<div class="seven columns team-corner"><h5>Mannschaft';
-    if (count($teams) > 1) echo 'en';
-    echo '</h5><ul>';
-
-    foreach ($teams as $team) {
-
-        echo '<li class="team" title="'.htmlspecialchars($team['name']).'">';
-        if ($team['logo']) {
-            echo '<img src="/'.$config['logo-path'].$team['logo'].'" alt="'.htmlspecialchars($team['short']).'"/>';
-        } else {
-            echo '<p>'.htmlspecialchars($team['short']).'</p>';
-        }
-        echo '</li>';
-
-        $t[$team['id']] = $team;
-    }
-    $teams = $t;
-
-    echo '</ul></div>';
+$teamLogos = '';
+foreach ($teams as $team) {
+  $teamLogos .= TeamLogo::getTall($team['logo'], $team['short'], '<div class="logo-replacement">'.$team['short'].'</div>');
 }
+echo Bootstrap::row()
+  ->col(Chart::img('person_overview', array($id), true, 'person_overview'), 3)
+  ->col($teamLogos, 6)
+  ->col($toc, 3);
 
-echo '</div>';
 
-foreach (array_merge($disEinzel, $disGruppe) as $key => $scores) {
+foreach ($disciplines as $disciplineConf) {
+  $discipline = $disciplineConf[0];
+  $group      = $disciplineConf[1];
+  if (count($scores[$discipline]) === 0) continue;
+  $name = FSS::dis2name($discipline);
 
-    // Nur Disziplinen anzeigen, die auch Zeiten haben
-    if (count($scores) === 0) continue;
+  $sum  = 0;
+  $i    = 0;
+  $best = PHP_INT_MAX;
+  $bad  = 0;
 
-    $name = FSS::dis2name($key);
+  foreach ($scores[$discipline] as $score) {
+    if (FSS::isInvalid($score['time'])) continue;
+    $sum += $score['time'];
+    $i++;
+    $best = min($best, $score['time']);
+    $bad  = max($bad, $score['time']);
+  }
+  echo Title::h2($name, $discipline);
+  $chartTable = ChartTable::build();
+  if (!FSS::isInvalid($best)) $chartTable->row('Bestzeit:', FSS::time($best).' s');
+  if (!FSS::isInvalid($bad)) $chartTable->row('Schlechteste Zeit:', FSS::time($bad).' s');
+  $chartTable->row('Zeiten:', count($scores[$discipline]));
+  if ($i > 0) $chartTable->row('Durchschnitt:', FSS::time($sum/$i).' s');
+  if ($discipline != 'zk') $chartTable->row(Chart::img('person_bad_good', array($id, $discipline)));
+  
+  $row = Bootstrap::row()->col($chartTable, 3);
+  if ($i > 0) $row->col(Chart::img('person', array($id, $discipline)), 3);
+  echo $row;
 
-    $sum  = 0;
-    $i    = 0;
-    $best = PHP_INT_MAX;
-    $bad  = 0;
+  $countTable = CountTable::build($scores[$discipline], array('datatable-'.$discipline))
+  ->col('Datum', 'date', 8)
+  ->col('Typ', function($row) { return Link::event($row['event_id'], $row['event']); }, 15)
+  ->col('Ort', function($row) { return Link::place($row['place_id'], $row['place']); }, 15);
 
-    foreach ($scores as $score) {
-        // Zählen für Team
-        if (isset($score['team_id']) && $score['team_id']) {
-            $teams[$score['team_id']][$key]++;
+  if (in_array($discipline, array('hl', 'hb'))) {
+    $countTable
+    ->addClass('single-scores')
+    ->rowAttribute('data-id', 'score_id')
+    ->col('Mannschaft', function($row) use ($teams) { 
+      if ($row['team_id']) {
+        $t_name = $teams[$row['team_id']]['name'];
+        if ($row['score_type_id']) {
+          $t_name .= FSS::teamNumber($row['team_number'], $row['competition_id'], $row['team_id'], false, ' ');
         }
-
-        if (FSS::isInvalid($score['time'])) continue;
-
-        $sum += $score['time'];
-        $i++;
-
-        if ($best > $score['time']) {
-            $best = $score['time'];
+        return Link::team($row['team_id'], $t_name);
+      }
+      return '';
+    }, 20, array('class' => 'team'));
+  } elseif ($discipline == 'zk') {
+    $countTable
+    ->col('HB', function($row) { return FSS::time($row['hb']); }, 5)
+    ->col('HL', function($row) { return FSS::time($row['hb']); }, 5);
+  }
+  $countTable->col('Zeit', function($row) { return FSS::time($row['time']); }, 7, array('class' => 'number'));
+  if ($group) {
+    $countTable->col('Position', function($row) use ($id, $discipline, $person) {
+      for ($wk = 1; $wk < 8; $wk++) {
+        if (array_key_exists('person_'.$wk, $row) && $row['person_'.$wk] == $id) {
+          return WK::type($wk, $person['sex'], $discipline);
         }
-        if ($bad < $score['time']) {
-            $bad = $score['time'];
+      }
+    }, 10);
+  }
+  $countTable->col('', function($row) { return Link::competition($row['competition_id'], 'Details'); }, 6);
+  echo Bootstrap::row()->col($countTable, 12);
+
+  if (in_array($discipline, array('hl', 'hb'))) {
+    echo '<h3 style="clear:both">'.$name.' - Vergleich der Bestzeiten mit anderen Sportler</h3>';
+    echo '<p class="chart">'.Chart::img('person_best_score', array($id, $discipline)).'</p>';
+  }
+
+  if ($group) {
+    // search for team mates
+    $teammates = array();
+
+    foreach ($scores[$discipline] as $score) {
+      for ($wk = 1; $wk < 8; $wk++) {
+        if (array_key_exists('person_'.$wk, $score) && $score['person_'.$wk] != null && $score['person_'.$wk] != $id) {
+          if (!array_key_exists($score['person_'.$wk], $teammates)) $teammates[$score['person_'.$wk]] = array();
+          $teammates[$score['person_'.$wk]][] = $score['competition_id'];
         }
+      }
     }
 
-    echo '<div class="competition-box">';
-    echo '<h2 style="clear:both; margin-top:40px;" id="dis-',FSS::name2id($name),'">'.FSS::dis2img($key).' '.$name.'</h2>';
-
-    echo  '<table class="chart-table">';
-
-    if ($i > 0) echo '<tr><th>Bestzeit:</th><td>',FSS::time($best),'</td></tr>',
-          '<tr><th>Schlechteste Zeit:</th><td>',FSS::time($bad),'</td></tr>';
-
-    echo '<tr><th>Zeiten:</th><td>',count($scores),'</td></tr>';
-
-    if ($i > 0) echo '<tr><th>Durchschnitt:</th><td>',FSS::time($sum/$i),'</td></tr>';
-
-    echo
-          '<tr><td colspan="2">Die Ergebnisse beziehen sich nur auf die hier gespeicherten Daten.</td></tr>';
-
-    if ($key != 'zk') echo '<tr><td colspan="2" style="text-align:center;">'.Chart::img('person_bad_good', array($_id, $key)).'</td></tr>';
-
-    echo
-          '</table>';
-    if ($i > 0) echo '<p class="chart">'.Chart::img('person', array($_id, $key)).'</p>';
-
-
-
-    if (in_array($key, array('hl', 'hb'))) {
-
-
-        echo
-          '<table class="datatable sc_'.$key.'"><thead><tr>',
-            '<th style="width:16%">Wettkampf</th>',
-            '<th style="width:25%">Ort</th>',
-            '<th style="width:31%">Mannschaft</th>',
-            '<th style="width:10%">Datum</th>',
-            '<th style="width:10%">Zeit</th>',
-            '<th style="width:8%"></th>',
-          '</tr></thead><tbody>';
-        foreach ($scores as $score) {
-
-            echo
-            '<tr data-id="',$score['score_id'],'">',
-              '<td>'.Link::event($score['event_id'], $score['event']).'</td>',
-              '<td>'.Link::place($score['place_id'], $score['place']).'</td>',
-              '<td class="team">';
-
-            if ($score['team_id']) {
-
-                $t_name = $teams[$score['team_id']]['name'];
-                if ($score['score_type_id']) {
-                    $t_name .= FSS::teamNumber($score['team_number'], $score['competition_id'], $score['team_id'], false, ' ');
-                }
-                echo Link::team($score['team_id'], $t_name);
-            }
-            echo '</td>',
-              '<td>',$score['date'],'</td>',
-              '<td class="number">',FSS::time($score['time']),'</td>',
-              '<td>'.Link::competition($score['competition_id'],'Details').'</td>',
-              '</tr>';
+    if (count($teammates) > 0) {
+      echo '<h3 style="clear:both">'.$name.' - Mannschaftsmitglieder</h3>';
+      echo Bootstrap::row()->col(CountTable::build($teammates, array('datatable-teammates'))
+      ->col('Person', function($row, $id) { return Link::person($id, 'full'); }, 5)
+      ->col('Läufe', function($row) { return count($row); }, 1, array(), array('class' => 'small'))
+      ->col('Wettkämpfe', function($competitionIds) {
+        $competitionIds = array_unique($competitionIds);
+        $competitions = array();
+        foreach ($competitionIds as $id) {
+          $competition = FSS::competition($id);
+          $competitions[] = Link::competition($id,
+            $competition['place'].'`'.date('y', strtotime($competition['date'])),
+            $competition['event'].' - '.gDate($competition['date'])
+          );
         }
-        echo '</tbody></table>';
-
-        echo '<h3 style="clear:both">'.$name.' - Vergleich der Bestzeiten mit anderen Sportler</h3>';
-        echo '<p class="chart">'.Chart::img('person_best_score', array($_id, $key)).'</p>';
-
-
-    } elseif ($key == 'zk') {
-
-
-        echo
-          '<table class="datatable sc_'.$key.'"><thead><tr>',
-            '<th style="width:16%">Wettkampf</th>',
-            '<th style="width:25%">Ort</th>',
-            '<th style="width:10%">Datum</th>',
-            '<th style="width:12%">HB</th>',
-            '<th style="width:12%">HL</th>',
-            '<th style="width:12%">Zeit</th>',
-            '<th style="width:8%"></th>',
-          '</tr></thead><tbody>';
-        foreach ($scores as $score) {
-
-            echo
-            '<tr>',
-              '<td>'.Link::event($score['event_id'], $score['event']).'</td>',
-              '<td>'.Link::place($score['place_id'], $score['place']).'</td>',
-              '<td>',$score['date'],'</td>',
-              '<td>',FSS::time($score['hb']),'</td>',
-              '<td>',FSS::time($score['hl']),'</td>',
-              '<td>',FSS::time($score['time']),'</td>',
-              '<td>'.Link::competition($score['competition_id'],'Details').'</td>',
-              '</tr>';
-        }
-        echo '</tbody></table>';
-
-
-    } else {
-
-
-        echo '<table class="datatable sc_'.$key.'"><thead><tr>',
-            '<th style="width:13%">Wettkampf</th>',
-            '<th style="width:17%">Ort</th>',
-            '<th style="width:28%">Mannschaft</th>',
-            '<th style="width:10%">Datum</th>',
-            '<th style="width:10%">Zeit</th>',
-            '<th style="width:14%">Position</th>',
-            '<th style="width:8%"></th>',
-          '</tr></thead><tbody>';
-        foreach ($scores as $score) {
-
-            echo
-            '<tr data-scoreid="',$score['score_id'],'">',
-              '<td>'.Link::event($score['event_id'], $score['event']).'</td>',
-              '<td>'.Link::place($score['place_id'], $score['place']).'</td>',
-              '<td class="team">';
-
-            if ($score['team_id']) {
-
-                $t_name = $teams[$score['team_id']]['name'];
-                if ($score['score_type_id']) {
-                    $t_name .= FSS::teamNumber($score['team_number'], $score['competition_id'], $score['team_id'], false, ' ');
-                }
-                echo Link::team($score['team_id'], $t_name);
-            }
-            echo '</td>',
-              '<td>',$score['date'],'</td>',
-              '<td class="timecol">',FSS::time($score['time']),'</td>';
-
-
-            for ($wk = 1; $wk < 8; $wk++) {
-                if (array_key_exists('person_'.$wk, $score) && $score['person_'.$wk] == $id) {
-                    echo '<td>'.WK::type($wk, $person['sex'], $key).'</td>';
-                    break;
-                }
-            }
-
-            echo
-              '<td>'.Link::competition($score['competition_id'], 'Details').'</td>',
-              '</tr>';
-        }
-        echo '</tbody></table>';
-
-        // search for team mates
-        $teammates = array();
-
-        foreach ($scores as $score) {
-            for ($wk = 1; $wk < 8; $wk++) {
-                if (array_key_exists('person_'.$wk, $score) && $score['person_'.$wk] != null && $score['person_'.$wk] != $id) {
-                    if (!array_key_exists($score['person_'.$wk], $teammates)) $teammates[$score['person_'.$wk]] = array();
-                    $teammates[$score['person_'.$wk]][] = $score['competition_id'];
-                }
-            }
-        }
-
-        if (count($teammates) > 0) {
-
-            asort($teammates);
-
-            echo '<h3 style="clear:both">'.$name.' - Mannschaftsmitglieder</h3>';
-            echo '<table class="datatable teammates"><thead><tr>',
-                '<th style="width:15%">Person</th>',
-                '<th style="width:7%">Läufe</th>',
-                '<th style="width:77%">Wettkämpfe</th>',
-              '</tr></thead><tbody>';
-            foreach ($teammates as $tmId => $tmCompetitions) {
-                $tmCs = array_unique($tmCompetitions);
-
-                $comps = array();
-                foreach ($tmCs as $c) {
-                    $co = FSS::competition($c);
-                    $comps[] = Link::competition($c,
-                        $co['place'].'`'.date('y', strtotime($co['date'])),
-                        $co['event'].' - '.gDate($co['date'])
-                    );
-                }
-
-                echo
-                '<tr>',
-                  '<td>'.Link::person($tmId, 'full').'</td>',
-                  '<td>'.count($tmCompetitions).'</td>',
-                  '<td>'.implode(', ', $comps).'</td>',
-                '</tr>';
-            }
-            echo '</tbody></table>';
-        }
-
-        if (in_array($key, array('la', 'fs', 'gs'))) {
-            echo '<h3 style="clear:both">'.$name.' - Gelaufene Positionen</h3>';
-            echo Chart::img('position_'.$key, array($id));
-        }
-
-
+        return implode(', ', $competitions);
+      }, 20, array('class' => 'small')), 12);
     }
-    echo '</div>';
+    echo '<h3 style="clear:both">'.$name.' - Gelaufene Positionen</h3>';
+    echo Chart::img('position_'.$discipline, array($id));
+  }
 }
 
 if (count($teams)) {
-
-    echo
-      '<h2 id="team" style="clear:both; margin-top:40px;">Mannschaft</h2>',
-      '<p>',htmlspecialchars($person['firstname']),' ',htmlspecialchars($person['name']),' trat für folgende Mannschaften an:</p>',
-
-      '<div class="team-listing">';
-
-    foreach ($teams as $team){
-        echo '<div class="team">';
-        echo '<div class="logo" title="'.htmlspecialchars($team['name']).'">';
-        if ($team['logo']) {
-            echo '<img src="/'.$config['logo-path'].$team['logo'].'" alt="'.htmlspecialchars($team['short']).'"/>';
-        } else {
-            echo '<p>'.htmlspecialchars($team['short']).'</p>';
-        }
-        echo '</div><ul class="actions disc">',
-                '<li>'.Link::team($team['id'], 'Details'), '</li>',
-            '</ul><div>',
-            '<h3>',htmlspecialchars($team['name']),'</h3>',
-            '<table>',
-                '<tr><th>Gelaufene Zeiten:</th><td>',$team['count'],'</td></tr>'.
-                '<tr><th></th><td>';
-
-        $elems = array();
-        foreach (array('hl','hb','gs','la','fs') as $key) {
-            if ($team[$key] > 0) {
-                $elems[] = $team[$key].'x '.FSS::dis2name($key);
-            }
-        }
-        echo implode(', ', $elems);
-
-        echo '</td></tr>';
-
-        $links = $db->getRows("
-          SELECT *
-          FROM `links`
-          WHERE `for_id` = '".$team['id']."'
-          AND `for` = 'team'
-        ");
-
-        if (count($links)) {
-            echo '<tr><th>Webseite:</th><td>';
-
-            $l = array();
-            foreach ($links as $link) {
-                $l[] = '<a href="'.htmlspecialchars($link['url']).'">'.htmlspecialchars($link['name']).'</a>';
-            }
-            echo implode('<br/>', $l);
-
-            echo '</td></tr>';
-        }
-
-        echo
-            '</table>',
-        '</div>';
-        echo '</div>';
+  echo Title::h2('Mannschaft', 'mannschaft');
+  foreach ($teams as $team) {
+    $elems = array();
+    foreach (array('hl','hb','gs','la','fs') as $key) {
+      if ($team[$key] > 0) {
+        $elems[] = $team[$key].'x '.FSS::dis2name($key);
+      }
     }
-    echo '</div>';
+    echo Bootstrap::row()
+      ->col(TeamLogo::getTall($team['logo'], $team['short'], '<div class="logo-replacement">'.$team['short'].'</div>'), 2)
+      ->col('<h3>'.htmlspecialchars($team['name']).'</h3>', 6)
+      ->col('<ul><li>'.Link::team($team['id'], 'Details').'</li><li>'.$team['count'].' gelaufene Zeiten</li><li>'.implode('</li><li>', $elems).'</li></ul>', 4);
+    }
 }
 
-
-echo '<h2 id="fehler">Fehler melden</h2>
-        <p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>
-        <p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>
-        <p><button id="report-error">Fehler mit dieser Person melden</button></p>';
+echo Title::h2('Fehler melden', 'fehler');
+echo Bootstrap::row()
+  ->col('<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>'.
+        '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>'.
+        '<p><button id="report-error" data-person-id="'.$id.'">Fehler mit dieser Person melden</button></p>', 12);

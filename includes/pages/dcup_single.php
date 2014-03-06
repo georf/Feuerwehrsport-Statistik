@@ -1,88 +1,59 @@
 <?php
 
 $disciplines = array(
-    'hbf' => FSS::dis2name('hb').' - '.FSS::sex('female'),
-    'hbm' => FSS::dis2name('hb').' - '.FSS::sex('male'),
-    'hl' => FSS::dis2name('hl'),
-    'zk' => FSS::dis2name('zk')
+  'hbf' => array('hb', 'female', true),
+  'hbm' => array('hb', 'male', true),
+  'hl' => array('hl', 'male', false),
+  'zk' => array('zk', 'male', false)
 );
 
 $path = $config['base'].'info/results/dcup/';
-if (!Check::get('id') || !preg_match('|^[0-9]{4}$|', $_GET['id']) || !is_file($path.$_GET['id'].'.json')) throw new PageNotFound();
-if (!Check::get('id2') || !isset($disciplines[$_GET['id2']])) throw new PageNotFound();
-
-$year = $_GET['id'];
+$year = Check2::page()->get('id')->match('|^[1,2][0-9]{3}$|');
+Check2::page()->isTrue(is_file($path.$year.'.json'));
+$key = Check2::page()->get('id2')->present();
+Check2::page()->isTrue(isset($disciplines[$key]));
 $path .= $year.'.json';
-$id = $_GET['id2'];
 
-echo '
-<div class="row">
-    <div class="five columns">
-        '.FSS::dis2img(substr($id, 0, 2), true).'
-    </div>
-    <div class="ten columns">
-        '.Title::set($disciplines[$id].' - Deutschlandpokal '.$year).'
-        <p>Diese Seite zeigt die Gesamtwertung der D-Cup-Einzelergebnisse in der Kategorie »<em>'.$disciplines[$id].'</em>«. Dabei handelt es sich um selbst berechnete Daten, welche <b>nicht offiziell</b> sind.
-        <br/>Zu der Gesamtwertung zitiere ich die Ausschreibung des DFV:</p>
-        <p style="font-style:italic;padding-left:30px;">Bei Punktgleichheit von Wettkämpfern entscheidet die bessere Gesamtzeit der Bestzeiten aus den einzelnen Wettkämpfen über die bessere Platzierung. Hat ein Wettkämpfer eine geringere Anzahl von Wettkampfteilnahmen, ist er bei gleicher Gesamtpunktzahl automatisch hinter dem mit mehr Wettkämpfen platziert.</p>
-    </div>
-</div>';
+$discipline = $disciplines[$key][0];
+$sex = $disciplines[$key][1];
+$headline = FSS::dis2name($discipline);
+if ($disciplines[$key][2]) $headline .= ' - '.FSS::sex($sex);
 
+echo Bootstrap::row()
+->col(FSS::dis2img($discipline, true), 4)
+->col(
+  Title::set($headline.' - Deutschlandpokal '.$year).
+  '<p>Diese Seite zeigt die Gesamtwertung der D-Cup-Einzelergebnisse in der Kategorie »<em>'.$headline.'</em>«. Dabei handelt es sich um selbst berechnete Daten, welche <b>nicht offiziell</b> sind.'.
+  '<br/>Zu der Gesamtwertung zitiere ich die Ausschreibung des DFV:</p>'.
+  '<p style="font-style:italic;padding-left:30px;">Bei Punktgleichheit von Wettkämpfern entscheidet die bessere Gesamtzeit der Bestzeiten aus den einzelnen Wettkämpfen über die bessere Platzierung. Hat ein Wettkämpfer eine geringere Anzahl von Wettkampfteilnahmen, ist er bei gleicher Gesamtpunktzahl automatisch hinter dem mit mehr Wettkämpfen platziert.</p>'
+, 8);
 
 $json = json_decode(file_get_contents($path), true);
 
-echo '
-    <table class="datatable">
-    <thead>
-      <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Vorname</th>';
-
-foreach ($json['competitions'] as $competition_id) {
-    $competition = FSS::competition($competition_id);
-    echo '<th>'.$competition['place'].'</th>';
-}
-
-echo '
-        <th>Bestzeit</th>
-        <th>Teil.</th>
-        <th>Gesamtzeit</th>
-        <th>Punkte</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>';
-
 $i = 0;
-foreach ($json[$id] as $result) {
-    $i++;
+$countTable = CountTable::build($json[$key])
+->col('', function ($row) use (&$i) { $i++; return $i.'.'; }, 5)
+->col('Name', 'name', 30)
+->col('Vorame', 'firstname', 30);
 
-    // search person
-    $person = $db->getFirstRow("
-        SELECT *
-        FROM `persons`
-        WHERE `name` = '".$db->escape($result['name'])."'
-        AND `firstname` = '".$db->escape($result['firstname'])."'
-        LIMIT 1
-    ");
-
-    echo '<tr>';
-    echo '<td>'.$i.'.</td>';
-    echo '<td>'.$result['name'].'</td>';
-    echo '<td>'.$result['firstname'].'</td>';
-    foreach ($result['entries'] as $entry) {
-        echo '<td>'.$entry['time'];
-        if ($entry['points'] > 0) {
-            echo ' ('.$entry['points'].')';
-        }
-        echo '</td>';
+foreach ($json['competitions'] as $count => $competition_id) {
+  $competition = FSS::competition($competition_id);
+  $countTable->col($competition['place'], function ($row) use ($count) { 
+    $time = $row['entries'][$count]['time'];
+    if ($row['entries'][$count]['points'] > 0) {
+        $time .= ' ('.$row['entries'][$count]['points'].')';
     }
-    echo '<td>'.$result['bestTime'].'</td>';
-    echo '<td>'.$result['part'].'</td>';
-    echo '<td>'.$result['time'].'</td>';
-    echo '<td>'.$result['points'].'</td>';
-    echo '<td>'.Link::person($person['id']).'</td>';
-    echo '</tr>';
+    return $time;
+  }, 18, array(), array('class' => 'small'));
 }
-echo '</tbody></table>';
+$countTable
+->col('Bestzeit', 'bestTime', 10, array(), array('class' => 'small'))
+->col('Teil.', 'part', 7, array(), array('class' => 'small'))
+->col('Gesamtzeit', 'time', 10, array(), array('class' => 'small'))
+->col('Punkte', 'points', 7, array(), array('class' => 'small'))
+->col('', function ($row) use ($sex) { 
+  $person = Import::getPerson($row['name'], $row['firstname'], $sex);
+  return Link::person($person['id']); 
+}, 9);
+
+echo $countTable;

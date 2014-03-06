@@ -16,7 +16,7 @@ class Title {
       self::$title = $title;
     }
 
-    return '<h1>'.$title.'</h1>';
+    return self::h1($title);
   }
 
   public static function get() {
@@ -32,5 +32,14 @@ class Title {
     );
 
     return $names[$key];
+  }
+
+  public static function h1($title) {
+    return '<div class="page-header"><h1>'.htmlspecialchars($title).'</h1></div>';
+  }
+
+  public static function h2($title, $anchor = false) {
+    $anchor = ($anchor)? ' id="'.$anchor.'"' : '';
+    return '<h2'.$anchor.'>'.htmlspecialchars($title).'</h2>';
   }
 }

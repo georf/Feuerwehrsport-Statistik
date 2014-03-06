@@ -299,7 +299,7 @@ $competitions = $db->getRows("
     INNER JOIN `events` `e` ON `c`.`event_id` = `e`.`id`
     INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
     LEFT JOIN `score_types` `t` ON `t`.`id` = `c`.`score_type_id`
-    WHERE `c`.`score_type_id` != 0
+    WHERE `c`.`score_type_id` IS NOT NULL
     ORDER BY `c`.`date` DESC
 ");
 
