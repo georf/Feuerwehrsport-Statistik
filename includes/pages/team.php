@@ -9,7 +9,6 @@ TempDB::generate('x_scores_hbm');
 TempDB::generate('x_scores_hl');
 TempDB::generate('x_full_competitions');
 
-
 $sexConfig = array(
   'female' => 'weiblich',
   'male' => 'männlich',
@@ -112,6 +111,14 @@ foreach ($sexConfig as $sex => $name) {
     AND `s`.`sex` = '".$sex."'
   ");
 }
+
+$teamScores = array(
+   array('gs', false, $teamDisciplines['GS'],              6, array('')),
+   array('fs', 'female', $teamDisciplines['FS']['female'], 4, array('feuer', 'abstellen')),
+   array('fs', 'male', $teamDisciplines['FS']['male'],     4, array('feuer', 'abstellen')),
+   array('la', 'female', $teamDisciplines['LA']['female'], 7, array('wko2005', 'wko2012', 'CTIF', 'ISFFR')),
+   array('la', 'male', $teamDisciplines['LA']['male'],     7, array('wko2005', 'wko2012', 'CTIF', 'ISFFR')),
+);
 
 // Mannschaftswertung
 $team_scores = array(
@@ -271,8 +278,36 @@ $competitions = $db->getRows("
   GROUP BY `competition_id`
 ");
 
+$toc = TableOfContents::get();
+if (count($members)) $toc->link('wettkaempfer', 'Wettkämpfer');
+$toc->link('wettkaempfe', 'Wettkämpfe');
+foreach ($team_scores as $fullKey => $tscores) {
+  if (!count($tscores)) continue;
+  $keys = explode('-', $fullKey);
+  $name = $title = FSS::dis2name($keys[0]);
+  if (count($keys) > 1) {
+    $name  .= ' '.FSS::sexSymbol($keys[1]);
+    $title .= ' '.FSS::sex($keys[1]);
+  }
+  $toc->link($fullKey, $name, $title.' - Mannschaftswertung');
+}
+
+foreach ($teamScores as $value) {
+  if (!count($value[2])) continue;
+  $name = $title = FSS::dis2name($value[0]);
+  $key = $value[0];
+  if ($value[1]) {
+    $name  .= ' '.FSS::sexSymbol($value[1]);
+    $title .= ' '.FSS::sex($value[1]);
+    $key   .= '-'.$value[1];
+  }
+  $toc->link($key, $name, $title);
+}
+$toc->link('karte', 'Karte');
+$toc->link('fehler', 'Fehler melden');
+
 echo Bootstrap::row()
-->col(TeamLogo::getTall($team['logo'], $team['short']), 2)
+->col(TeamLogo::getTall($team['logo'], $team['short']).Chart::img('team_sex', array($id)), 2)
 ->col(
   Title::set($team['name']).
   '<table>'.
@@ -293,24 +328,25 @@ echo Bootstrap::row()
       )).
     '</td></tr>'.
   '</table>'  
-  , 8)
-->col(Chart::img('team_sex', array($id)), 2);
+  , 7)
+->col($toc, 3);
 
+if (count($members)) {
+  echo Title::h2('Wettkämpfer', 'wettkaempfer');
+  echo Bootstrap::row()->col(CountTable::build($members, array("datatable-sort-members"))
+  ->col('Name', 'name', 22)
+  ->col('Vorname', 'firstname', 22)
+  ->col('Geschlecht', function ($row) { return FSS::sex($row['sex']); }, 12)
+  ->col('HB', 'HB', 5)
+  ->col('GS', 'GS', 5)
+  ->col('LA', 'LA', 5)
+  ->col('FS', 'FS', 5)
+  ->col('HL', 'HL', 5)
+  ->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 8)
+  , 12);
+}
 
-echo Title::h2('Wettkämpfer');
-echo Bootstrap::row()->col(CountTable::build($members, array("datatable-sort-members"))
-->col('Name', 'name', 22)
-->col('Vorname', 'firstname', 22)
-->col('Geschlecht', function ($row) { return FSS::sex($row['sex']); }, 12)
-->col('HB', 'HB', 5)
-->col('GS', 'GS', 5)
-->col('LA', 'LA', 5)
-->col('FS', 'FS', 5)
-->col('HL', 'HL', 5)
-->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 8)
-, 12);
-
-echo Title::h2('Wettkämpfe');
+echo Title::h2('Wettkämpfe', 'wettkaempfe');
 echo Bootstrap::row()->col(CountTable::build($competitions, array("datatable-sort-competitions"))
 ->col('Datum', 'date', 13)
 ->col('Typ', function ($row) { return Link::event($row['event_id'], $row['event']); }, 28)
@@ -334,7 +370,7 @@ foreach ($team_scores as $fullKey => $tscores) {
   $title = FSS::dis2name($key);
   if ($sex) $title .= ' '.FSS::sex($sex);
   $title .= ' - Mannschaftswertung';
-  echo Title::h2($title);
+  echo Title::h2($title, $fullKey);
 
   $allScores = array();
   $all = array();
@@ -398,15 +434,6 @@ foreach ($team_scores as $fullKey => $tscores) {
   , 12);
 }
 
-
-$teamScores = array(
-   array('gs', false, $teamDisciplines['GS'],              6, array('')),
-   array('fs', 'female', $teamDisciplines['FS']['female'], 4, array('feuer', 'abstellen')),
-   array('fs', 'male', $teamDisciplines['FS']['male'],     4, array('feuer', 'abstellen')),
-   array('la', 'female', $teamDisciplines['LA']['female'], 7, array('wko2005', 'wko2012', 'CTIF', 'ISFFR')),
-   array('la', 'male', $teamDisciplines['LA']['male'],     7, array('wko2005', 'wko2012', 'CTIF', 'ISFFR')),
-);
-
 foreach ($teamScores as $value) {
   $discipline  = $value[0];
   $sex         = $value[1];
@@ -416,8 +443,12 @@ foreach ($teamScores as $value) {
   if (!count($scores)) continue;
 
   $title = FSS::dis2name($discipline);
-  if ($sex) $title .= ' - '.FSS::sex($sex);
-  echo Title::h2($title);
+  $key = $discipline;
+  if ($sex) {
+    $title .= ' - '.FSS::sex($sex);
+    $key   .= '-'.$sex;
+  }
+  echo Title::h2($title, $key);
 
   $sum   = 0;
   $min = array();
@@ -472,7 +503,7 @@ foreach ($teamScores as $value) {
   echo Bootstrap::row()->col($countTable->col('', function ($row) { return Link::competition($row['competition_id']); }, 3), 12);
 }
 
-echo Title::h2("Karte");
+echo Title::h2("Karte", "karte");
 if (Map::isFile('teams', $id)) {
   echo Bootstrap::row()
     ->col(Map::getImg('teams', $id), 8)
@@ -486,7 +517,7 @@ echo Bootstrap::row('hide')
 ->col('<div id="map-dynamic"></div>', 8)
 ->col('<button id="map-edit">Position bearbeiten</button><button id="map-save">Speichern</button><p id="map-edit-hint">Bitte den Marker auf die korrekte Position ziehen.</p>', 4);
 
-echo Title::h2("Fehler melden");
+echo Title::h2("Fehler melden", "fehler");
 echo '<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>';
 echo '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>';
 echo '<p><button id="report-error" data-team-id="'.$id.'">Fehler mit diesem Team melden</button></p>';
