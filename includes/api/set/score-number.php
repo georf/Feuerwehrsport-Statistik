@@ -1,11 +1,11 @@
 <?php
 
-$score_id    = Check2::except()->post('score_id')->isIn('scores');
-$team_number = Check2::except()->post('team_number')->isNumber();
+$scoreId    = Check2::except()->post('scoreId')->isIn('scores');
+$teamNumber = Check2::except()->post('teamNumber')->isNumber();
 
-$db->updateRow('scores', $score_id, array('team_number' => $team_number));
+$db->updateRow('scores', $scoreId, array('team_number' => $teamNumber));
 
-$score = FSS::tableRow('scores', $score_id);
+$score = FSS::tableRow('scores', $scoreId);
 $person = FSS::tableRow('persons', $score['person_id']);
 $team = null;
 if ($score['team_id']) $team = FSS::tableRow('teams', $score['team_id']);

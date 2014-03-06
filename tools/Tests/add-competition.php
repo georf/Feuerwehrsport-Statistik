@@ -11,8 +11,8 @@ class AddCompetitionTest extends ApiTestCase {
       'post' => array(
         'date' => date('Y-m-d'),
         'name' => 'test',
-        'place_id' => $place['id'],
-        'event_id' => $event['id'],
+        'placeId' => $place['id'],
+        'eventId' => $event['id'],
       ),
       'session' => array(
         'loggedin' => true,
@@ -38,13 +38,13 @@ class AddCompetitionTest extends ApiTestCase {
 
   public function testFailedBadPlace() {
     $options = $this->options();
-    $options['post']['place_id'] = '';
+    $options['post']['placeId'] = '';
     $this->failed($this->api($options));
   }
 
   public function testFailedBadEvent() {
     $options = $this->options();
-    $options['post']['event_id'] = '';
+    $options['post']['eventId'] = '';
     $this->failed($this->api($options));
   }
 

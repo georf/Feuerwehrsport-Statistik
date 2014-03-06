@@ -3,7 +3,7 @@
 $outTeams = array();
 $wherenot = '';
 
-$id = Check2::value(false)->post('person_id')->isIn('persons');
+$id = Check2::value(false)->post('personId')->isIn('persons');
 if ($id !== false) {
   $teams = $db->getRows("
     SELECT `t`.*, COUNT(`i`.`key`) AS `count`

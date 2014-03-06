@@ -18,14 +18,14 @@ switch ($discipline) {
   default:
     throw new Exception('Bad discipline');
 }
-$score = Check2::except()->post('score_id')->isIn($table, 'row');
+$score = Check2::except()->post('scoreId')->isIn($table, 'row');
 
 $update = false;
 for ($i = 1; $i < $wks; $i++) {
-  $person_id = Check2::value()->post('person_'.$i)->isIn('persons', true);
-  if ($person_id && $score['person_'.$i] != $person_id) {
+  $personId = Check2::value()->post('person'.$i)->isIn('persons', true);
+  if ($personId && $score['person_'.$i] != $personId) {
     $db->updateRow($table, $score['id'], array(
-      'person_'.$i => $person_id
+      'person_'.$i => $personId
     ));
     $update = true;
   }

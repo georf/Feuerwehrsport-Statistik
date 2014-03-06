@@ -4,8 +4,8 @@ class SetScoreNumberTest extends ApiTestCase {
   protected function params() {
     $score = $this->validRow('scores');
     return array(
-      'score_id'    => $score['id'],
-      'team_number' => '1',
+      'scoreId'    => $score['id'],
+      'teamNumber' => '1',
     );
   }
 
@@ -15,13 +15,13 @@ class SetScoreNumberTest extends ApiTestCase {
 
   public function testFailedBadScore() {
     $params = $this->params();
-    $params['score_id'] = '';
+    $params['scoreId'] = '';
     $this->failed($this->apiPost('set', 'score-number', $params));
   }
 
   public function testFailedBadTeamNumber() {
     $params = $this->params();
-    $params['team_number'] = '';
+    $params['teamNumber'] = '';
     $this->failed($this->apiPost('set', 'score-number', $params));
   }
 

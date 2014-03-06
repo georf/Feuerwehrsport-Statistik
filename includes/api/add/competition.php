@@ -2,17 +2,17 @@
 
 Check2::except()->isAdmin();
 
-$date     = Check2::except()->post('date')->isDate();
-$place_id = Check2::except()->post('place_id')->isIn('places');
-$event_id = Check2::except()->post('event_id')->isIn('events');
-$name     = Check2::value('')->post('name')->present();
+$date    = Check2::except()->post('date')->isDate();
+$placeId = Check2::except()->post('placeId')->isIn('places');
+$eventId = Check2::except()->post('eventId')->isIn('events');
+$name    = Check2::value('')->post('name')->present();
 
-$result_id = $db->insertRow('competitions', array(
+$resultId = $db->insertRow('competitions', array(
   'date'     => $date,
   'name'     => $name,
-  'place_id' => $place_id,
-  'event_id' => $event_id,
+  'place_id' => $placeId,
+  'event_id' => $eventId,
 ));
 
-Log::insert('add-competition', FSS::tableRow('competitions', $result_id));
+Log::insert('add-competition', FSS::tableRow('competitions', $resultId));
 $output['success'] = true;

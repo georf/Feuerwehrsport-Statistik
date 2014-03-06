@@ -2,9 +2,9 @@
 
 $name = Check2::except()->post('name')->present();
 
-$result_id = $db->insertRow('events', array(
+$resultId = $db->insertRow('events', array(
   'name' => $name,
 ));
 
-Log::insert('add-event', FSS::tableRow('events', $result_id));
+Log::insert('add-event', FSS::tableRow('events', $resultId));
 $output['success'] = true;

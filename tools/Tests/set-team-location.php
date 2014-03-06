@@ -4,9 +4,9 @@ class SetTeamLocationTest extends ApiTestCase {
   protected function params() {
     $team = $this->validRow('teams');
     return array(
-      'team_id' => $team['id'],
-      'lat'     => '11',
-      'lon'     => '11',
+      'teamId' => $team['id'],
+      'lat'    => '11',
+      'lon'    => '11',
     );
   }
 
@@ -16,7 +16,7 @@ class SetTeamLocationTest extends ApiTestCase {
 
   public function testFailedBadTeam() {
     $params = $this->params();
-    $params['team_id'] = '';
+    $params['teamId'] = '';
     $this->failed($this->apiPost('set', 'team-location', $params));
   }
 

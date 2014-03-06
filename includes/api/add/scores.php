@@ -2,13 +2,13 @@
 
 Check2::except()->isAdmin();
 
-$competition_id = Check2::except()->post('competition_id')->isIn('competitions');
-$discipline     = Check2::except()->post('discipline')->isDiscipline();
-$sex            = Check2::except()->post('sex')->isSex();
-$scores         = Check2::except()->post('scores')->isArray();
+$competitionId = Check2::except()->post('competitionId')->isIn('competitions');
+$discipline    = Check2::except()->post('discipline')->isDiscipline();
+$sex           = Check2::except()->post('sex')->isSex();
+$scores        = Check2::except()->post('scores')->isArray();
 
 foreach ($scores as $score) {
-  $team_number = strval(intval($score['team_number']) -1);
+  $teamNumber = strval(intval($score['team_number']) -1);
 
   if (FSS::isSingleDiscipline($discipline)) {
     $person = Import::getPerson($score['name'], $score['firstname'], $sex);
@@ -32,9 +32,9 @@ foreach ($scores as $score) {
     }
 
     $insert = array(
-      'competition_id' => $competition_id,
+      'competition_id' => $competitionId,
       'time' => $score['times'][$i],
-      'team_number' => $team_number,
+      'team_number' => $teamNumber,
       'team_id' => $score['team_id']
     );
 
