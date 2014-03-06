@@ -1,19 +1,25 @@
 
 # backups
-tools/Ergebnisse
-tools/Daten
-tools/Logos
+tools/Ergebnisse/**
+tools/Daten/**
+tools/Logos/**
 
 # files
-files
-styling/logos
-styling/map
+files/**
+styling/logos/**
+styling/map/**
 
 # config
-lib/config.php
 includes/lib/config.php
 
 # cache
-includes/lib/vendor/pChart/cache/*
-page
-chart
+includes/lib/vendor/pChart/cache/**
+page/**
+chart/**
+
+# generated from coffeescript
+js/**
+
+# coffeescript-concat
+# https://github.com/georf/coffeescript-concat
+tools/coffeescript-concat/**
