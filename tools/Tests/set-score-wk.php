@@ -5,12 +5,12 @@ class SetScoreWkTest extends ApiTestCase {
     $person = $this->validRow('persons');
     $score  = $this->validRow('scores_fs');
     return array(
-      'score_id'   => $score['id'],
+      'scoreId'    => $score['id'],
       'discipline' => 'fs',
-      'person_1'   => $person['id'],
-      'person_2'   => $person['id'],
-      'person_3'   => $person['id'],
-      'person_4'   => $person['id'],
+      'person1'    => $person['id'],
+      'person2'    => $person['id'],
+      'person3'    => $person['id'],
+      'person4'    => $person['id'],
     );
   }
 
@@ -20,7 +20,7 @@ class SetScoreWkTest extends ApiTestCase {
 
   public function testFailedBadScore() {
     $params = $this->params();
-    $params['score_id'] = '';
+    $params['scoreId'] = '';
     $this->failed($this->apiPost('set', 'score-wk', $params));
   }
 

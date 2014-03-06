@@ -9,7 +9,7 @@ class GetTestScoresTest extends ApiTestCase {
       'post' => array(
         'discipline' => 'hb',
         'sex' => 'male',
-        'raw_scores' => 'Limbach;Georg;FF Warin;19,22;18,99',
+        'rawScores' => 'Limbach;Georg;FF Warin;19,22;18,99',
         'seperator' => ';',
         'headlines' => 'name,firstname,team,time,time',
       ),
@@ -37,7 +37,7 @@ class GetTestScoresTest extends ApiTestCase {
 
   public function testFailedBadRawScores() {
     $options = $this->options();
-    $options['post']['raw_scores'] = '';
+    $options['post']['rawScores'] = '';
     $this->failed($this->api($options), array('teams', 'scores'));
   }
 

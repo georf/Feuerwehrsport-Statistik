@@ -8,8 +8,8 @@ class AddDateTest extends ApiTestCase {
       'date'        => date('Y-m-d'),
       'name'        => 'test',
       'description' => 'test',
-      'place_id'    => $place['id'],
-      'event_id'    => $event['id'],
+      'placeId'     => $place['id'],
+      'eventId'     => $event['id'],
     );
   }
 
@@ -25,13 +25,13 @@ class AddDateTest extends ApiTestCase {
 
   public function testFailedBadPlace() {
     $params = $this->params();
-    unset($params['place_id']);
+    unset($params['placeId']);
     $this->failed($this->apiPost('add', 'date', $params));
   }
 
   public function testFailedBadEvent() {
     $params = $this->params();
-    unset($params['event_id']);
+    unset($params['eventId']);
     $this->failed($this->apiPost('add', 'date', $params));
   }
 

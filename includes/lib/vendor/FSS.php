@@ -40,6 +40,7 @@ class FSS
 
         if ($cache == 'competition') {
             if (self::$competitionTeamNumbers === false) {
+                TempDB::generate('x_team_numbers');
                 $rows = $db->getRows("
                     SELECT `team_id`
                     FROM `x_team_numbers`
@@ -60,6 +61,7 @@ class FSS
 
         if ($cache == 'team') {
             if (self::$teamTeamNumbers === false) {
+                TempDB::generate('x_team_numbers');
                 $rows = $db->getRows("
                     SELECT `team_id`
                     FROM `x_team_numbers`
@@ -78,6 +80,7 @@ class FSS
             return '';
         }
 
+        TempDB::generate('x_team_numbers');
         if (count($db->getRows("
             SELECT `team_id`
             FROM `x_team_numbers`
@@ -128,7 +131,6 @@ class FSS
         global $db;
 
         TempDB::generate('x_full_competitions');
-
         return $db->getFirstRow("
             SELECT *
             FROM `x_full_competitions`

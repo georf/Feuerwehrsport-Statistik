@@ -1,8 +1,8 @@
 <?php
 
 $date        = Check2::except()->post('date')->isDate();
-$place_id    = Check2::except()->post('place_id')->isIn('places', true);
-$event_id    = Check2::except()->post('event_id')->isIn('events', true);
+$placeId     = Check2::except()->post('placeId')->isIn('places', true);
+$eventId     = Check2::except()->post('eventId')->isIn('events', true);
 $name        = Check2::except()->post('name')->present();
 $description = Check2::except()->post('description')->present();
 
@@ -14,14 +14,14 @@ foreach (FSS::$disciplines as $dis) {
 }
 sort($provided);
 
-$result_id = $db->insertRow('dates', array(
+$resultId = $db->insertRow('dates', array(
   'date'        => $date,
   'name'        => $name,
-  'place_id'    => $place_id,
-  'event_id'    => $event_id,
+  'place_id'     => $placeId,
+  'event_id'     => $eventId,
   'description' => $description,
   'disciplines' => implode(',', $provided)
 ));
 
-Log::insert('add-date', FSS::tableRow('dates', $result_id));
+Log::insert('add-date', FSS::tableRow('dates', $resultId));
 $output['success'] = true;

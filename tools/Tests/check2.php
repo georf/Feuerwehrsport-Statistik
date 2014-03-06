@@ -28,8 +28,8 @@ class Check2Test extends ApiTestCase {
     $competition = $this->validRow("competitions");
     $_POST = array(
       'foo'             => 'bar',
-      'competition_id'  => $competition['id'],
-      'competition_id2' => 0,
+      'competitionId'  => $competition['id'],
+      'competitionId2' => 0,
     );
 
     // array
@@ -37,10 +37,10 @@ class Check2Test extends ApiTestCase {
     $this->isFalse(Check2::boolean()->post('foo')->isIn(array('bar2')));
 
     // database
-    $this->isTrue(Check2::boolean()->post('competition_id')->isIn('competitions'));
-    $this->isFalse(Check2::boolean()->post('competition_id2')->isIn('competitions'));
-    $this->isNull(Check2::boolean()->post('competition_id2')->isIn('competitions', true));
-    $this->isArray(Check2::boolean()->post('competition_id')->isIn('competitions', 'row'));
+    $this->isTrue(Check2::boolean()->post('competitionId')->isIn('competitions'));
+    $this->isFalse(Check2::boolean()->post('competitionId2')->isIn('competitions'));
+    $this->isNull(Check2::boolean()->post('competitionId2')->isIn('competitions', true));
+    $this->isArray(Check2::boolean()->post('competitionId')->isIn('competitions', 'row'));
   }
 
   public function testIsSex() {
@@ -69,6 +69,7 @@ class Check2Test extends ApiTestCase {
 
   public function testPresent() {
     $this->isTrue(Check2::boolean()->variable('foo')->present());
+    $this->isTrue(Check2::boolean()->variable("\t")->present());
     $this->isFalse(Check2::boolean()->variable('')->present());
   }
 

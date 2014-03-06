@@ -84,6 +84,8 @@ class Cache {
     public static function generateFile($content) {
         global $config;
 
+        if (isset($config['cache-disabled'])) return;
+
         $name = $_SERVER['SCRIPT_URL'];
 
         if (preg_match('|\.php$|', $name)) return;

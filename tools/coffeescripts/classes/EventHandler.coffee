@@ -1,4 +1,4 @@
-class EventHandler
+class @EventHandler
   constructor: () ->
     @handlers = {}
 

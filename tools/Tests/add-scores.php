@@ -10,7 +10,7 @@ class AddScoresTest extends ApiTestCase {
       'post' => array(
         'discipline' => 'hl',
         'sex' => 'male',
-        'competition_id' => $competition['id'],
+        'competitionId' => $competition['id'],
         'scores' => array(),
       ),
       'session' => array(
@@ -43,7 +43,7 @@ class AddScoresTest extends ApiTestCase {
 
   public function testFailedBadCompetition() {
     $options = $this->options();
-    $options['post']['competition_id'] = '99999999999999';
+    $options['post']['competitionId'] = '99999999999999';
     $this->failed($this->api($options));
   }
 

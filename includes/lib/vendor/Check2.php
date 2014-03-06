@@ -17,6 +17,10 @@ class Check2 {
     return new self('except');
   }
 
+  public static function page() {
+    return new self('page');
+  }
+
   public static function boolean() {
     return new self('boolean');
   }
@@ -44,7 +48,7 @@ class Check2 {
   private function valueIn($name, $array) {
     $this->name = $name;
     if (isset($array[$name])) {
-      $this->value = is_array($array[$name]) ? $array[$name] : trim($array[$name]);
+      $this->value = $array[$name];
     } else {
       $this->value = false;
       $this->escape();
@@ -61,6 +65,9 @@ class Check2 {
   private function escape($result = false, $subject = false) {
     if ($this->type === 'except') {
       if ($result === false) throw new CheckException($this->name, $subject);
+      return $this->value;
+    } elseif ($this->type === 'page') {
+      if ($result === false) throw new PageNotFound($this->name, $subject);
       return $this->value;
     } elseif ($this->type === 'boolean') {
       return ($result) ? true : false ;
@@ -115,7 +122,7 @@ class Check2 {
   }
 
   public function isDate() {
-    return $this->escape(preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->value) === 1);
+    return $this->match('/^\d{4}-\d{2}-\d{2}$/');
   }
 
   public function present() {
@@ -124,6 +131,10 @@ class Check2 {
 
   public function isSex() {
     return $this->isIn(array('male', 'female'));
+  }
+
+  public function match($regex) {
+    return $this->escape(preg_match($regex, $this->value) === 1);
   }
 
   public function isDiscipline() {
@@ -149,5 +160,9 @@ class Check2 {
 
   public function isNumber() {
     return $this->escape(is_numeric($this->value));
+  }
+
+  public function isTrue($value) {
+    return $this->escape($value);
   }
 }

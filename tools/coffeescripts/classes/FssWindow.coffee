@@ -1,12 +1,16 @@
-#= EventHandler
-#= FssFormRow
+#= require EventHandler
+#= require FssFormRow
 
-class FssWindow extends EventHandler
+class @FssWindow extends EventHandler
+  @build: (title) ->
+    new FssWindow(title)
+
   constructor: (@title) ->
     super
     @rows = []
     @rendered = false
     @on('pre-submit', () =>
+      @close()
       @fire('submit', @data())
     )
 
@@ -17,15 +21,16 @@ class FssWindow extends EventHandler
     @darkroom = $('<div/>').addClass('darkroom')
 
     if @handlers['submit']? and @handlers['submit'].length > 0
-      submit = $('<a/>').addClass('class').text('OK').on('click', (e) => 
+      submit = $('<button/>').text('OK').on('click', (e) => 
         e.preventDefault()
         @fire('pre-submit')
       )
       cancel = $('<button/>').text('Abbrechen').on('click', (e) => 
         e.preventDefault()
+        @close()
         @fire('cancel')
       )
-      @add(new FssFormRow(submit, cancel))
+      @add((new FssFormRow(submit, cancel)).addClass('submit-row'))
 
     form = $('<form/>').on('submit', (e) => 
       e.preventDefault()
@@ -38,6 +43,7 @@ class FssWindow extends EventHandler
 
   add: (row) =>
     @rows.push(row)
+    @
 
   open: () =>
     @render() unless @rendered
@@ -60,8 +66,10 @@ class FssWindow extends EventHandler
   close: () =>
     @container.remove()
     @darkroom.remove()
+    @
 
   data: () =>
     data = {}
-    data = row.appendData(data) for row in @row
+    for row in @rows
+      data = row.appendData(data) 
     data

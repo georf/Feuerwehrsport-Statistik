@@ -1,17 +1,17 @@
 <?php
-$team_id = Check2::except()->post('team_id')->isIn('teams');
+$teamId = Check2::except()->post('teamId')->isIn('teams');
 $lat = Check2::except()->post('lat')->present();
 $lon = Check2::except()->post('lon')->present();
 
-$db->updateRow('teams', $team_id, array(
+$db->updateRow('teams', $teamId, array(
   'lat' => $lat,
   'lon' => $lon,
 ));
 
-Map::downloadStaticMap('teams', $team_id);
+Map::downloadStaticMap('teams', $teamId);
 
 Log::insert('set-team-location', array(
-  'team' => FSS::tableRow('teams', $team_id)
+  'team' => FSS::tableRow('teams', $teamId)
 ));
 
 $output['success'] = true;

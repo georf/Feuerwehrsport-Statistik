@@ -1,14 +1,14 @@
 <?php
 
-$competition_id = Check2::except()->post('competition_id')->isIn('competitions');
-$score_type_id  = Check2::except()->post('score_type_id')->isIn('score_types', true);
+$competitionId = Check2::except()->post('competitionId')->isIn('competitions');
+$scoreTypeId   = Check2::except()->post('scoreTypeId')->isIn('score_types', true);
 
-$db->updateRow('competitions', $competition_id, array(
-  'score_type_id' => $score_type_id
+$db->updateRow('competitions', $competitionId, array(
+  'score_type_id' => $scoreTypeId
 ));
 
 Log::insert('set-score-type', array(
-  'competition' => FSS::tableRow('competitions', $competition_id)
+  'competition' => FSS::tableRow('competitions', $competitionId)
 ));
 
 $output['success'] = true;

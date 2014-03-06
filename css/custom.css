@@ -1,0 +1,399 @@
+/* Sticky footer styles
+-------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+  border-top: #ddd 1px solid;
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+#wrap > .container {
+  padding: 0px 15px 0;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
+#footer {
+  margin-top:30px;
+}
+
+#footer > .container {
+  padding-left: 15px;
+  padding-right: 15px;
+  text-align: center;
+  padding: 5px;
+}
+#footer .container .list-group-item {
+  line-height: 1.1em;
+  font-size: 0.9em;
+  padding: 3px;
+  margin:2px;
+}
+
+.container {
+  max-width: 1000px;
+}
+
+.toc {
+  padding: 10px 20px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  box-shadow: none;
+  margin-bottom: 30px;
+}
+
+.best-of-year-home .hint-line td{
+  font-size: 0.9em;
+  line-height: 1.0em;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.years-overview-home {
+  width: 100%;  
+}
+
+code {
+  font-size: 80%;
+}
+
+table.dataTable {
+  margin: 0 auto;
+  clear: both;
+  width: 100%;
+}
+
+table.dataTable thead th {
+  padding: 3px 18px 3px 10px;
+  border-bottom: 1px solid black;
+  font-weight: bold;
+  cursor: pointer;
+  *cursor: hand;
+}
+
+table.dataTable tfoot th {
+  padding: 3px 18px 3px 10px;
+  border-top: 1px solid black;
+  font-weight: bold;
+}
+
+table.dataTable td {
+  padding: 3px 10px;
+}
+
+table.dataTable td.center,
+table.dataTable td.dataTables_empty {
+  text-align: center;
+}
+
+table.dataTable tr.odd { background-color: #E2E4FF; }
+table.dataTable tr.even { background-color: white; }
+
+table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
+table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }
+table.dataTable tr.odd td.sorting_3 { background-color: #E0E2FF; }
+table.dataTable tr.even td.sorting_1 { background-color: #EAEBFF; }
+table.dataTable tr.even td.sorting_2 { background-color: #F2F3FF; }
+table.dataTable tr.even td.sorting_3 { background-color: #F9F9FF; }
+
+.dataTables_wrapper {
+  position: relative;
+  clear: both;
+  *zoom: 1;
+}
+.dataTables_length {
+  float: left;
+}
+.dataTables_filter {
+  float: right;
+  text-align: right;
+}
+.dataTables_info {
+  clear: both;
+  float: left;
+    margin-bottom:20px;
+}
+.dataTables_paginate {
+  float: right;
+  text-align: right;
+}
+.paginate_disabled_previous,
+.paginate_enabled_previous,
+.paginate_disabled_next,
+.paginate_enabled_next {
+  height: 19px;
+  float: left;
+  cursor: pointer;
+  *cursor: hand;
+  color: #111 !important;
+}
+.paginate_disabled_previous:hover,
+.paginate_enabled_previous:hover,
+.paginate_disabled_next:hover,
+.paginate_enabled_next:hover {
+  text-decoration: none !important;
+}
+.paginate_disabled_previous:active,
+.paginate_enabled_previous:active,
+.paginate_disabled_next:active,
+.paginate_enabled_next:active {
+  outline: none;
+}
+.paginate_disabled_previous,
+.paginate_disabled_next {
+  color: #666 !important;
+}
+.paginate_disabled_previous,
+.paginate_enabled_previous {
+  padding-left: 23px;
+}
+.paginate_disabled_next,
+.paginate_enabled_next {
+  padding-right: 23px;
+  margin-left: 10px;
+}
+.paginate_enabled_previous { background: url('../styling/images/back_enabled.png') no-repeat top left; }
+.paginate_enabled_previous:hover { background: url('../styling/images/back_enabled_hover.png') no-repeat top left; }
+.paginate_disabled_previous { background: url('../styling/images/back_disabled.png') no-repeat top left; }
+
+.paginate_enabled_next { background: url('../styling/images/forward_enabled.png') no-repeat top right; }
+.paginate_enabled_next:hover { background: url('../styling/images/forward_enabled_hover.png') no-repeat top right; }
+.paginate_disabled_next { background: url('../styling/images/forward_disabled.png') no-repeat top right; }
+.paging_full_numbers {
+  height: 22px;
+  line-height: 22px;
+}
+.paging_full_numbers a:active {
+  outline: none
+}
+.paging_full_numbers a:hover {
+  text-decoration: none;
+}
+.paging_full_numbers a.paginate_button,
+.paging_full_numbers a.paginate_active {
+  border: 1px solid #aaa;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 2px 5px;
+  margin: 0 3px;
+  cursor: pointer;
+  *cursor: hand;
+  color: #333 !important;
+}
+.paging_full_numbers a.paginate_button {
+  background-color: #ddd;
+}
+.paging_full_numbers a.paginate_button:hover {
+  background-color: #ccc;
+  text-decoration: none !important;
+}
+.paging_full_numbers a.paginate_active {
+  background-color: #99B3FF;
+}
+.dataTables_processing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 250px;
+  height: 30px;
+  margin-left: -125px;
+  margin-top: -15px;
+  padding: 14px 0 2px 0;
+  border: 1px solid #ddd;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+  background-color: white;
+}
+.sorting { background: url('../styling/images/sort_both.png') no-repeat center right; }
+.sorting_asc { background: url('../styling/images/sort_asc.png') no-repeat center right; }
+.sorting_desc { background: url('../styling/images/sort_desc.png') no-repeat center right; }
+
+.sorting_asc_disabled { background: url('../styling/images/sort_asc_disabled.png') no-repeat center right; }
+.sorting_desc_disabled { background: url('../styling/images/sort_desc_disabled.png') no-repeat center right; }
+table.dataTable thead th.sorting_disabled { cursor: default; }
+
+table.dataTable th:active {
+  outline: none;
+}
+
+
+/*
+ * Scrolling
+ */
+.dataTables_scroll {
+  clear: both;
+}
+
+.dataTables_scrollBody {
+  *margin-top: -1px;
+  -webkit-overflow-scrolling: touch;
+}
+
+table.table-small {
+  font-size: 0.9em;
+}
+div.logo-replacement {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+  vertical-align: top;
+  text-align: center;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+table.d-cup-wertung td{
+font-size:0.8em;
+line-height:0.8em;
+}
+
+td.person {
+  font-size: 0.9em;
+}
+
+.top2-line {
+border-top:2px solid black;
+}
+.top-line {
+border-top:1px solid black;
+}
+.right-line {
+border-right: 1px solid black;
+}
+
+.top-right{
+float:right;
+}
+
+.fss-window {
+  position: absolute;
+  background: #fff;
+  z-index: 1002;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  padding: 3px;
+  border: #e7e7e7 1px solid;
+  width: 650px;
+}
+.fss-form-row {
+  margin-left: 20px;
+}
+.fss-form-row .score-table {
+  font-size: 0.9em;
+  margin-left: -10px;
+}
+.fss-form-row .score-table select {
+  width: 80px;
+}
+.fss-window .text-label {
+  width: 100px;
+}
+.fss-form-row .checkbox-label span {
+  margin-left: 10px;
+}
+.fss-window .text-label {
+  width: 100px;
+}
+.fss-window .field-box {
+  display: inline-block;
+}
+.fss-window .description {
+  margin: 5px 10px 15px 10px;
+}
+.fss-window .submit-row {
+  text-align: center;
+  background: #f8f8f8;
+  margin: 10px -3px -3px -3px;
+  border-top: #e7e7e7 1px solid;
+  padding: 5px;
+}
+.fss-window .submit-row button {
+  margin: 0 10px;
+  width: 100px;
+}
+.fss-window-title {
+  text-align: center;
+  background: #f8f8f8;
+  margin: -3px -3px 10px -3px;
+  border-bottom: #e7e7e7 1px solid;
+  padding: 5px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.darkroom {
+  background: black;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  opacity: 0.3;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1001;
+}
+.action-icon {
+  cursor: pointer;
+  padding-left: 10px;
+}
+
+span.bt {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  float: right;
+}
+span.bt:hover {
+  outline: 1px dotted #BFBFBF;
+}
+
+.edit-team-group {
+  background-image:url(../styling/images/user-properties.png);
+}
+/*span.bt:hover{
+outline:dotted 1px grey;
+}
+span.bt.user-group-new{
+background-image:url(../images/user-group-new.png);
+}
+span.bt.user-group-properties{
+background-image:url(../images/user-properties.png);
+}
+span.bt.user-group-delete{
+background-image:url(../images/user-group-delete.png);
+}
+span.bt.applications-internet-add{
+background-image:url(../images/applications-internet-add.png);
+}*/
+
+#map-dynamic {
+  height: 500px;
+}

@@ -1,13 +1,13 @@
 <?php
 
-$score_id    = Check2::except()->post('score_id')->isIn('scores');
-$team_id = Check2::except()->post('team_id')->isIn('teams', true);
+$scoreId = Check2::except()->post('scoreId')->isIn('scores');
+$teamId  = Check2::except()->post('teamId')->isIn('teams', true);
 
-$db->updateRow('scores', $score_id, array(
-  'team_id' => $team_id
+$db->updateRow('scores', $scoreId, array(
+  'team_id' => $teamId
 ));
 
-$score = FSS::tableRow('scores', $score_id);
+$score = FSS::tableRow('scores', $scoreId);
 $person = FSS::tableRow('persons', $score['person_id']);
 
 $team = null;

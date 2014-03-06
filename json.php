@@ -6,6 +6,7 @@ try {
   require_once(__DIR__.'/includes/lib/init.php');
 
   $output['login'] = Login::check();
+  $output['success'] = true;
 
   $_type = Check2::except()->get('type')->getVal();
 

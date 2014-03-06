@@ -1,7 +1,7 @@
 #= require FssWindow
 #= require FssFormRow
 
-class ConfirmFssWindow extends FssWindow
+class @ConfirmFssWindow extends FssWindow
   constructor: (title, message, submit, cancel = false) ->
     super(title)
     @add(new FssFormRow($('<p/>').text(message)))

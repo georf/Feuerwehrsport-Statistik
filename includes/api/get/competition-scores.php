@@ -1,12 +1,12 @@
 <?php
-$competition_id = Check2::except()->post('competition_id')->isIn('competitions');
+$competitionId = Check2::except()->post('competitionId')->isIn('competitions');
 
 $scores = array();
 $scores['gs'] = array();
 $scores['gs']['female'] = $db->getFirstRow("
   SELECT COUNT(*) AS `count`
   FROM `scores_gs`
-  WHERE `competition_id` = ".$competition_id, 'count');
+  WHERE `competition_id` = ".$competitionId, 'count');
 
 $scores['hl'] = array();
 $scores['hl']['male'] = $db->getFirstRow("
@@ -15,7 +15,7 @@ $scores['hl']['male'] = $db->getFirstRow("
   INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
   WHERE `p`.`sex` = 'male'
   AND `s`.`discipline` = 'hl'
-  AND `competition_id` = ".$competition_id, 'count');
+  AND `competition_id` = ".$competitionId, 'count');
 
 $scores['hb'] = array();
 $scores['la'] = array();
@@ -28,19 +28,19 @@ foreach (array('male', 'female') as $sex) {
     INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
     WHERE `p`.`sex` = '".$sex."'
     AND `s`.`discipline` = 'hb'
-    AND `competition_id` = ".$competition_id, 'count');
+    AND `competition_id` = ".$competitionId, 'count');
 
   $scores['la'][$sex] = $db->getFirstRow("
     SELECT COUNT(*) AS `count`
     FROM `scores_la`
     WHERE `sex` = '".$sex."'
-    AND `competition_id` = ".$competition_id, 'count');
+    AND `competition_id` = ".$competitionId, 'count');
 
   $scores['fs'][$sex] = $db->getFirstRow("
     SELECT COUNT(*) AS `count`
     FROM `scores_fs`
     WHERE `sex` = '".$sex."'
-    AND `competition_id` = ".$competition_id, 'count');
+    AND `competition_id` = ".$competitionId, 'count');
 }
 
 $output['scores'] = $scores;

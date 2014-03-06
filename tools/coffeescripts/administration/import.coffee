@@ -1,0 +1,3 @@
+#= require FssImport
+
+$ () -> new FssImport()

@@ -1,7 +1,7 @@
 #= require FssWindow
 #= require FssFormRow
 
-class AlertFssWindow extends FssWindow
+class @AlertFssWindow extends FssWindow
   constructor: (title, message) ->
     super(title)
     @add(new FssFormRow($('<p/>').text(message)))

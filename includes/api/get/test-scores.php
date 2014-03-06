@@ -2,12 +2,13 @@
 
 Check2::except()->isAdmin();
 
+
 $discipline = Check2::except()->post('discipline')->isDiscipline();
 $sex        = Check2::except()->post('sex')->isSex();
-$raw_scores = Check2::except()->post('raw_scores')->present();
+$rawScores  = Check2::except()->post('rawScores')->present();
 $seperator  = Check2::except()->post('seperator')->present();
 $headlines  = explode(",", Check2::except()->post('headlines')->present());
-$score_lines = explode("\n", $raw_scores);
+$score_lines = explode("\n", $rawScores);
 
 $outputScores = array();
 $outputTeams = array();
