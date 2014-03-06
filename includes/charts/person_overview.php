@@ -115,16 +115,16 @@ $w = 210;
 $h = 150;
 
 /* Create the pChart object */
-$myPicture = new pImage($w, $h, $MyData, TRUE);
+$myPicture = Chart::create($w, $h, $MyData);
 
 /* Turn on Antialiasing */
 $myPicture->Antialias = TRUE;
 
 /* Set the default font */
-$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>8,"R"=>0,"G"=>0,"B"=>0));
+$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(8),"R"=>0,"G"=>0,"B"=>0));
 
 /* Define the chart area */
-$myPicture->setGraphArea(25,15,200,135);
+$myPicture->setGraphArea(Chart::size(25),Chart::size(15),Chart::size(200),Chart::size(135));
 
 /* Draw the scale */
 $scaleSettings = array(
@@ -140,29 +140,29 @@ $scaleSettings = array(
 $myPicture->drawScale($scaleSettings);
 
 /* Enable shadow computing */
-$myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+$myPicture->setShadow(TRUE,array("X"=>Chart::size(1),"Y"=>Chart::size(1),"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
 
 /* Draw the line chart */
 $myPicture->drawLineChart(array(
     'BreakVoid' => false,
 ));
 $myPicture->drawPlotChart(array(
-    "PlotSize"=>1,
+    "PlotSize"=>Chart::size(1),
     "DisplayValues"=>FALSE,
     "PlotBorder"=>False,
-    "BorderSize"=>1,
+    "BorderSize"=>Chart::size(1),
     "Surrounding"=>-50,
     "BorderAlpha"=>80
 ));
 
 
 /* Write the chart legend */
-$myPicture->drawLegend(5,1,array(
+$myPicture->drawLegend(Chart::size(5),Chart::size(1),array(
   "Style"=>LEGEND_NOBORDER,
   "Mode"=>LEGEND_HORIZONTAL,
   "FontR"=>0,"FontG"=>0,"FontB"=>0,
   "FontName"=>PCHARTDIR."fonts/calibri.ttf",
-  "FontSize"=>10
+  "FontSize"=>Chart::size(10)
 ));
 
 /* Render the picture */
