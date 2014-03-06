@@ -376,6 +376,7 @@ foreach ($dis as $fullKey => $scores) {
 
 $toc->link('toc-weblinks', 'Weblinks');
 $toc->link('toc-files', 'Dateien');
+$toc->link('fehler', 'Fehler oder Hinweis melden');
 
 
 $overviewTable = '<table class="table table-condensed">';
@@ -759,3 +760,11 @@ echo '<div id="add-file-form" style="display:none;">
   </form>
 </div>
 ';
+
+
+echo Title::h2('Fehler oder Hinweis melden', 'fehler');
+echo '<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>';
+echo '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>';
+echo '<p>Auch Hinweise können zu einem Wettkampf gegeben werden. Dazu zählen zum Beispiel:</p>';
+echo '<ul><li>Name des Wettkampfs</li><li>Besondere Bindungen</li><li>Wetter</li><li>Aufteilung auf mehrere Orte oder Tage</li></ul>';
+echo '<p><button id="report-error" data-competition-id="'.$id.'" data-competition-name="'.$competition['name'].'">Fehler oder Hinweis melden</button></p>';
