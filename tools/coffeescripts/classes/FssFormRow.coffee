@@ -106,12 +106,12 @@ class @FssFormRowDate extends FssFormRowLabelField
       month: @twoDigits(d.getMonth()+1)
       day: @twoDigits(d.getDate())
 
-    result = defaultDate.match(/^(\d{2})-(\d{2})-(\d{4})$/)
+    result = defaultDate.match(/^(\d{4})-(\d{2})-(\d{2})$/)
     if result
       defaultValues = $.extend defaultValues,
-        day: result[1]
+        year: result[1]
         month: result[2]
-        year: result[3]
+        day: result[3]
 
     @day = $('<select/>')
     for val in [1..31]
