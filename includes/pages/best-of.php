@@ -71,7 +71,7 @@ foreach ($disciplines as $d) {
     ->col('Name', function($row) use ($group) { 
       return ($group)? 
         Link::team($row['id'], $row['name']) 
-      : Link::fullPerson($row['id'], $row['name'], $row['firstname']); 
+      : Link::fullPerson($row['person_id'], $row['name'], $row['firstname']); 
     }, 20)
     ->col('Bestzeit', function($row) { return FSS::time($row['time']); }, 10)
     ->col('Wettkampf', function($row) {
