@@ -34,6 +34,7 @@ if (count($links)) {
     $boxContent .= '</ul>';
 }
 $boxContent .= '<p style="text-align:center;"><button id="add-link" data-for-id="'.$date['id'].'" data-for-table="date">Link hinzufügen</button></p>';
+$boxContent .= '<p style="text-align:center;"><button id="change-date" data-date-id="'.$date['id'].'">Termin bearbeiten</button></p>';
 
 echo Bootstrap::row()
 ->col('<p>'.nl2br(htmlspecialchars($date['description'])).'</p>', 8)
