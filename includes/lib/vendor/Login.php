@@ -5,7 +5,7 @@ class Login
     static public function check()
     {
 
-        return (self::getId() !== false);
+        return (self::getId() !== false) || Check::isAdmin();
     }
 
     static public function in($name, $email, $ip, $useragent)
@@ -54,6 +54,8 @@ class Login
 
             if ($row) return $row['id'];
         }
+
+        if (Check::isAdmin()) return 1;
         return false;
     }
 
