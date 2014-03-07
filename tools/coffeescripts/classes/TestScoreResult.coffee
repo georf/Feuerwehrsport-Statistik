@@ -1,7 +1,8 @@
 class TestScoreResult
   constructor: (@raw, @fields) ->
-    @needField('name')               if @raw.name?
-    @needField('firstname')          if @raw.firstname? 
+    if @raw.name?
+      @needField('name')
+      @needField('person_link')
     @needField('teams')              if @raw.teams?      
     @needField('team_ids')           if @raw.team_ids?   
     @needField('team_number')        if @raw.team_number?
@@ -30,15 +31,16 @@ class TestScoreResult
       tr.addClass('not-correct');
 
     if @raw.name?
-      td = appendTd(@raw['name'])
-      td.addClass('person-not-found') unless @raw['found_person'] 
+      if @raw.persons.length > 1
+        $('<td/>').append(@personSelect()).appendTo(tr)
+      else if @raw.persons.length
+        appendTd("#{@raw.name} #{@raw.firstname}")
+        @raw.person_id = @raw.persons[0].id
+      else
+        appendTd("#{@raw.name} #{@raw.firstname}").addClass('person-not-found')
+      $('<td/>').append(@personLinks()).appendTo(tr)
     else if fields.name
       appendTd('')
-
-    if @raw.firstname?
-      td = appendTd(@raw['firstname'])
-      td.addClass('person-not-found') unless @raw['found_person'] 
-    else if fields.firstname
       appendTd('')
 
     if @raw.teams?
@@ -94,3 +96,17 @@ class TestScoreResult
     select.change () =>
       @raw.team_id = teamIds[parseInt(select.val())]
       @raw.team = teams[parseInt(select.val())]
+
+  personSelect: () =>
+    select = $('<select/>')
+    for p in @raw.persons
+      $('<option/>').text("#{p.name} #{p.firstname} #{p.id}").val(p.id).appendTo(select)
+    select.change () =>
+      @raw.person_id = select.val()
+
+  personLinks: () =>
+    span = $('<span/>')
+    for p in @raw.persons
+      $('<a/>').text("#{p.id}").attr('href', "/page/person-#{p.id}.html").appendTo(span)
+      span.append(' ')
+    span

@@ -107,14 +107,7 @@ foreach ($score_lines as $score_line) {
     }
 
     if (FSS::isSingleDiscipline($discipline)) {
-      $score['found_person'] = true;
-      $person = Import::getPerson($score['name'], $score['firstname'], $sex);
-      if ($person) {
-        $score['name']      = $person['name'];
-        $score['firstname'] = $person['firstname'];
-      } else {
-        $score['found_person'] = false;
-      }
+      $score['persons'] = Import::getPersons($score['name'], $score['firstname'], $sex);
     }
   }
   $outputScores[] = $score;

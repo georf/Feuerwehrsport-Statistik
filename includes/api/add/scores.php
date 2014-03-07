@@ -11,14 +11,20 @@ foreach ($scores as $score) {
   $teamNumber = strval(intval($score['team_number']) -1);
 
   if (FSS::isSingleDiscipline($discipline)) {
-    $person = Import::getPerson($score['name'], $score['firstname'], $sex);
-    if (!$person) {
-      $result = $db->insertRow('persons', array(
-        'name' => $score['name'],
-        'firstname' => $score['firstname'],
-        'sex' => $sex
-      ), false);
-      $person = FSS::tableRow('persons', $result);
+    if (isset($score['person_id'])) {
+      $person = FSS::tableRow('persons', $score['person_id']);
+    } else {
+      $persons = Import::getPersons($score['name'], $score['firstname'], $sex);
+      if (count($persons)) {
+        $person = $persons[0];
+      } else {
+        $result = $db->insertRow('persons', array(
+          'name' => $score['name'],
+          'firstname' => $score['firstname'],
+          'sex' => $sex
+        ), false);
+        $person = FSS::tableRow('persons', $result);
+      }
     }
 
     if ($score['team_id'] == -1) {

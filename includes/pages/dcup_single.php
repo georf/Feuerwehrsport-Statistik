@@ -52,8 +52,8 @@ $countTable
 ->col('Gesamtzeit', 'time', 10, array(), array('class' => 'small'))
 ->col('Punkte', 'points', 7, array(), array('class' => 'small'))
 ->col('', function ($row) use ($sex) { 
-  $person = Import::getPerson($row['name'], $row['firstname'], $sex);
-  return Link::person($person['id']); 
+  $person = Import::getPersons($row['name'], $row['firstname'], $sex);
+  return Link::person($person[0]['id']); 
 }, 9);
 
 echo $countTable;
