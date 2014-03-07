@@ -190,7 +190,7 @@ class TestException extends Exception {
   public function escape($value) {
     if (is_bool($value)) return $value ? 'true' : 'false';
     if (is_null($value)) return 'null';
-    if (is_array($value)) return implode(', ', $value);
+    if (is_array($value)) return json_encode($value);
     return strval($value);
   }
 
