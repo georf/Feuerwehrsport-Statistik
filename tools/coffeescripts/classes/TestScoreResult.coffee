@@ -2,8 +2,8 @@ class TestScoreResult
   constructor: (@raw, @fields) ->
     @needField('name')               if @raw.name?
     @needField('firstname')          if @raw.firstname? 
-    @needField('team')               if @raw.team?      
-    @needField('team_id')            if @raw.team_id?   
+    @needField('teams')              if @raw.teams?      
+    @needField('team_ids')           if @raw.team_ids?   
     @needField('team_number')        if @raw.team_number?
     @needField('run')                if @raw.run?       
     @needTimes(@raw['times'].length) if @raw.times?
@@ -41,13 +41,18 @@ class TestScoreResult
     else if fields.firstname
       appendTd('')
 
-    if @raw.team?
-      appendTd(@raw['team'])
+    if @raw.teams?
+      @raw.team = @raw.teams[0]
+      if @raw.teams.length
+        $('<td/>').append(@teamSelect()).appendTo(tr)
+      else
+        appendTd(@raw.teams[0])
     else if fields.team
       appendTd('')
 
-    if @raw.team_id?
-      appendTd(@raw['team_id'])
+    if @raw.team_ids?
+      @raw.team_id = @raw.team_ids[0]
+      appendTd(@raw.team_ids.join(', ')).addClass('null')
     else if fields.team_id
       appendTd('')
 
@@ -78,3 +83,13 @@ class TestScoreResult
 
   getObject: () =>
     @raw
+
+  teamSelect: () =>
+    teamIds = @raw.team_ids
+    teams = @raw.teams
+    select = $('<select/>')
+    for team, i in teams
+      $('<option/>').text("#{team} #{teamIds[i]}").val(i).appendTo(select)
+    select.change () =>
+      @raw.team_id = teamIds[parseInt(select.val())]
+      @raw.team = teams[parseInt(select.val())]

@@ -39,8 +39,8 @@ foreach ($score_lines as $score_line) {
     $score['name']      = '';
     $score['firstname'] = '';
   }
-  $score['team']        = '';
-  $score['team_id']     = '-1';
+  $score['teams']       = array('');
+  $score['team_ids']    = array('-1');
   $score['team_number'] = '1';
   $score['oldteam']     = '';
   $score['number']      = '1';
@@ -71,22 +71,26 @@ foreach ($score_lines as $score_line) {
           break;
 
         case 'team':
-          $score['team'] = $cols[$i];
-          $score['oldteam'] = $score['team'];
+          $teamName = $cols[$i];
+          $score['teams'] = array($teamName);
+          $score['oldteam'] = $teamName;
 
-          $score['team_number'] = Import::getTeamNumber($score['team'], $score['team_number']);
-          if (is_numeric($score['team']) && Check::isIn($score['team'], 'teams')) {
-            $score['team_id'] = $score['team'];
-            $try_team = FSS::tableRow('teams', $score['team']);
-            $score['team'] = $try_team['short'];
+          $score['team_number'] = Import::getTeamNumber($teamName, $score['team_number']);
+          if (is_numeric($teamName) && Check::isIn($teamName, 'teams')) {
+            $score['team_ids'] = array($teamName);
+            $tryTeam = FSS::tableRow('teams', $teamId);
+            $score['teams'] = array($tryTeam['short']);
             break;
           }
 
-          $try_team_id = Import::getTeamId($score['team']);
-          if ($try_team_id !== false) {
-            $score['team_id'] = $try_team_id;
-            $try_team = FSS::tableRow('teams', $try_team_id);
-            $score['team'] = $try_team['short'];
+          $tryTeamIds = Import::getTeamIds($teamName);
+          if (count($tryTeamIds)) {
+            $score['team_ids'] = $tryTeamIds;
+            $score['teams'] = array();
+            foreach ($tryTeamIds as $teamId) {
+              $tryTeam = FSS::tableRow('teams', $teamId);
+              $score['teams'][] = $tryTeam['short'];
+            }
             break;
           }
           $outputTeams[] = $score['oldteam'];
