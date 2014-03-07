@@ -70,6 +70,9 @@ $disciplines = array(
 $scores = array();
 
 echo Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']));
+$otherNames = Import::getOtherOfficialNames($id);
+if (count($otherNames)) echo '<p>'.$person['firstname'].' ist auch unter <em>'.implode('</em>, <em>', $otherNames).'</em> bekannt.</p>';
+
 $toc = TableOfContents::get();
 foreach ($disciplines as $disciplineConf) {
   $discipline = $disciplineConf[0];

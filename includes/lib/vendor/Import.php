@@ -133,5 +133,14 @@ class Import {
       return $result_search;
     }
 
+  public static function getOtherOfficialNames($personId) {
+    global $db;
 
+    return $db->getRows("
+      SELECT CONCAT(`firstname`, ' ', `name`) AS `full_name`
+      FROM `persons_spelling`
+      WHERE `person_id` = '".$db->escape($personId)."'
+      AND `official` = 1
+    ", 'full_name');
+  }
 }
