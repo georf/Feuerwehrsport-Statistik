@@ -43,7 +43,7 @@ class TestScoreResult
 
     if @raw.teams?
       @raw.team = @raw.teams[0]
-      if @raw.teams.length
+      if @raw.teams.length > 1
         $('<td/>').append(@teamSelect()).appendTo(tr)
       else
         appendTd(@raw.teams[0])
@@ -52,7 +52,8 @@ class TestScoreResult
 
     if @raw.team_ids?
       @raw.team_id = @raw.team_ids[0]
-      appendTd(@raw.team_ids.join(', ')).addClass('null')
+      td = appendTd(@raw.team_ids.join(', '))
+      td.addClass('null') if @raw.team_ids.length > 1
     else if fields.team_id
       appendTd('')
 

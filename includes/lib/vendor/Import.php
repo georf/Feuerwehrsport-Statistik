@@ -36,21 +36,17 @@ class Import {
     $likeTeam = preg_replace('/ 4$/', '', $likeTeam);
     $likeTeam = preg_replace('/ E$/', '', $likeTeam);
 
-    $teamIds = $db->getRows("
-      SELECT `id`
-      FROM `teams`
-      WHERE `name` LIKE '".$db->escape($likeTeam)."'
-      OR `short` LIKE '".$db->escape($likeTeam)."'
+    return $db->getRows("
+        SELECT `id`
+        FROM `teams`
+        WHERE `name` LIKE '".$db->escape($likeTeam)."'
+        OR `short` LIKE '".$db->escape($likeTeam)."'
+      UNION
+        SELECT `team_id` AS `id`
+        FROM `teams_spelling`
+        WHERE `name` LIKE '".$db->escape($likeTeam)."'
+        OR `short` LIKE '".$db->escape($likeTeam)."'
     ", 'id');
-
-    $teamSpellingIds = $db->getRows("
-      SELECT `team_id` AS `id`
-      FROM `teams_spelling`
-      WHERE `name` LIKE '".$db->escape($likeTeam)."'
-      OR `short` LIKE '".$db->escape($likeTeam)."'
-    ", 'id');
-
-    return array_unique(array_merge($teamIds, $teamSpellingIds));
   }
 
   public static function getTime($time) {
