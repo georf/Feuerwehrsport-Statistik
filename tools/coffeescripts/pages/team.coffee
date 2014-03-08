@@ -1,7 +1,7 @@
 #= require FssMap
 
 new SortTable(selector: ".datatable-sort-members", noSorting: 8)
-new SortTable(selector: ".datatable-sort-competitions", noSorting: 7)
+new SortTable(selector: ".datatable-sort-competitions", noSorting: 7, direction: "desc")
 new SortTable(selector: ".datatable-sort-team-scores", noSorting: [3,4], direction: "desc")
 new SortTable(selector: ".scores-gs", noSorting: [5..11], direction: "desc")
 new SortTable(selector: ".scores-fs", noSorting: [5..9], direction: "desc")
