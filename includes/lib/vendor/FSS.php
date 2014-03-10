@@ -177,6 +177,7 @@ class FSS
     public static function dis2img($key, $tall = false) {
         $n = '';
         if ($tall == 'blue') $n = 'blue-';
+        if ($tall == 'middle') $n = 'middle-';
         elseif ($tall) $n = 'tall-';
         return '<img src="/styling/images/dis-'.$n.$key.'.png" alt="'.self::dis2name($key).'" title="'.self::dis2name($key).'"/>';
     }
