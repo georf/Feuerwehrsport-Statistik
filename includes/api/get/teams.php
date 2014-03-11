@@ -1,7 +1,7 @@
 <?php
 
 $outTeams = array();
-$wherenot = '';
+$where = '';
 
 $id = Check2::value(false)->post('personId')->isIn('persons');
 if ($id !== false) {
@@ -51,15 +51,42 @@ if ($id !== false) {
 
   foreach ($teams as $team) {
     $outTeams[] = array('value' => $team['id'], 'display' => $team['name'], 'inteam' => true);
-    $wherenot .= " AND `t`.`id` != '".$team['id']."' ";
+    $where .= " AND `t`.`id` != '".$team['id']."' ";
   }
+}
+
+$competitionId = Check2::value(false)->post('competitionId')->isIn('competitions');
+if ($competitionId !== false) {
+  $sex = Check2::value(false)->post('sex')->isSex();
+  $whereSex = ($sex !== false)? " WHERE `sex` = '".$sex."' ":'';
+  $where .= " AND `t`.`id` IN (
+    SELECT `team_id`
+    FROM (
+      SELECT `team_id`, `p`.`sex`
+      FROM `scores` `s`
+      INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+      WHERE `competition_id` = '".$competitionId."'
+    UNION
+      SELECT `team_id`, 'female' AS `sex`
+      FROM `scores_gs`
+      WHERE `competition_id` = '".$competitionId."'
+    UNION
+      SELECT `team_id`, `sex`
+      FROM `scores_la`
+      WHERE `competition_id` = '".$competitionId."'
+    UNION
+      SELECT `team_id`, `sex`
+      FROM `scores_fs`
+      WHERE `competition_id` = '".$competitionId."'
+    ) `i`
+    ".$whereSex.") ";
 }
 
 $teams = $db->getRows("
   SELECT *
   FROM `teams` `t`
   WHERE 1 = 1
-  ".$wherenot."
+  ".$where."
   ORDER BY `name`
 ");
 

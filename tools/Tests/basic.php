@@ -155,8 +155,16 @@ abstract class ApiTestCase extends TestCase {
 
   protected function success($response, $fields = array()) {
     $fields[] = 'success';
-    foreach ($fields as $field) {
-      $this->isFieldSet($response, $field);
+    foreach ($fields as $key => $field) {
+      if (is_numeric($key)) $this->isFieldSet($response, $field);
+      else {
+        $this->isFieldSet($response, $key);
+        if ($field instanceof Closure) {
+          $this->isTrue($field($response[$key]));
+        } else {
+          $this->compare($field, $response[$key]);
+        }
+      }
     }
     return $this->isTrue($response['success']);
   }
