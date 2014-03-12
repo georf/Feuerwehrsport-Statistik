@@ -1,4 +1,5 @@
 <?php
+$no_cache[] = 'person';
 
 $person = Check2::page()->get('id')->isIn('persons', 'row');
 $id = $person['id'];
@@ -68,6 +69,7 @@ $disciplines = array(
   array('la', true),
 );
 $scores = array();
+$dcups = array();
 
 echo Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']));
 $otherNames = Import::getOtherOfficialNames($id);
@@ -78,6 +80,20 @@ foreach ($disciplines as $disciplineConf) {
   $discipline = $disciplineConf[0];
   $scores[$discipline] = array();
   if (count($discipline) > 3 && $discipline[2] != $person['sex']) continue;
+
+  if (in_array($discipline, array('hl', 'hb', 'zk'))) {
+    $dcups[$discipline] = $db->getRows("
+      SELECT `points`, `position`, `year`, `ready`, `dcup_id`
+      FROM `dcup_points` `d`
+      INNER JOIN `dcups` `c` ON `c`.`id` = `d`.`dcup_id`
+      WHERE `d`.`person_id` = '".$id."'
+      AND `d`.`discipline` LIKE '".$discipline."'
+      ORDER BY `year` DESC
+    ");
+    foreach ($dcups[$discipline] as $i => $dcup) {
+      $dcups[$discipline][$i]['scores'] = DcupCalculation::getSingleScores($id, $dcup['dcup_id'], $discipline, 'date');
+    }
+  }
 
   if (in_array($discipline, array('hl', 'hb'))) {
     $scores[$discipline] = $db->getRows("
@@ -269,6 +285,41 @@ foreach ($disciplines as $disciplineConf) {
     echo '<p class="chart">'.Chart::img('person_best_score', array($id, $discipline)).'</p>';
   }
 
+  if (in_array($discipline, array('hl', 'hb', 'zk'))) {
+    if (count($dcups[$discipline])) {
+      $maxScores = 0;
+      foreach ($dcups[$discipline] as $dcup) {
+        $maxScores = max(count($dcup['scores']), $maxScores);
+      }
+      echo '<h3>D-Cup-Jahreswertung</h3>';
+      echo '<table class="table table-condensed">';
+      echo '<tr>';
+      echo '<th>Jahr</th>';
+      echo '<th colspan="'.$maxScores.'">Wettkämpfe</th>';
+      echo '<th>Punkte</th>';
+      echo '<th>Platz</th>';
+      echo '</tr>';
+      
+      foreach ($dcups[$discipline] as $dcup) {
+        echo '<tr>';
+        echo '<td>'.Link::year($dcup['year']).'</td>';
+        for ($i = 0; $i < $maxScores; $i++) {
+          if (isset($dcup['scores'][$i])) {
+            $score = $dcup['scores'][$i];
+            echo '<td title="'.$score['points'].' Punkte">'.Link::competition($score['competition_id'], $score['place'], $score['date']).': '.FSS::time($score['time']).'</td>';
+          } else {
+            echo '<td></td>';
+          }
+        }
+        echo '<td>'.$dcup['points'].'</td>';
+        echo '<td>'.$dcup['position'].'.</td>';
+        echo '</tr>';
+      }
+      echo '</table>';
+
+    }
+  }  
+
   if ($group) {
     // search for team mates
     $teammates = array();
@@ -318,7 +369,7 @@ if (count($teams)) {
       ->col(TeamLogo::getTall($team['logo'], $team['short'], '<div class="logo-replacement">'.$team['short'].'</div>'), 2)
       ->col('<h3>'.htmlspecialchars($team['name']).'</h3>', 6)
       ->col('<ul><li>'.Link::team($team['id'], 'Details').'</li><li>'.$team['count'].' gelaufene Zeiten</li><li>'.implode('</li><li>', $elems).'</li></ul>', 4);
-    }
+  }
 }
 
 echo Title::h2('Fehler melden', 'fehler');

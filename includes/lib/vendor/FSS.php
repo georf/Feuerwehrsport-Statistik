@@ -186,7 +186,7 @@ class FSS
         return in_array(strtolower($key), array('hl', 'hb'));
     }
 
-    public static function inGroupDiscipline($key) {
+    public static function isGroupDiscipline($key) {
         return !self::isSingleDiscipline($key);
     }
 

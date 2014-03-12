@@ -1,1 +1,1 @@
-new SortTable(noSorting: 10)
+new SortTable(noSorting: 9)

@@ -122,6 +122,13 @@ class Link
         return self::page_a('dcup_single-'.$year.'-'.$type, $display, $title);
     }
 
+    public static function dcup($year, $display = false, $title = false) {
+        global $config;
+
+        if ($display == false) $display = 'D-Cup-Gesamtwertung '.$year;
+        return self::page_a('dcup-'.$year, $display, $title);
+    }
+
     public static function admin_page_a($page, $name) {
         global $config;
         return self::a($config['url'].'?page=administration&admin='.$page, $name);        
