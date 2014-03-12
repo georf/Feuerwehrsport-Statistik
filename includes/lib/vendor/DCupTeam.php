@@ -77,4 +77,13 @@ class DCupTeam {
       return false;
     }
   }
+
+  public function getCompetitionLinks() {
+    $links = array();
+    foreach ($this->competitions as $c) {
+      $c = $c[0];
+      $links[] = Link::competition($c['competition_id'], $c['place'], $c['date']).': '.$this->getSum($c['competition_id']).' Punkte';
+    }
+    return $links;
+  }
 }

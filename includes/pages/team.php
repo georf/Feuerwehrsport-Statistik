@@ -1,5 +1,4 @@
 <?php
-
 $team = Check2::page()->get('id')->isIn('teams', 'row');
 $id = $team['id'];
 
@@ -278,6 +277,26 @@ $competitions = $db->getRows("
   GROUP BY `competition_id`
 ");
 
+$dcups = $db->getRows("
+  SELECT `year`, `ready`, `dcup_id`
+  FROM `dcups` `d`
+  INNER JOIN `scores_dcup_team` `s` ON `s`.`dcup_id` = `d`.`id`
+  WHERE `team_id` = '".$id."'
+  GROUP BY `dcup_id`
+  ORDER BY `year` DESC
+");
+foreach ($dcups as $i => $dcup) {
+  $dcups[$i]['scores'] = array();
+  foreach (FSS::$sexes as $sex) {
+    list($teams, $competitions) = DcupCalculation::getTeamScores($sex, $dcup['dcup_id']);
+    for ($z = 0; $z < count($teams); $z++) {
+      if ($teams[$z]->id == $id) {
+        $dcups[$i]['scores'][] = array($sex, $teams[$z], $z + 1);
+      }
+    }
+  }
+}
+
 $toc = TableOfContents::get();
 if (count($members)) $toc->link('wettkaempfer', 'Wettkämpfer');
 $toc->link('wettkaempfe', 'Wettkämpfe');
@@ -303,6 +322,8 @@ foreach ($teamScores as $value) {
   }
   $toc->link($key, $name, $title);
 }
+
+if (count($dcups)) $toc->link('dcup', 'D-Cup-Wertungen');
 $toc->link('karte', 'Karte');
 $toc->link('fehler', 'Fehler melden');
 
@@ -501,6 +522,26 @@ foreach ($teamScores as $value) {
     }, 5, array('class' => 'person small', 'title' => WK::type($discipline, $sex, $wk)));
   }
   echo Bootstrap::row()->col($countTable->col('', function ($row) { return Link::competition($row['competition_id']); }, 3), 12);
+}
+
+if (count($dcups)) {
+  echo Title::h2("D-Cup-Wertungen", "dcup");
+  echo '<table class="table table-condensed">';
+  echo '<tr><th>Jahr</th><th>Geschlecht</th><th>Wettkämpfe</th><th>Punkte</th><th>Platz</th></tr>';
+  foreach($dcups as $dcup) {
+    echo '<tr>';
+    echo '<th rowspan="'.count($dcup['scores']).'">'.$dcup['year'].'</th>';
+    for ($i = 0; $i < count($dcup['scores']); $i++) {
+      list($sex, $dcupTeam, $position) = $dcup['scores'][$i];
+      if ($i != 0) echo '<tr>';
+      echo '<td>'.FSS::sex($sex).' ('.($dcupTeam->number+1).')</td>';
+      echo '<td>'.implode(", ", $dcupTeam->getCompetitionLinks()).'</td>';
+      echo '<td>'.$dcupTeam->getSum().'</td>';
+      echo '<td>'.$position.'.</td>';
+      echo '</tr>';
+    }
+  }
+  echo '</table>';
 }
 
 echo Title::h2("Karte", "karte");

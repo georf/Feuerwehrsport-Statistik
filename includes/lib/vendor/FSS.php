@@ -4,6 +4,7 @@ class FSS
 {
 
     public static $disciplines = array('hl', 'hb', 'la', 'gs', 'fs');
+    public static $sexes = array('female', 'male');
     
     const INVALID = 99999999;
 

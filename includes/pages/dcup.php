@@ -28,38 +28,7 @@ echo Bootstrap::row()->col('<p>Zu jedem Wettkampf stehen die einzelnen Punkte fÃ
 $navTab = Bootstrap::navTab();
 
 foreach (array('female', 'male') as $sex) {
-  $rows = $db->getRows("
-    SELECT `s`.`points`,`s`.`time`,
-      `c`.`date`, `s`.`competition_id`,
-      `c`.`event_id`, `c`.`event`,
-      `c`.`place_id`, `c`.`place`,
-      `s`.`team_id`, `s`.`team_number`, `t`.`short` AS `team`,
-      `s`.`discipline`
-    FROM `scores_dcup_team` `s`
-    INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    INNER JOIN `teams` `t` ON `s`.`team_id` = `t`.`id`
-    WHERE `s`.`sex` = '".$sex."'
-    AND `s`.`dcup_id` = '".$id."'
-    ORDER BY `date`
-  ");
-
-  $competitions = array();
-  $teams = array();
-
-  foreach ($rows as $row) {
-    if (!isset($competitions[$row['competition_id']])) {
-      $competitions[$row['competition_id']] = $row;
-    }
-
-    if (!isset($teams[$row['team_id'].'-'.$row['team_number']])) {
-      $teams[$row['team_id'].'-'.$row['team_number']] = new DCupTeam($row);
-    }
-    $teams[$row['team_id'].'-'.$row['team_number']]->addScore($row);
-  }
-
-  uasort($teams, function($a, $b) {
-    return $a->compare($b);
-  });
+  list($teams, $competitions) = DcupCalculation::getTeamScores($sex, $id);
 
   $output = '<table class="d-cup-wertung">';
   $output .= '<tr><th class="right-line">Team</th>';
