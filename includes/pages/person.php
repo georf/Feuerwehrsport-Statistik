@@ -1,6 +1,4 @@
 <?php
-$no_cache[] = 'person';
-
 $person = Check2::page()->get('id')->isIn('persons', 'row');
 $id = $person['id'];
 
