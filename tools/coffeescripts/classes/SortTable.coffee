@@ -15,6 +15,9 @@ class @SortTable
       bPaginate: true
       iDisplayLength: options.count
 
+    if options.noSorting? && options.noSorting is 'last'
+      options.noSorting = $(options.selector).find('th').length - 1
+
     if options.noSorting?
       options.noSorting = [options.noSorting] unless $.isArray(options.noSorting)
 

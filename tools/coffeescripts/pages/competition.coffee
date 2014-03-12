@@ -1,4 +1,4 @@
-new SortTable(selector: '.scores-hb, .scores-hl, .scores-zk', sortCol: 2, noSorting: 5)
+new SortTable(selector: '.scores-hb, .scores-hl, .scores-zk', sortCol: 2, noSorting: 'last')
 new SortTable(selector: '.scores-hb-final, .scores-hl-final', sortCol: 2, noSorting: 3)
 new SortTable(selector: '.group-scores', sortCol: 1)
 
