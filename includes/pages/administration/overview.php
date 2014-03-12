@@ -35,7 +35,8 @@
   </li>
   <li><h4>D-Cup</h4>
     <ul>
-      <li><?php echo Link::admin_page_a('add_dcup', 'D-Cup hinzufügen'); ?></li>
+      <li><?php echo Link::admin_page_a('dcup_team', 'D-Cup Teamwertung'); ?></li>
+      <li><?php echo Link::admin_page_a('dcup_single', 'D-Cup Einzelwertung'); ?></li>
     </ul>
   </li>
   <li><h4>Cache</h4>
