@@ -33,16 +33,19 @@ if (FSS::isGroupDiscipline($discipline)) {
   $scores = $db->getRows("
     SELECT `best`.*
     FROM (
-      SELECT `id`,`team_id`,`team_number`,
-      `person_id`,
-      MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
-      FROM `scores`
-      WHERE `time` IS NOT NULL
-      AND `competition_id` = '".$competitionId."'
-      AND `discipline` = '".$discipline."'
-      AND `team_number` != -2
-      AND `team_id` IS NOT NULL
-      GROUP BY `person_id`
+      SELECT *
+      FROM (
+        SELECT `id`,`team_id`,`team_number`,
+        `person_id`,
+        COALESCE(`time`, ".FSS::INVALID.") AS `time`
+        FROM `scores`
+        WHERE `time` IS NOT NULL
+        AND `competition_id` = '".$competitionId."'
+        AND `discipline` = '".$discipline."'
+        AND `team_number` != -2
+        AND `team_id` IS NOT NULL
+        GROUP BY `person_id`
+      ) `all`
     ) `best`
     INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
     WHERE `sex` = '".$sex."'
