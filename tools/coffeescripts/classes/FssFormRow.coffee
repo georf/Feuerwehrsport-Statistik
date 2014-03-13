@@ -144,11 +144,11 @@ class @FssFormRowDate extends FssFormRowLabelField
     data
 
 class @FssFormRowScores extends FssFormRow
-  constructor: (@name, persons, @scores, wks) ->
+  constructor: (@name, persons, @scores, @wks) ->
     table = $('<table/>').addClass('score-table')
 
     tr = $('<tr/>').append($('<td/>'))
-    for wk in wks
+    for wk in @wks
       tr.append($('<th/>').text(wk))
 
     table.append(tr)
@@ -156,7 +156,7 @@ class @FssFormRowScores extends FssFormRow
       @scores[i].selects = []
       tr = $('<tr/>').append($('<th/>').text(score.timeHuman))
 
-      for wk, c in wks
+      for wk, c in @wks
         select = $('<select/>')
         option = $('<option/>').val("NULL").text(' ---- ').appendTo(select)
         option.attr('selected', 'selected') if score["person_#{c + 1}"] is null
@@ -171,7 +171,7 @@ class @FssFormRowScores extends FssFormRow
 
       if i > 0
         tr = $('<tr/>').append($('<td/>'))
-        for wk, c in wks
+        for wk, c in @wks
           ((selectTop, selectBottom) ->
             $('<td/>').addClass('text-center').append(
               $('<button/>').text('↧').click (ev) ->
@@ -191,7 +191,7 @@ class @FssFormRowScores extends FssFormRow
     returnScores = []
     for score, i in @scores
       returnScores[i] = scoreId: score.id
-      for wk, c in wks
-        returnScores[i]["person_#{c+1}"] = score.selects[c].val()
-
-    returnScores
+      for wk, c in @wks
+        returnScores[i]["person#{c+1}"] = score.selects[c].val()
+    data.scores = returnScores
+    data
