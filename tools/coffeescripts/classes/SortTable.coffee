@@ -16,8 +16,9 @@ class @SortTable
       iDisplayLength: options.count
 
     if options.noSorting? && options.noSorting is 'last'
-      options.noSorting = $(options.selector).find('th').length - 1
-
+      $(options.selector).each () ->
+        new SortTable($.extend options, selector: @, noSorting: $(@).find('th').length - 1)
+      return
     if options.noSorting?
       options.noSorting = [options.noSorting] unless $.isArray(options.noSorting)
 
