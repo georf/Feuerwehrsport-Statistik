@@ -96,13 +96,17 @@ class DcupCalculation {
     $scores = $db->getRows("
       SELECT `best`.*
       FROM (
-        SELECT `id`,
-          `person_id`,
-          MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
-        FROM `scores`
-        WHERE `competition_id` = '".$competitionId."'
-          AND `discipline` = '".$discipline."'
-          AND `team_number` != -2
+        SELECT *
+        FROM (
+          SELECT `id`,
+            `person_id`,
+            COALESCE(`time`, ".FSS::INVALID.") AS `time`
+          FROM `scores`
+          WHERE `competition_id` = '".$competitionId."'
+            AND `discipline` = '".$discipline."'
+            AND `team_number` != -2
+          ORDER BY `time`
+        ) `all`
         GROUP BY `person_id`
       ) `best`
       INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
