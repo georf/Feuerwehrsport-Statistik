@@ -37,15 +37,13 @@ if (Check::post('team') && Check::isIn($_POST['team'], 'teams') && isset($_FILES
 echo '<form method="post" enctype="multipart/form-data"><input type="file" name="logo"/><br/><select name="team">';
 
 $teams = $db->getRows("
-    SELECT *
-    FROM `teams`
-    WHERE `logo` IS NULL
-    ORDER BY `name`
+  SELECT *
+  FROM `teams`
+  WHERE `logo` IS NULL
+  ORDER BY `name`
 ");
 
 foreach ($teams as $team) {
     echo '<option value="'.$team['id'].'">'.$team['name'].'</option>';
 }
 echo '</select><br/><input type="submit"></form>';
-
-echo Check2::except()->get('test')->isIn(array('male'));
