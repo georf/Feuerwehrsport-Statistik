@@ -39,7 +39,10 @@ class FssImport
             .add(new FssFormRowSelect('placeId', 'Ort', null, placeOptions))
             .add(new FssFormRowSelect('eventId', 'Typ', null, eventOptions))
             .add(new FssFormRowDate('date', 'Datum'))
-            .on('submit', (data) => Fss.post 'add-competition', data, @addSuccess)
+            .on('submit', (data) => Fss.post 'add-competition', data, () => 
+              @addSuccess () ->
+                $("input[name='competition-type'][value='latest']").attr('checked', true).change()
+            )
             .open()
 
     $('.add-discipline').click (ev) =>
@@ -52,9 +55,12 @@ class FssImport
 
     @reloadCompetitions(@selectCompetitionType)
 
-  addSuccess: () =>
-    @reloadCompetitions(@selectCompetitionType)
-    new AlertFssWindow('Eingetragen')
+  addSuccess: (callback=false) =>
+    new AlertFssWindow 'Eingetragen', '', () =>
+      @reloadCompetitions () =>
+        @selectCompetitionType
+        callback() if callback
+
 
   changeCompetitionLink: () =>
     option = @selectCompetition.find('option:selected')
@@ -62,6 +68,9 @@ class FssImport
       $('#competition-link')
         .attr('href', "/page/competition-#{option.val()}.html")
         .text(option.text())
+      $('#competition-link-admin')
+        .attr('href', "/?page=administration&admin=competition&id=#{option.val()}")
+        .text("#{option.text()} - Admin")
     @loadScores()
 
   selectCompetitionType: () =>

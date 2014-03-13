@@ -14,7 +14,8 @@
     <div class="col-md-5" id="select-competitions">
       <select id="competitions" style=""></select>
       <br/><br/>
-      <a id="competition-link" href=""></a>
+      <a id="competition-link" href=""></a><br/>
+      <a id="competition-link-admin" href=""></a>
     </div>
     <div class="col-md-2" id="competition-scores">
     </div>

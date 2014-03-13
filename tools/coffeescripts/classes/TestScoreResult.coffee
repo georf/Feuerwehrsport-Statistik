@@ -31,9 +31,9 @@ class TestScoreResult
       tr.addClass('not-correct');
 
     if @raw.name?
-      if @raw.persons.length > 1
+      if @raw.persons? and @raw.persons.length > 1
         $('<td/>').append(@personSelect()).appendTo(tr)
-      else if @raw.persons.length
+      else if @raw.persons? and @raw.persons.length
         appendTd("#{@raw.name} #{@raw.firstname}")
         @raw.person_id = @raw.persons[0].id
       else
@@ -106,7 +106,8 @@ class TestScoreResult
 
   personLinks: () =>
     span = $('<span/>')
-    for p in @raw.persons
-      $('<a/>').text("#{p.id}").attr('href', "/page/person-#{p.id}.html").appendTo(span)
-      span.append(' ')
+    if @raw.persons?
+      for p in @raw.persons
+        $('<a/>').text("#{p.id}").attr('href', "/page/person-#{p.id}.html").appendTo(span)
+        span.append(' ')
     span

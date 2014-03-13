@@ -19,7 +19,7 @@ class MissingTeam
         FssWindow.build('Mannschaft anlegen')
         .add(new FssFormRowText('name', 'Name', longname))
         .add(new FssFormRowText('short', 'Abkürzung', @name))
-        .add(new FssFormRowSelect('type', 'Typ der Mannschaft', null, options))
+        .add(new FssFormRowSelect('type', 'Typ der Mannschaft', 'Feuerwehr', options))
         .on('submit', (data) =>
           Fss.post 'add-team', data, () => 
             @callback()
