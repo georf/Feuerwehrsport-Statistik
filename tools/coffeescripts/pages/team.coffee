@@ -51,7 +51,7 @@ $('#report-error').click (ev) ->
 
           FssWindow.build('Namen korrigieren')
           .add(new FssFormRowDescription('Bitte wählen Sie das korrekte Team aus:'))
-          .add(new FssFormRowSelect('newTeamid', 'Richtiges Team:', null, teams))
+          .add(new FssFormRowSelect('newTeamId', 'Richtiges Team:', null, teams))
           .on('submit', (data) ->
             data.reason = selected
             data.type = 'team'
