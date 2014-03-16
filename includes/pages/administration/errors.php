@@ -21,7 +21,7 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
       $db->updateRow("teams", $post['teamId'], array(
         'name' => $post['name'],
         'short' => $post['short'],
-        'type' => $post['team_type'],
+        'type' => $post['teamType'],
       ));
     }
   } elseif ($post['reason'] == 'together') {
@@ -284,7 +284,7 @@ foreach($errors as $error) {
       case 'wrong':
       case 'correction':
         $ok = true;
-        echo '<td>Name: '.$post['name'].'<br/>Kurz: '.$post['short'].'<br/>Typ: '.$post['team_type'].'</td>';
+        echo '<td>Name: '.$post['name'].'<br/>Kurz: '.$post['short'].'<br/>Typ: '.$post['teamType'].'</td>';
         if (!team_to_td($post['teamId'])) $ok = false;
 
         if ($ok) {
@@ -320,16 +320,16 @@ foreach($errors as $error) {
   } elseif ($post['type'] == 'date') {
     $date = $post['date'];
 
-    $provided = array();
-    foreach (FSS::$disciplines as $dis) {
-      if (isset($date[$dis]) && $date[$dis] == 'true') {
-        $provided[] = strtoupper($dis);
-      }
-    }
-    sort($provided);
 
     switch ($post['reason']) {
       case 'change':
+        $provided = array();
+        foreach (FSS::$disciplines as $dis) {
+          if (isset($date[$dis]) && $date[$dis] == 'true') {
+            $provided[] = strtoupper($dis);
+          }
+        }
+        sort($provided);
         echo '<td>'.htmlspecialchars($date['name']).'<br/>'.$date['date'].'<br/>'.implode(', ', $provided).'</td>';
         echo '<td>'.nl2br(htmlspecialchars($date['description'])).'</td>';
         echo '<td>';
