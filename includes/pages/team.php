@@ -27,7 +27,6 @@ $scores = $db->getRows("
   SELECT `person_id`,`discipline`
   FROM `scores`
   WHERE `team_id` = '".$id."'
-  AND `discipline` = 'HB'
 ");
 foreach ($scores as $score) {
   $pid = $score['person_id'];
@@ -41,11 +40,11 @@ $scores = $db->getRows("
     SELECT 'GS' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,NULL AS `person_7`
     FROM `scores_gs`
     WHERE `team_id` = '".$team['id']."'
-  UNION
+  UNION ALL
     SELECT 'LA' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
     FROM `scores_la`
     WHERE `team_id` = '".$team['id']."'
-  UNION
+  UNION ALL
     SELECT 'FS' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,NULL AS `person_5`,NULL AS `person_6`, NULL AS `person_7`
     FROM `scores_fs`
     WHERE `team_id` = '".$team['id']."'
@@ -152,25 +151,14 @@ foreach ($competitions as $competition) {
       FROM (
         SELECT *
         FROM (
-          (
-            SELECT `id`,`team_number`,
-            `person_id`,
-            `time`
-            FROM `".$table."`
-            WHERE `time` IS NOT NULL
-            AND `competition_id` = '".$competition['id']."'
-            AND `team_number` >= 0
-            AND `team_id` = '".$id."'
-          ) UNION (
-            SELECT `id`,`team_number`,
-            `person_id`,
-            ".FSS::INVALID." AS `time`
-            FROM `".$table."`
-            WHERE `time` IS NULL
-            AND `competition_id` = '".$competition['id']."'
-            AND `team_number` >= 0
-            AND `team_id` = '".$id."'
-          ) ORDER BY `time`
+          SELECT `id`,`team_number`,
+          `person_id`,
+          COALESCE(`time`, ".FSS::INVALID.") AS `time`
+          FROM `".$table."`
+          WHERE `competition_id` = '".$competition['id']."'
+          AND `team_number` >= 0
+          AND `team_id` = '".$id."'
+          ORDER BY `time`
         ) `all`
         GROUP BY `person_id`
       ) `best`
@@ -257,17 +245,17 @@ $competitions = $db->getRows("
     FROM `scores`
     WHERE `team_id` = '".$id."'
     GROUP BY `competition_id`
-  UNION
+  UNION ALL
     SELECT `competition_id`,0 AS `single`,COUNT(*) AS `gs`,0 AS `la`,0 AS `fs`
     FROM `scores_gs`
     WHERE `team_id` = '".$id."'
     GROUP BY `competition_id`
-  UNION
+  UNION ALL
     SELECT `competition_id`,0 AS `single`,0 AS `gs`,COUNT(*) AS `la`,0 AS `fs`
     FROM `scores_la`
     WHERE `team_id` = '".$id."'
     GROUP BY `competition_id`
-  UNION
+  UNION ALL
     SELECT `competition_id`,0 AS `single`,0 AS `gs`,0 AS `la`,COUNT(*) AS `fs`
     FROM `scores_fs`
     WHERE `team_id` = '".$id."'
@@ -288,7 +276,7 @@ $dcups = $db->getRows("
 foreach ($dcups as $i => $dcup) {
   $dcups[$i]['scores'] = array();
   foreach (FSS::$sexes as $sex) {
-    list($teams, $competitions) = DcupCalculation::getTeamScores($sex, $dcup['dcup_id']);
+    list($teams, $competitions_dcup) = DcupCalculation::getTeamScores($sex, $dcup['dcup_id']);
     for ($z = 0; $z < count($teams); $z++) {
       if ($teams[$z]->id == $id) {
         $dcups[$i]['scores'][] = array($sex, $teams[$z], $z + 1);
