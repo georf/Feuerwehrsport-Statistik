@@ -172,12 +172,12 @@ class Database {
 		}
 
 
-        $result =  (mysql_affected_rows($this->dbConnection) === 1);
+    $result =  (mysql_affected_rows($this->dbConnection) === 1);
 
-        if ($cleanCache) {
-            // clean cache
-            Cache::clean();
-        }
+    if ($cleanCache) {
+      // clean cache
+      Cache::clean();
+    }
 
 		return $result;
   }
@@ -192,7 +192,7 @@ class Database {
 	 * @param array $values
 	 * @return int | boolean
 	 */
-	public function updateRow($table, $id, $values, $colName = 'id') {
+	public function updateRow($table, $id, $values, $colName = 'id', $cleanCache = true) {
 
 		if (count($values) === 0) {
 			throw new Exception(_('No value given'));
@@ -210,10 +210,12 @@ class Database {
 			throw new Exception('MySQL Connection Database Error: ' . mysql_error().'<br/>'.$mysqlQuery);
 		}
 
-        $result = (mysql_affected_rows($this->dbConnection) === 1);
+    $result = (mysql_affected_rows($this->dbConnection) === 1);
 
-        // clean cache
-        Cache::clean();
+    if ($cleanCache) {
+      // clean cache
+      Cache::clean();
+    }
 
 		return $result;
 	}
