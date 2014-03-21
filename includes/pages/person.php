@@ -263,7 +263,7 @@ foreach ($disciplines as $disciplineConf) {
   } elseif ($discipline == 'zk') {
     $countTable
     ->col('HB', function($row) { return FSS::time($row['hb']); }, 5)
-    ->col('HL', function($row) { return FSS::time($row['hb']); }, 5);
+    ->col('HL', function($row) { return FSS::time($row['hl']); }, 5);
   }
   $countTable->col('Zeit', function($row) { return FSS::time($row['time']); }, 7, array('class' => 'number'));
   if ($group) {
