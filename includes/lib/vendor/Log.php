@@ -10,7 +10,7 @@ class Log
     public $type = '';
     public $inserted = 0;
 
-    public static function insert($type, $content) {
+    public static function insert($type, $content, $cleanCache = true) {
         global $db;
 
         if (is_array($content)) {
@@ -21,7 +21,7 @@ class Log
             'user_id' => Login::getId(),
             'type' => $type,
             'content' => $content
-            ));
+        ), $cleanCache);
     }
 
 
