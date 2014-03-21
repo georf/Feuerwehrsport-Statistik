@@ -95,3 +95,17 @@ echo Analysis::generalCharts('place', $id);
 
 echo Title::h2('Bestzeiten', 'bestzeiten');
 echo Analysis::bestOfYears('place', $id);
+
+echo Title::h2("Karte", "karte");
+if (Map::isFile('places', $id)) {
+  echo Bootstrap::row()
+    ->col(Map::getImg('places', $id), 8)
+    ->col('<button id="map-load" data-place-id="'.$id.'" data-place-name="'.htmlspecialchars($place['name']).'" data-lat="'.$place['lat'].'" data-lon="'.$place['lon'].'">Interaktive Karte laden</button>', 4);
+} else {
+  echo Bootstrap::row()
+    ->col('<img src="/styling/images/no-location.png" alt=""/><br/>Keine Kartenposition vorhanden', 8)
+    ->col('<button id="map-load" data-place-id="'.$id.'" data-place-name="'.htmlspecialchars($place['name']).'">Interaktive Karte zum Bearbeiten laden</button>', 4);
+}
+echo Bootstrap::row('hide')
+->col('<div id="map-dynamic"></div>', 8)
+->col('<button id="map-edit">Position bearbeiten</button><button id="map-save">Speichern</button><p id="map-edit-hint">Bitte den Marker auf die korrekte Position ziehen.</p>', 4);
