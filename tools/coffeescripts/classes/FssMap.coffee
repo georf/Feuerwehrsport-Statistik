@@ -22,13 +22,13 @@ class @FssMap
           FssMap.loaded(callback)
 
   @getMap: (id, zoom, lat, lon) ->
-    osmUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    osmUrl = "http://b.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
     osmAttrib = 'Map data © <a href="http://openstreetmap.org">openstreetmap</a>'
     osm = L.tileLayer(osmUrl, {attribution: osmAttrib})
 
     fireUrl = 'http://openfiremap.org/hytiles/{z}/{x}/{y}.png'
     fireAttrib = '<a href="http://openfiremap.org">openfiremap</a>'
-    fire = L.tileLayer(fireUrl, {attribution: fireAttrib})
+    fire = L.tileLayer(fireUrl, {attribution: fireAttrib, minZoom: 11})
     return L.map id, 
       center: L.latLng(lat, lon)
       zoom: zoom
