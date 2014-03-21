@@ -19,9 +19,9 @@ foreach ($scores as $score) {
         $person = $persons[0];
       } else {
         $result = $db->insertRow('persons', array(
-          'name' => $score['name'],
-          'firstname' => $score['firstname'],
-          'sex' => $sex
+          'name' => trim($score['name']),
+          'firstname' => trim($score['firstname']),
+          'sex' => trim($sex)
         ), false);
         $person = FSS::tableRow('persons', $result);
       }

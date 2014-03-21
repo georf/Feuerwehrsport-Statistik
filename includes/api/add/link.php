@@ -10,10 +10,10 @@ if (!preg_match('|^https?://|', $url)) {
 }
 
 $resultId = $db->insertRow('links', array(
-  'name'   => $name,
-  'for'    => $for,
+  'name'   => trim($name),
+  'for'    => trim($for),
   'for_id' => $id,
-  'url'    => $url,
+  'url'    => trim($url),
 ));
 
 Log::insert('add-link', FSS::tableRow('links', $resultId));

@@ -8,8 +8,8 @@ $eventId = Check2::except()->post('eventId')->isIn('events');
 $name    = Check2::value('')->post('name')->present();
 
 $resultId = $db->insertRow('competitions', array(
-  'date'     => $date,
-  'name'     => $name,
+  'date'     => trim($date),
+  'name'     => trim($name),
   'place_id' => $placeId,
   'event_id' => $eventId,
 ));

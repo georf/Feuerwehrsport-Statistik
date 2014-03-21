@@ -15,12 +15,12 @@ foreach (FSS::$disciplines as $dis) {
 sort($provided);
 
 $resultId = $db->insertRow('dates', array(
-  'date'        => $date,
-  'name'        => $name,
-  'place_id'     => $placeId,
-  'event_id'     => $eventId,
-  'description' => $description,
-  'disciplines' => implode(',', $provided)
+  'date'        => trim($date),
+  'name'        => trim($name),
+  'place_id'    => $placeId,
+  'event_id'    => $eventId,
+  'description' => trim($description),
+  'disciplines' => trim(implode(',', $provided))
 ));
 
 Log::insert('add-date', FSS::tableRow('dates', $resultId));

@@ -4,8 +4,8 @@ $lat = Check2::except()->post('lat')->present();
 $lon = Check2::except()->post('lon')->present();
 
 $db->updateRow('teams', $teamId, array(
-  'lat' => $lat,
-  'lon' => $lon,
+  'lat' => trim($lat),
+  'lon' => trim($lon),
 ));
 
 Map::downloadStaticMap('teams', $teamId);

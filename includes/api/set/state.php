@@ -7,7 +7,7 @@ $state = Check2::except()->post('state')->getVal();
 $state = (FSS::stateToText($state) == $state)? NULL : $state;
 
 $db->updateRow($table, $id, array(
-  'state' => $state
+  'state' => trim($state)
 ));
 
 Log::insert('set-'.$for.'-state', array(
