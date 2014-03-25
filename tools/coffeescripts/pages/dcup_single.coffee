@@ -1,1 +1,1 @@
-new SortTable(noSorting: 9)
+new SortTable(noSorting: "last")
