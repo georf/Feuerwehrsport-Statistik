@@ -23,7 +23,10 @@ $score = Check2::except()->post('scoreId')->isIn($table, 'row');
 $update = false;
 for ($i = 1; $i < $wks; $i++) {
   $personId = Check2::value()->post('person'.$i)->isIn('persons', true);
-  if ($personId && $score['person_'.$i] != $personId) {
+  if (!$personId && Check2::boolean()->post('person'.$i)->match('|NULL|')) {
+    $personId = null;
+  }
+  if ($personId !== false && $score['person_'.$i] != $personId) {
     $db->updateRow($table, $score['id'], array(
       'person_'.$i => $personId
     ));
