@@ -44,11 +44,13 @@ if (FSS::isGroupDiscipline($discipline)) {
         AND `discipline` = '".$discipline."'
         AND `team_number` != -2
         AND `team_id` IS NOT NULL
-        GROUP BY `person_id`
+        ORDER BY `time`
       ) `all`
+      GROUP BY `person_id`
     ) `best`
     INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
     WHERE `sex` = '".$sex."'
+    ORDER BY `team_id`
   ");
 
   // Bereche die Wertung
