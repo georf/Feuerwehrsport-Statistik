@@ -246,11 +246,8 @@ foreach ($disciplines as $disciplineConf) {
   ->col('Typ', function($row) { return Link::event($row['event_id'], $row['event']); }, 15)
   ->col('Ort', function($row) { return Link::place($row['place_id'], $row['place']); }, 15);
 
-  if (in_array($discipline, array('hl', 'hb'))) {
-    $countTable
-    ->addClass('single-scores')
-    ->rowAttribute('data-id', 'score_id')
-    ->col('Mannschaft', function($row) use ($teams) { 
+  if ($discipline != 'zk') {
+    $countTable->col('Mannschaft', function($row) use ($teams) { 
       if ($row['team_id']) {
         $t_name = $teams[$row['team_id']]['name'];
         if ($row['score_type_id']) {
@@ -259,7 +256,13 @@ foreach ($disciplines as $disciplineConf) {
         return Link::team($row['team_id'], $t_name);
       }
       return '';
-    }, 20, array('class' => 'team'));
+    }, 22, array('class' => 'team'));
+  }
+
+  if (in_array($discipline, array('hl', 'hb'))) {
+    $countTable
+    ->addClass('single-scores')
+    ->rowAttribute('data-id', 'score_id');
   } elseif ($discipline == 'zk') {
     $countTable
     ->col('HB', function($row) { return FSS::time($row['hb']); }, 5)
@@ -310,7 +313,9 @@ foreach ($disciplines as $disciplineConf) {
           }
         }
         echo '<td>'.$dcup['points'].'</td>';
-        echo '<td>'.$dcup['position'].'.</td>';
+        echo '<td';
+        if ($dcup['position'] < 11) echo ' style="font-weight:bold"';
+        echo '>'.$dcup['position'].'.</td>';
         echo '</tr>';
       }
       echo '</table>';
