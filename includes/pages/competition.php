@@ -632,7 +632,7 @@ foreach ($dis as $fullKey => $scores) {
       $sum += $score['time'];
       $i++;
     }
-    $ave = $sum/$i;
+    $ave = ($i > 0) ? $sum/$i : FSS::INVALID;
 
     echo Bootstrap::row()
     ->col(ChartTable::build()
@@ -640,7 +640,7 @@ foreach ($dis as $fullKey => $scores) {
       ->row('Mannschaften', count($scores))
       ->row('Durchschnitt', FSS::time($ave))
       ->row(Chart::img('competition_bad_good', array($id, $fullKey))), 3)
-    ->col(Chart::img('competition', array($id, $fullKey)), 9);
+    ->col(($i > 0) ? Chart::img('competition', array($id, $fullKey)) : "", 9);
 
     $countTable = CountTable::build($scores, array('group-scores', 'scores-'.$key))
     ->rowAttribute('data-id', 'id')
