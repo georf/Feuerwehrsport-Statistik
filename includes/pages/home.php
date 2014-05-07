@@ -14,7 +14,7 @@ echo Bootstrap::row()
 ', 9)
   ->col(TableOfContents::get()
     ->link('overview', 'Überblick')
-    ->link('year2013', 'Jahr 2013', 'Super Leistungen vom Jahr 2013')
+    ->link('year2014', 'Jahr 2014', 'Super Leistungen vom Jahr 2014')
     ->link('mitmachen', 'Mitmachen')
     ->link('datenbank', 'Datenbank')
     ->link('fehler', 'Fehler melden', 'Fehler in den Daten melden')
@@ -49,10 +49,10 @@ echo Bootstrap::row()
     Chart::img('overview_best', false, true, 'overview_best')
   , 3);
 
-echo Title::h2('Super Leistungen vom Jahr 2013', 'year2013');
+echo Title::h2('Super Leistungen vom Jahr 2014', 'year2014');
 
 $navTab = Bootstrap::navTab('best-of-year-home');
-$year = 2013;
+$year = 2014;
 $disciplines = array(
   array('hb', false, 'female'),
   array('hb', false, 'male'),
