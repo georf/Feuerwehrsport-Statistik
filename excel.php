@@ -81,7 +81,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                                   LEFT JOIN `teams` `t` ON `t`.`id` = `s`.`team_id`
                                   WHERE ".$disValue['where']."
                                   AND `s`.`time` IS NOT NULL
-                                  AND `team_number` != -2
+                                  AND `team_number` > -2
                                   ORDER BY `s`.`time`
                                 )
                                 UNION
@@ -92,7 +92,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                                   LEFT JOIN `teams` `t` ON `t`.`id` = `s`.`team_id`
                                   WHERE ".$disValue['where']."
                                   AND `s`.`time` IS NULL
-                                  AND `team_number` != -2
+                                  AND `team_number` > -2
                                 )
                                 ORDER BY `time`
                             ) `i`
@@ -198,7 +198,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             AND `person_id` = '".$score['id']."'
                             AND `s`.`id` != '".$score['score_id']."'
                             AND `s`.`time` IS NOT NULL
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                             ORDER BY `s`.`time`
                         )
                         UNION
@@ -211,7 +211,7 @@ if (Check::post('competition_id') && isset($_GET['competition']) && Check::isIn(
                             AND `person_id` = '".$score['id']."'
                             AND `s`.`id` != '".$score['score_id']."'
                             AND `s`.`time` IS NULL
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                         )
                         ORDER BY `time`
                     ");

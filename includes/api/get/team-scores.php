@@ -42,7 +42,7 @@ if (FSS::isGroupDiscipline($discipline)) {
         WHERE `time` IS NOT NULL
         AND `competition_id` = '".$competitionId."'
         AND `discipline` = '".$discipline."'
-        AND `team_number` != -2
+        AND `team_number` > -2
         AND `team_id` IS NOT NULL
         ORDER BY `time`
       ) `all`

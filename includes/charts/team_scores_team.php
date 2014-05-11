@@ -52,7 +52,7 @@ foreach ($competitions as $c_id => $competition) {
                             WHERE `time` IS NOT NULL
                             AND `competition_id` = '".$competition['id']."'
                             AND `discipline` = 'HB'
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                             AND `team_id` = '".$id."'
                         ) UNION (
                             SELECT `id`,`team_number`,
@@ -62,7 +62,7 @@ foreach ($competitions as $c_id => $competition) {
                             WHERE `time` IS NULL
                             AND `competition_id` = '".$competition['id']."'
                             AND `discipline` = 'HB'
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                             AND `team_id` = '".$id."'
                         ) ORDER BY `time`
                     ) `all`
@@ -90,7 +90,7 @@ foreach ($competitions as $c_id => $competition) {
                             WHERE `time` IS NOT NULL
                             AND `competition_id` = '".$competition['id']."'
                             AND `discipline` = 'HL'
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                             AND `team_id` = '".$id."'
                         ) UNION (
                             SELECT `id`,`team_number`,
@@ -100,7 +100,7 @@ foreach ($competitions as $c_id => $competition) {
                             WHERE `time` IS NULL
                             AND `competition_id` = '".$competition['id']."'
                             AND `discipline` = 'HL'
-                            AND `team_number` != -2
+                            AND `team_number` > -2
                             AND `team_id` = '".$id."'
                         ) ORDER BY `time`
                     ) `all`

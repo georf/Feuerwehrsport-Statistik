@@ -546,6 +546,21 @@ echo Bootstrap::row('hide')
 ->col('<div id="map-dynamic"></div>', 8)
 ->col('<button id="map-edit">Position bearbeiten</button><button id="map-save">Speichern</button><p id="map-edit-hint">Bitte den Marker auf die korrekte Position ziehen.</p>', 4);
 
+// if (Map::isFile('teams', $id)) {
+//   $rows = $db->getRows("
+//     SELECT 111.045* DEGREES(ACOS(COS(RADIANS(lat))
+//                    * COS(RADIANS(".str_replace(',', '.', $team["lat"])."))
+//                    * COS(RADIANS(lon) - RADIANS(".str_replace(',', '.', $team["lon"])."))
+//                    + SIN(RADIANS(lat))
+//                    * SIN(RADIANS(".str_replace(',', '.', $team["lat"]).")))) AS `distance`, 
+//       `name`, `id`
+//     FROM `places`
+//     WHERE `lat` IS NOT NULL AND `lat` != ''
+//     ORDER BY distance
+//   ");
+//   print_r($rows);
+// }
+
 echo Title::h2("Fehler melden", "fehler");
 echo '<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>';
 echo '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>';

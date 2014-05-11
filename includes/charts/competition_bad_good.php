@@ -158,7 +158,7 @@ switch ($key) {
                 WHERE `time` IS NOT NULL
                 AND `p`.`sex` = '".$sex."'
                 AND `s`.`discipline` = 'HB'
-                AND `s`.`team_number` != -2
+                AND `s`.`team_number` > -2
                 AND `s`.`competition_id` = '".$db->escape($id)."'
             ", 'good');
             $bad = $db->getFirstRow("
@@ -168,7 +168,7 @@ switch ($key) {
                 WHERE `time` IS NULL
                 AND `p`.`sex` = '".$sex."'
                 AND `s`.`discipline` = 'HB'
-                AND `s`.`team_number` != -2
+                AND `s`.`team_number` > -2
                 AND `s`.`competition_id` = '".$db->escape($id)."'
             ", 'bad');
             $title = FSS::dis2name($key).' '.FSS::sex($sex);
@@ -207,7 +207,7 @@ switch ($key) {
                 FROM `scores`
                 WHERE `time` IS NOT NULL
                 AND `discipline` = 'HL'
-                AND `team_number` != -2
+                AND `team_number` > -2
                 AND `competition_id` = '".$db->escape($id)."'
             ", 'good');
             $bad = $db->getFirstRow("
@@ -215,7 +215,7 @@ switch ($key) {
                 FROM `scores`
                 WHERE `time` IS NULL
                 AND `discipline` = 'HL'
-                AND `team_number` != -2
+                AND `team_number` > -2
                 AND `competition_id` = '".$db->escape($id)."'
             ", 'bad');
             $title = FSS::dis2name($key);

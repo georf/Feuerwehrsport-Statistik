@@ -30,7 +30,7 @@ $title  = '';
                 WHERE `time` IS NOT NULL
                 AND `competition_id` = '".$id."'
                 AND `discipline` = 'HL'
-                AND `team_number` != -2
+                AND `team_number` > -2
                 ORDER BY `time`
             ) `hl`
             INNER JOIN (
@@ -39,7 +39,7 @@ $title  = '';
                 WHERE `time` IS NOT NULL
                 AND `competition_id` = '".$id."'
                 AND `discipline` = 'HB'
-                AND `team_number` != -2
+                AND `team_number` > -2
                 ORDER BY `time`
             ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
             GROUP BY `hl`.`person_id`

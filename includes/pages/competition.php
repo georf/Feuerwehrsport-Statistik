@@ -162,7 +162,7 @@ foreach ($sexes as $sex) {
                     WHERE `time` IS NOT NULL
                     AND `competition_id` = '".$id."'
                     AND `discipline` = 'HB'
-                    AND `team_number` != -2
+                    AND `team_number` > -2
                 ) UNION (
                     SELECT `id`,`team_id`,`team_number`,
                     `person_id`,
@@ -171,7 +171,7 @@ foreach ($sexes as $sex) {
                     WHERE `time` IS NULL
                     AND `competition_id` = '".$id."'
                     AND `discipline` = 'HB'
-                    AND `team_number` != -2
+                    AND `team_number` > -2
                 ) ORDER BY `time`
             ) `all`
             GROUP BY `person_id`
@@ -233,7 +233,7 @@ $hl = $db->getRows("
                 WHERE `time` IS NOT NULL
                 AND `competition_id` = '".$id."'
                 AND `discipline` = 'HL'
-                AND `team_number` != -2
+                AND `team_number` > -2
             ) UNION (
                 SELECT `id`,`team_id`,`team_number`,
                 `person_id`,
@@ -242,7 +242,7 @@ $hl = $db->getRows("
                 WHERE `time` IS NULL
                 AND `competition_id` = '".$id."'
                 AND `discipline` = 'HL'
-                AND `team_number` != -2
+                AND `team_number` > -2
             ) ORDER BY `time`
         ) `all`
         GROUP BY `person_id`
@@ -299,7 +299,7 @@ $zk = $db->getRows("
         WHERE `time` IS NOT NULL
         AND `competition_id` = '".$id."'
         AND `discipline` = 'HL'
-        AND `team_number` != -2
+        AND `team_number` > -2
         ORDER BY `time`
     ) `hl`
     INNER JOIN (
@@ -308,7 +308,7 @@ $zk = $db->getRows("
         WHERE `time` IS NOT NULL
         AND `competition_id` = '".$id."'
         AND `discipline` = 'HB'
-        AND `team_number` != -2
+        AND `team_number` > -2
         ORDER BY `time`
     ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
     INNER JOIN `persons` `p` ON `hb`.`person_id` = `p`.`id`

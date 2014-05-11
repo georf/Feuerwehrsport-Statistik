@@ -23,7 +23,7 @@ class DcupCalculation {
           FROM `scores`
           WHERE `discipline` = '".$discipline."'
           AND `person_id` = '".$personId."'
-          AND `team_number` != -2
+          AND `team_number` > -2
         ) `s` ON `d`.`score_id` = `s`.`id`
         INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
         WHERE `d`.`dcup_id` = '".$dcupId."'
@@ -53,7 +53,7 @@ class DcupCalculation {
         FROM `scores`
         WHERE `competition_id` = '".$competitionId."'
           AND `discipline` = 'HL'
-          AND `team_number` != -2
+          AND `team_number` > -2
         GROUP BY `person_id`
       ) `hl`
       INNER JOIN (
@@ -62,7 +62,7 @@ class DcupCalculation {
         FROM `scores`
         WHERE `competition_id` = '".$competitionId."'
           AND `discipline` = 'HB'
-          AND `team_number` != -2
+          AND `team_number` > -2
         GROUP BY `person_id`
       ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
       GROUP BY `person_id`
@@ -104,7 +104,7 @@ class DcupCalculation {
           FROM `scores`
           WHERE `competition_id` = '".$competitionId."'
             AND `discipline` = '".$discipline."'
-            AND `team_number` != -2
+            AND `team_number` > -2
           ORDER BY `time`
         ) `all`
         GROUP BY `person_id`
@@ -121,7 +121,7 @@ class DcupCalculation {
         WHERE `competition_id` = '".$competitionId."'
           AND `person_id` = '".$score['person_id']."'
           AND `discipline` = '".$discipline."'
-          AND `team_number` != -2
+          AND `team_number` > -2
         ORDER BY `time`
       ", 'time');
     }
@@ -205,7 +205,7 @@ class DcupCalculation {
                 `person_id`
               FROM `scores`
               WHERE `discipline` = '".$discipline[0]."'
-                AND `team_number` != -2
+                AND `team_number` > -2
             ) `s` ON `d`.`score_id` = `s`.`id`
             INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
             WHERE `dcup_id` = '".$dcupId."'
