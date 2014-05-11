@@ -58,7 +58,7 @@ class FssImport
   addSuccess: (callback=false) =>
     new AlertFssWindow 'Eingetragen', '', () =>
       @reloadCompetitions () =>
-        @selectCompetitionType
+        @selectCompetitionType()
         callback() if callback
 
 

@@ -54,7 +54,7 @@ class TestScoreResult
 
     if @raw.team_ids?
       @raw.team_id = @raw.team_ids[0]
-      td = appendTd(@raw.team_ids.join(', '))
+      td = $('<td/>').append(@teamLinks()).appendTo(tr)
       td.addClass('null') if @raw.team_ids.length > 1
     else if fields.team_id
       appendTd('')
@@ -109,5 +109,13 @@ class TestScoreResult
     if @raw.persons?
       for p in @raw.persons
         $('<a/>').text("#{p.id}").attr('href', "/page/person-#{p.id}.html").appendTo(span)
+        span.append(' ')
+    span
+
+  teamLinks: () =>
+    span = $('<span/>')
+    if @raw.team_ids?
+      for t in @raw.team_ids
+        $('<a/>').text("#{t}").attr('href', "/page/team-#{t}.html").appendTo(span)
         span.append(' ')
     span
