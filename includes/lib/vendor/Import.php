@@ -35,6 +35,8 @@ class Import {
     $likeTeam = preg_replace('/ 3$/', '', $likeTeam);
     $likeTeam = preg_replace('/ 4$/', '', $likeTeam);
     $likeTeam = preg_replace('/ E$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ A$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ B$/', '', $likeTeam);
 
     return $db->getRows("
         SELECT `id`
