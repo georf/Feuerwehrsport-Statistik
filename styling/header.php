@@ -28,7 +28,7 @@
 <ul class="nav navbar-nav">
 <li><a href="/page/home.html">Startseite</a></li>
 <li><a href="/page/dates.html">Termine</a></li>
-<li><a href="/page/dcup-2013.html">D-Cup</a></li>
+<li><a href="/page/dcup-2014.html">D-Cup</a></li>
 <li><a href="/page/news.html">Neuigkeiten</a></li>
 <li><a href="/page/competitions.html">Wettkämpfe</a></li>
 <li><a href="/page/teams.html">Mannschaften</a></li>
@@ -43,6 +43,7 @@
 <li class="dropdown-header">Interessantes</li>
 <li><a href="/page/records.html">Rekorde</a></li>
 <li><a href="/page/best-of.html">100 Bestzeiten</a></li>
+<li><a href="/page/year-2014.html">Statistiken 2014</a></li>
 <li><a href="/page/year-2013.html">Statistiken 2013</a></li>
 <li><a href="/page/logs.html">Letzte Änderungen</a></li>
 </ul>
