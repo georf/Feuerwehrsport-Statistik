@@ -122,16 +122,26 @@ class @Fss
   @post: (type, data, callbackSuccess, callbackFailed=false) ->
     url = "/json.php?type=#{type}"
     wait = new WaitFssWindow()
-    $.post(url, data, (data) ->
-      wait.close()
-      if data.success
-        callbackSuccess(data)
-      else if callbackFailed
-        callbackFailed(data)
-      else
-        message = if data.message? then data.message else JSON.stringify(data)
-        new WarningFssWindow(message)
-    , 'json')
+
+    params =
+      type: "POST"
+      url: url
+      data: data
+      dataType: 'json'
+      success: (data) ->
+        wait.close()
+        if data.success
+          callbackSuccess(data)
+        else if callbackFailed
+          callbackFailed(data)
+        else
+          message = if data.message? then data.message else JSON.stringify(data)
+          new WarningFssWindow(message)
+    
+    if data instanceof FormData
+      params.processData = false
+      params.contentType = false
+    $.ajax(params)
 
   @postReload: (type, data) ->
     Fss.post type, data, (result) ->

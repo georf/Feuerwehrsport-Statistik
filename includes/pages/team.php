@@ -1,4 +1,6 @@
 <?php
+$no_cache[] = "team";
+
 $team = Check2::page()->get('id')->isIn('teams', 'row');
 $id = $team['id'];
 
@@ -315,8 +317,17 @@ if (count($dcups)) $toc->link('dcup', 'D-Cup-Wertungen');
 $toc->link('karte', 'Karte');
 $toc->link('fehler', 'Fehler melden');
 
+$logoCol = TeamLogo::getTall(
+  $team['logo'], 
+  $team['short'], 
+  '<div id="logo-upload" data-team-id="'.$id.'"><span class="label label-default">Logo hochladen</span></div>');
+
+if (count($members) > 0) {
+  $logoCol .= Chart::img('team_sex', array($id));
+}
+
 echo Bootstrap::row()
-->col(TeamLogo::getTall($team['logo'], $team['short']).Chart::img('team_sex', array($id)), 2)
+->col($logoCol, 2)
 ->col(
   Title::set($team['name']).
   '<table>'.

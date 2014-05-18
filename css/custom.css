@@ -414,3 +414,14 @@ background-image:url(../images/applications-internet-add.png);
 #map-dynamic {
   height: 500px;
 }
+#logo-upload {
+  background: url(../styling/images/logo-default.png) no-repeat center center;
+  display: inline-block;
+  border: 1px solid #CCC;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  text-align: center;
+  padding: 35px 1px;
+  margin-bottom: 2px;
+}

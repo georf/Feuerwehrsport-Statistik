@@ -22,18 +22,34 @@ class @FssFormRow extends EventHandler
     container.append(field) for field in @fields
     container
 
-class @FssFormRowCheckbox extends FssFormRow
+class @FssFormRowFile extends FssFormRow
   constructor: (@name, label, @defaultValue = false) ->
+    @files = null
     @field = $('<input/>')
-      .attr('type', 'checkbox')
-
-    @field.attr('checked', true) if @defaultValue
+      .attr('type', 'file')
+      .on('change', (event) =>
+         @files = event.target.files
+      )
 
     @label = $('<label/>')
       .addClass('checkbox-label')
       .append(@field)
       .append($('<span/>').text(label))
     super(@label)
+
+  appendData: (data) =>
+    return data if !@files or @files.length is 0
+    data = new FormData()
+    data.append(i, file) for file, i in @files
+    data
+
+class @FssFormRowCheckbox extends FssFormRow
+  constructor: (@name, label, @defaultValue = false) ->
+    @field = $('<input/>')
+      .attr('type', 'checkbox')
+
+    @field.attr('checked', true) if @defaultValue
+    super(@field)
 
   appendData: (data) =>
     data[@name] = @field.is(':checked')

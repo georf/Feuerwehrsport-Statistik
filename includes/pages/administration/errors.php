@@ -213,11 +213,56 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         'disciplines' => implode(',', $provided)
       ));
     }
+  } elseif ($post['reason'] == 'logo') {
+    if ($post['type'] == 'team') {
+
+      $team = FSS::tableRow("teams", $post['teamId']);
+
+      TeamLogo::build($team)->remove();
+
+      $name = $post['attached_files'][0];
+      $basename = preg_replace('|\.[^.]+$|', '', $name);
+      $newName = $basename.'.png';
+
+      if ($name != $newName) {
+        shell_exec('convert '.$config['error-file-path'].$name.' '.$config['error-file-path'].$newName);
+        unlink($config['error-file-path'].$name);
+      }
+
+      $n = 1;
+      while (is_file($config['logo-path'].$n.$newName)) $n++;
+
+      $db->updateRow('teams', $post['teamId'], array(
+        'logo' => $n.$newName
+      ));
+
+      if ($name != $newName) {
+        shell_exec('convert '.$config['error-file-path'].$name.' '.$config['logo-path'].$n.$newName);
+      } else {
+        rename($config['error-file-path'].$name, $config['logo-path'].$n.$newName);
+      }
+      shell_exec('mogrify -resize 100x100 -background transparent -gravity center -extent 100x100 -format png '.$config['logo-path'].$n.$newName);
+
+      Log::insert('add-logo', array('team_id' => $post['teamId']));
+    }
   }
+  header('Location: ?page=administration&admin=errors');
+  exit();
 }
 
 if (isset($_GET['delete']) && Check::isIn($_GET['delete'], 'errors')) {
+  $error = FSS::tableRow("logs", $_GET["delete"]);
+  $post = unserialize($error['content']);
+  if (isset($post['attached_files'])) {
+    foreach ($post['attached_files'] as $file) {
+      if (is_file($config['error-file-path'].$file)) {
+        unlink($config['error-file-path'].$file);
+      }
+    }
+  }
   $db->deleteRow('errors', $_GET['delete'], 'id', false);
+  header('Location: ?page=administration&admin=errors');
+  exit();
 }
 
 $errors = $db->getRows("
@@ -312,6 +357,16 @@ foreach($errors as $error) {
         team_to_td($post['teamId']);
         echo '<td colspan="2">'.nl2br($post['description']).'</td>';
         break;
+
+      case 'logo':
+        team_to_td($post['teamId']);
+        echo '<td>';
+        foreach ($post['attached_files'] as $file) {
+          echo '<img src="/files/errors/'.$file.'" width=100/>';
+        }
+        echo '<td><a href="?page=administration&amp;admin=errors&amp;id='.$error['id'].'">OK</a></td>';
+        echo '</td>';
+        break;      
 
       default:
         echo '<td colspan="3">'.$error['content'].'</td>';

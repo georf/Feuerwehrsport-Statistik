@@ -7,6 +7,24 @@ new SortTable(selector: ".scores-gs", noSorting: [5..11], direction: "desc")
 new SortTable(selector: ".scores-fs", noSorting: [5..9], direction: "desc")
 new SortTable(selector: ".scores-la", noSorting: [5..12], direction: "desc")
 
+
+addLogo = (teamId) ->
+  Fss.checkLogin () ->
+    FssWindow.build('Neues Logo')
+    .add(new FssFormRowDescription('Bitte wählen Sie ein neues Logo aus:'))
+    .add(new FssFormRowFile('logo-file'))
+    .on('submit', (data) ->
+      unless data instanceof FormData
+        new WarningFssWindow("Sie haben keine Datei ausgewählt.")
+        return
+      data.append('reason', 'logo')
+      data.append('type', 'team')
+      data.append('teamId', teamId)
+      Fss.addError(data)
+    )
+    .open()
+
+
 $('#report-error').click (ev) ->
   ev.preventDefault()
   teamId = $(this).data('team-id')
@@ -15,6 +33,7 @@ $('#report-error').click (ev) ->
     options = [
       { value: 'together', display: 'Team ist doppelt vorhanden'},
       { value: 'correction', display: 'Team ist falsch geschrieben'},
+      { value: 'logo', display: 'Neues Logo hochladen'},
       { value: 'other', display: 'Etwas anderes'}
     ]
     FssWindow.build('Auswahl des Fehlers')
@@ -70,11 +89,13 @@ $('#report-error').click (ev) ->
           Fss.addError(data)
         )
         .open()
+      else if selected is 'logo'
+        addLogo(teamId)
     )
     .open()
 
 
-$('#map-load').click (ev) ->
+$('#map-load').click () ->
   button = $(this)
   loadRow = button.closest('.row').addClass('hide')
   mapRow = $('#map-dynamic').closest('.row').removeClass('hide')
@@ -105,7 +126,7 @@ $('#map-load').click (ev) ->
       map.removeLayer(marker).addLayer(editMarker)
       mapEdit.hide()
       mapEditHint.show()
-      mapSave.show().click (ev) ->
+      mapSave.show().click () ->
         Fss.checkLogin () ->
           Fss.postReload 'set-team-location',
             lat: editMarker.getLatLng().lat
@@ -113,6 +134,10 @@ $('#map-load').click (ev) ->
             teamId: teamId
 
     if loaded
-      mapEdit.show().click (ev) -> handleMap()
+      mapEdit.show().click () -> handleMap()
     else
       handleMap()
+
+$('#logo-upload').click () ->
+  addLogo($(this).data('team-id'))
+  
