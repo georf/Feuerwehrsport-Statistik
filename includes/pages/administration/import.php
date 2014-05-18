@@ -15,7 +15,8 @@
       <select id="competitions" style=""></select>
       <br/><br/>
       <a id="competition-link" href=""></a><br/>
-      <a id="competition-link-admin" href=""></a>
+      <a id="competition-link-admin" href=""></a><br/>
+      <a id="change-competition-score-type" href="">Mannschaftswertung<span>&nbsp;</span></a>
     </div>
     <div class="col-md-2" id="competition-scores">
     </div>

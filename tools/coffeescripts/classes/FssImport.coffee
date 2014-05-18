@@ -2,9 +2,29 @@
 
 class FssImport
   constructor: () ->
-    @selectCompetition = $('#competitions').change(@changeCompetitionLink)
+    @selectCompetition = $('#competitions').change(@changeCompetition)
     @competitions = []
     @lastValue = null
+
+    Fss.checkLogin () =>
+      Fss.post 'get-score-types', {}, (data) =>
+        @scoreTypes = data.types
+
+    $('#change-competition-score-type').click (ev) =>
+      ev.preventDefault()
+
+      options = [{display: "--", value: ""}]
+      for type in @scoreTypes
+        options.push({display: "#{type.score}/#{type.run}/#{type.persons}", value: type.id})
+
+      Fss.checkLogin () =>
+        FssWindow.build("Mannschaftswertung")
+        .add(new FssFormRowSelect('scoreTypeId', 'Wertung', @competition.score_type_id, options))
+        .on('submit', (data) =>
+          data.competitionId = @selectCompetition.find('option:selected').val()
+          Fss.post('set-score-type', data, @addSuccess)
+        )
+        .open()
 
     $("input[name='competition-type']").change(@selectCompetitionType)
 
@@ -62,7 +82,7 @@ class FssImport
         callback() if callback
 
 
-  changeCompetitionLink: () =>
+  changeCompetition: () =>
     option = @selectCompetition.find('option:selected')
     if option.length
       $('#competition-link')
@@ -71,7 +91,12 @@ class FssImport
       $('#competition-link-admin')
         .attr('href', "/?page=administration&admin=competition&id=#{option.val()}")
         .text("#{option.text()} - Admin")
+      @loadCompetition(option.val())
     @loadScores()
+
+  loadCompetition: (competitionId) =>
+    Fss.post 'get-competition', {competitionId: competitionId}, (data) =>
+      @competition = data.competition
 
   selectCompetitionType: () =>
     value = $("input[name='competition-type']:checked").val()
@@ -98,7 +123,7 @@ class FssImport
     
     for c in sortedCompetitions
       select.append($('<option/>').val(c.id).text("#{c.date} - #{c.event} - #{c.place}"))
-    @changeCompetitionLink()
+    @changeCompetition()
 
   loadScores: () =>
     Fss.post 'get-competition-scores', { competitionId: @selectCompetition.val() }, (data) =>

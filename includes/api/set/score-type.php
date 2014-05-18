@@ -1,5 +1,6 @@
 <?php
 
+Check2::except()->isAdmin();
 $competitionId = Check2::except()->post('competitionId')->isIn('competitions');
 $scoreTypeId   = Check2::except()->post('scoreTypeId')->isIn('score_types', true);
 
