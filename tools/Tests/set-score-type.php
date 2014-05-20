@@ -5,25 +5,33 @@ class SetScoreTypeTest extends ApiTestCase {
     $competition = $this->validRow('competitions');
     $score_type  = $this->validRow('score_types');
     return array(
-      'competitionId' => $competition['id'],
-      'scoreTypeId'  => $score_type['id'],
+      'get' => array(
+        'type' => 'set-score-type'
+      ),
+      'post' => array(
+        'competitionId' => $competition['id'],
+        'scoreTypeId'  => $score_type['id'],
+      ),
+      'session' => array(
+        'loggedin' => true,
+      )
     );
   }
 
   public function testSuccess() {
-    $this->success($this->apiPost('set', 'score-type', $this->params()));
+    $this->success($this->api($this->params()));
   }
 
   public function testFailedBadScore() {
     $params = $this->params();
-    $params['competitionId'] = '';
-    $this->failed($this->apiPost('set', 'score-type', $params));
+    $params['post']['competitionId'] = '';
+    $this->failed($this->api($params));
   }
 
   public function testFailedBadTeam() {
     $params = $this->params();
-    unset($params['scoreTypeId']);
-    $this->failed($this->apiPost('set', 'score-type', $params));
+    unset($params['post']['scoreTypeId']);
+    $this->failed($this->api($params));
   }
 
   public function testFailed() {
