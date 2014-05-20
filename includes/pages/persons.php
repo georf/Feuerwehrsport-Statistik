@@ -27,22 +27,11 @@ foreach ($sexs as $sex => $title) {
     ) AS `hb`,
     (
       SELECT COUNT(`id`) AS `count`
-      FROM `scores_la`
-      WHERE `person_1` = `p`.`id`
-      OR `person_2` = `p`.`id`
-      OR `person_3` = `p`.`id`
-      OR `person_4` = `p`.`id`
-      OR `person_5` = `p`.`id`
-      OR `person_6` = `p`.`id`
-      OR `person_7` = `p`.`id`
+      FROM `person_participations_la` `pp` ON `pp`.`person_id` = `p`.`id`
     ) AS `la`,
     (
       SELECT COUNT(`id`) AS `count`
-      FROM `scores_fs`
-      WHERE `person_1` = `p`.`id`
-      OR `person_2` = `p`.`id`
-      OR `person_3` = `p`.`id`
-      OR `person_4` = `p`.`id`
+      FROM `person_participations_fs` `pp` ON `pp`.`person_id` = `p`.`id`
     ) AS `fs`,
     (
       SELECT COUNT(`id`) AS `count`
@@ -50,13 +39,7 @@ foreach ($sexs as $sex => $title) {
       FROM `x_scores_hl`
       WHERE `person_id` = `p`.`id`
       ":"
-      FROM `scores_gs`
-      WHERE `person_1` = `p`.`id`
-      OR `person_2` = `p`.`id`
-      OR `person_3` = `p`.`id`
-      OR `person_4` = `p`.`id`
-      OR `person_5` = `p`.`id`
-      OR `person_6` = `p`.`id`
+      FROM `person_participations_gs` `pp` ON `pp`.`person_id` = `p`.`id`
       ")."
     ) AS `fourth`
     FROM `persons` `p`

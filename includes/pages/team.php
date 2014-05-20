@@ -21,45 +21,48 @@ $member = array(
   'GS' => 0,
   'LA' => 0,
   'FS' => 0,
-  'HL' => 0,
-  'mem_id' => null
+  'HL' => 0
 );
 
 $scores = $db->getRows("
-  SELECT `person_id`,`discipline`
-  FROM `scores`
-  WHERE `team_id` = '".$id."'
+  SELECT `discipline`,`person_id`,`count`
+  FROM (
+    SELECT 'GS' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
+    FROM `scores_gs` `s`
+    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+    WHERE `s`.`team_id` = '".$team['id']."'
+    GROUP BY `p`.`person_id`
+  UNION ALL
+    SELECT 'FS' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
+    FROM `scores_fs` `s`
+    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+    WHERE `s`.`team_id` = '".$team['id']."'
+    GROUP BY `p`.`person_id`
+  UNION ALL
+    SELECT 'LA' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
+    FROM `scores_la` `s`
+    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+    WHERE `s`.`team_id` = '".$team['id']."'
+    GROUP BY `p`.`person_id`
+  UNION ALL
+    SELECT `discipline`,`person_id`,COUNT(`id`) AS `count`
+    FROM `scores`
+    WHERE `team_id` = '".$team['id']."'
+    AND `discipline` = 'HB'
+    GROUP BY `person_id`
+  UNION ALL
+    SELECT `discipline`,`person_id`,COUNT(`id`) AS `count`
+    FROM `scores`
+    WHERE `team_id` = '".$team['id']."'
+    AND `discipline` = 'HL'
+    GROUP BY `person_id`
+  ) `i`
 ");
+
 foreach ($scores as $score) {
   $pid = $score['person_id'];
   if (!isset($members[$pid])) $members[$pid] = $member;
-  $members[$pid][$score['discipline']]++;
-}
-
-$scores = $db->getRows("
-  SELECT `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-  FROM (
-    SELECT 'GS' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,NULL AS `person_7`
-    FROM `scores_gs`
-    WHERE `team_id` = '".$team['id']."'
-  UNION ALL
-    SELECT 'LA' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-    FROM `scores_la`
-    WHERE `team_id` = '".$team['id']."'
-  UNION ALL
-    SELECT 'FS' AS `discipline`,`person_1`,`person_2`,`person_3`,`person_4`,NULL AS `person_5`,NULL AS `person_6`, NULL AS `person_7`
-    FROM `scores_fs`
-    WHERE `team_id` = '".$team['id']."'
-  ) `i`
-");
-foreach ($scores as $score) {
-  for($i = 1; $i <= 7; $i++) {
-    if (empty($score['person_'.$i])) continue;
-
-    $pid = $score['person_'.$i];
-    if (!isset($members[$pid])) $members[$pid] = $member;
-    $members[$pid][$score['discipline']]++;
-  }
+  $members[$pid][$score['discipline']] += $score['count'];
 }
 
 foreach ($members as $pid=>$member) {
@@ -80,36 +83,11 @@ $teamDisciplines = array(
   'FS' => $sexConfig,
   'LA' => $sexConfig,
 );
-$teamDisciplines['GS'] = $db->getRows("
-  SELECT `s`.*,
-    `event_id`, `event`,
-    `place_id`, `place`,
-    `date`, '' AS `type`
-  FROM `scores_gs` `s`
-  INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-  WHERE `s`.`team_id` = '".$id."'
-");
+$calculation = CalculationTeam::build($team);
+$teamDisciplines['GS'] = $calculation->getGroupScores('gs');
 foreach ($sexConfig as $sex => $name) {
-  $teamDisciplines['FS'][$sex] = $db->getRows("
-    SELECT `s`.*,
-      `event_id`, `event`,
-      `place_id`, `place`,
-      `date`, `fs` AS `type`
-    FROM `scores_fs` `s`
-    INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    WHERE `s`.`team_id` = '".$id."'
-    AND `s`.`sex` = '".$sex."'
-  ");
-  $teamDisciplines['LA'][$sex] = $db->getRows("
-    SELECT `s`.*,
-      `event_id`, `event`,
-      `place_id`, `place`,
-      `date`, `la` AS `type`
-    FROM `scores_la` `s`
-    INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-    WHERE `s`.`team_id` = '".$id."'
-    AND `s`.`sex` = '".$sex."'
-  ");
+  $teamDisciplines['FS'][$sex] = $calculation->getGroupScores('fs', $sex);
+  $teamDisciplines['LA'][$sex] = $calculation->getGroupScores('la', $sex);
 }
 
 $teamScores = array(
@@ -518,7 +496,7 @@ foreach ($teamScores as $value) {
       } else {
         return '';
       }
-    }, 5, array('class' => 'person small', 'title' => WK::type($discipline, $sex, $wk)));
+    }, 5, array('class' => 'person small', 'title' => WK::type($wk, $sex, $discipline)));
   }
   echo Bootstrap::row()->col($countTable->col('', function ($row) { return Link::competition($row['competition_id']); }, 3), 12);
 }

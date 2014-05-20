@@ -25,32 +25,21 @@ $teamsUnsorted = $db->getRows("
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 1 AS `gs`, 0 AS `fs`, 0 AS `la`
-      FROM `scores_gs`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
+      FROM `scores_gs` `s`
+      INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `p`.`person_id` = '".$id."'
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 0 AS `fs`, 1 AS `la`
-      FROM `scores_la`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
-      OR `person_7` = '".$id."'
+      FROM `scores_la` `s`
+      INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `p`.`person_id` = '".$id."'
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 1 AS `fs`, 0 AS `la`
-      FROM `scores_fs`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
+      FROM `scores_fs` `s`
+      INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `p`.`person_id` = '".$id."'
   ) `i`
   INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
   GROUP BY `team_id`
@@ -136,62 +125,8 @@ foreach ($disciplines as $disciplineConf) {
       INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `hb`.`competition_id`
       GROUP BY `c`.`id`
     ");
-  } elseif ($discipline == 'gs') {
-    $scores[$discipline] = $db->getRows("
-      SELECT
-        `c`.`place_id`,`c`.`place`,
-        `c`.`event_id`,`c`.`event`,
-        `c`.`score_type_id`,
-        `s`.`competition_id`,`c`.`date`,
-        `s`.`time`,`s`.`team_id`,
-        `s`.`id` AS `score_id`,`s`.`team_number`,
-        `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`
-      FROM `scores_gs` `s`
-      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
-    ");
-  } elseif ($discipline == 'la') {
-    $scores[$discipline] = $db->getRows("
-      SELECT
-        `c`.`place_id`,`c`.`place`,
-        `c`.`event_id`,`c`.`event`,
-        `c`.`score_type_id`,
-        `s`.`competition_id`,`c`.`date`,
-        `s`.`time`,`s`.`team_id`,
-        `s`.`id` AS `score_id`,`s`.`team_number`,
-        `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`,`s`.`person_5`,`s`.`person_6`,`s`.`person_7`
-      FROM `scores_la` `s`
-      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
-      OR `person_7` = '".$id."'
-    ");
-  } elseif ($discipline == 'fs') {
-    $scores[$discipline] = $db->getRows("
-      SELECT
-        `c`.`place_id`,`c`.`place`,
-        `c`.`event_id`,`c`.`event`,
-        `c`.`score_type_id`,
-        `s`.`competition_id`,`c`.`date`,
-        `s`.`time`,`s`.`team_id`,
-        `s`.`id` AS `score_id`,`s`.`team_number`,
-        `s`.`person_1`,`s`.`person_2`,`s`.`person_3`,`s`.`person_4`
-      FROM `scores_fs` `s`
-      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-    ");
+  } elseif (FSS::isGroupDiscipline($discipline)) {
+    $scores[$discipline] = CalculationPerson::build($person)->getGroupScores($discipline);
   }
 
   if (count($scores[$discipline])) {

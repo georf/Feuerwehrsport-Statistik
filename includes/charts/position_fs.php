@@ -15,8 +15,9 @@ $labels = array();
 for ($i = 1; $i < 5; $i++) {
     $positions[] = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `scores_fs`
-        WHERE `person_".$i."` = ".$id."
+        FROM `person_participations_fs`
+        WHERE `person_id` = ".$id."
+        AND `position` = ".$i."
     ", 'count');
 }
 
@@ -24,7 +25,7 @@ $show = array();
 for ($i = 1; $i < 5; $i++) {
     if ($positions[$i - 1] != 0) {
         $show[] = $positions[$i - 1];
-        $labels[] = WK::fs($i, $person['sex']);
+        $labels[] = WK::type($i, $person['sex'], 'fs');
     }
 }
 

@@ -57,42 +57,18 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         $db->updateRow('scores', $score['id'], array('person_id' => $new_person['id']));
       }
 
-      for($i = 1; $i < 7; $i++) {
+      foreach (array('fs', 'gs', 'la') as $key) {
         // set scores
         $scores = $db->getRows("
           SELECT `id`
-          FROM `scores_gs`
-          WHERE `person_".$i."` = '".$person['id']."'
+          FROM `person_participations_".$key."`
+          WHERE `person_id` = '".$person['id']."'
         ");
         foreach ($scores as $score) {
-          $db->updateRow('scores_gs', $score['id'], array('person_'.$i => $new_person['id']));
+          $db->updateRow('person_participations_'.$key, $score['id'], array('person_id' => $new_person['id']));
         }
       }
       
-      for($i = 1; $i < 8; $i++) {
-        // set scores
-        $scores = $db->getRows("
-          SELECT `id`
-          FROM `scores_la`
-          WHERE `person_".$i."` = '".$person['id']."'
-        ");
-        foreach ($scores as $score) {
-          $db->updateRow('scores_la', $score['id'], array('person_'.$i => $new_person['id']));
-        }
-      }
-    
-      for($i = 1; $i < 5; $i++) {
-        // set scores
-        $scores = $db->getRows("
-          SELECT `id`
-          FROM `scores_fs`
-          WHERE `person_".$i."` = '".$person['id']."'
-        ");
-        foreach ($scores as $score) {
-          $db->updateRow('scores_fs', $score['id'], array('person_'.$i => $new_person['id']));
-        }
-      }
-
       // set spelling
       $spellings = $db->getRows("
         SELECT `id`

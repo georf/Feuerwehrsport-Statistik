@@ -90,19 +90,11 @@ switch ($key) {
 
     case 'gs':
         $scores = $db->getRows("
-            SELECT
-                `s`.`time`,`c`.`date`
+            SELECT `s`.`time`,`c`.`date`
             FROM `scores_gs` `s`
             INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            WHERE
-            `time` IS NOT NULL AND (
-                `person_1` = '".$id."'
-                OR `person_2` = '".$id."'
-                OR `person_3` = '".$id."'
-                OR `person_4` = '".$id."'
-                OR `person_5` = '".$id."'
-                OR `person_6` = '".$id."'
-            )
+            INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
             ORDER BY `c`.`date`
         ");
         $title = FSS::dis2name($key);
@@ -110,17 +102,11 @@ switch ($key) {
 
     case 'fs':
         $scores = $db->getRows("
-            SELECT
-                `s`.`time`,`c`.`date`
+            SELECT `s`.`time`,`c`.`date`
             FROM `scores_fs` `s`
             INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            WHERE
-            `time` IS NOT NULL AND (
-                `person_1` = '".$id."'
-                OR `person_2` = '".$id."'
-                OR `person_3` = '".$id."'
-                OR `person_4` = '".$id."'
-            )
+            INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
             ORDER BY `c`.`date`
         ");
         $title = FSS::dis2name($key);
@@ -128,20 +114,11 @@ switch ($key) {
 
     case 'la':
         $scores = $db->getRows("
-            SELECT
-                `s`.`time`,`c`.`date`
+            SELECT `s`.`time`,`c`.`date`
             FROM `scores_la` `s`
             INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            WHERE
-            `time` IS NOT NULL AND (
-                `person_1` = '".$id."'
-                OR `person_2` = '".$id."'
-                OR `person_3` = '".$id."'
-                OR `person_4` = '".$id."'
-                OR `person_5` = '".$id."'
-                OR `person_6` = '".$id."'
-                OR `person_7` = '".$id."'
-            )
+            INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
             ORDER BY `c`.`date`
         ");
         $title = FSS::dis2name($key);

@@ -17,35 +17,24 @@
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
                 FROM (
-                    SELECT `id`
-                    FROM `scores_gs`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
+                    SELECT `s`.`id`
+                    FROM `scores_gs` `s`
+                    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NOT NULL
-                UNION
-                    SELECT `id`
-                    FROM `scores_la`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                    OR `person_7` = '".$id."'
+                UNION ALL
+                    SELECT `s`.`id`
+                    FROM `scores_la` `s`
+                    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NOT NULL
-                UNION
-                    SELECT `id`
-                    FROM `scores_fs`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
+                UNION ALL
+                    SELECT `s`.`id`
+                    FROM `scores_fs` `s`
+                    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NOT NULL
-                UNION
+                UNION ALL
                     SELECT `id`
                     FROM `scores`
                     WHERE `time` IS NOT NULL
@@ -56,35 +45,24 @@
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
                 FROM (
-                    SELECT `id`
-                    FROM `scores_gs`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
+                    SELECT `s`.`id`
+                    FROM `scores_gs` `s`
+                    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NULL
-                UNION
-                    SELECT `id`
-                    FROM `scores_la`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                    OR `person_7` = '".$id."'
+                UNION ALL
+                    SELECT `s`.`id`
+                    FROM `scores_la` `s`
+                    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NULL
-                UNION
-                    SELECT `id`
-                    FROM `scores_fs`
-                    WHERE `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
+                UNION ALL
+                    SELECT `s`.`id`
+                    FROM `scores_fs` `s`
+                    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+                    WHERE `p`.`person_id` = '".$id."'
                     AND `time` IS NULL
-                UNION
+                UNION ALL
                     SELECT `id`
                     FROM `scores`
                     WHERE `time` IS NULL
@@ -96,125 +74,40 @@
             break;
 
         case 'gs':
-            $good = $db->getFirstRow("
-                SELECT COUNT(*) AS `good`
-                FROM `scores_gs`
-                WHERE `time` IS NOT NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                )
-            ", 'good');
-            $bad = $db->getFirstRow("
-                SELECT COUNT(*) AS `bad`
-                FROM `scores_gs`
-                WHERE `time` IS NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                )
-            ", 'bad');
-            $title = FSS::dis2name($key);
-            break;
-
         case 'la':
-            $good = $db->getFirstRow("
-                SELECT COUNT(*) AS `good`
-                FROM `scores_la`
-                WHERE `time` IS NOT NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                    OR `person_7` = '".$id."'
-                )
-            ", 'good');
-            $bad = $db->getFirstRow("
-                SELECT COUNT(*) AS `bad`
-                FROM `scores_la`
-                WHERE `time` IS NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                    OR `person_5` = '".$id."'
-                    OR `person_6` = '".$id."'
-                    OR `person_7` = '".$id."'
-                )
-            ", 'bad');
-            $title = FSS::dis2name($key);
-            break;
-
         case 'fs':
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
-                FROM `scores_fs`
-                WHERE `time` IS NOT NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                )
+                FROM `scores_".$key."` `s`
+                INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
+                WHERE `p`.`person_id` = '".$id."'
+                AND `time` IS NOT NULL
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
-                FROM `scores_fs`
-                WHERE `time` IS NULL
-                AND (
-                    `person_1` = '".$id."'
-                    OR `person_2` = '".$id."'
-                    OR `person_3` = '".$id."'
-                    OR `person_4` = '".$id."'
-                )
+                FROM `scores_".$key."` `s`
+                INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
+                WHERE `p`.`person_id` = '".$id."'
+                AND `time` IS NULL
             ", 'bad');
             $title = FSS::dis2name($key);
             break;
 
         case 'hb':
-            $good = $db->getFirstRow("
-                SELECT COUNT(*) AS `good`
-                FROM `scores`
-                WHERE `time` IS NOT NULL
-                AND `person_id` = '".$id."'
-                AND `discipline` = 'HB'
-            ", 'good');
-            $bad = $db->getFirstRow("
-                SELECT COUNT(*) AS `bad`
-                FROM `scores`
-                WHERE `time` IS NULL
-                AND `person_id` = '".$id."'
-                AND `discipline` = 'HB'
-            ", 'bad');
-            $title = FSS::dis2name($key);
-            break;
-
         case 'hl':
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
                 FROM `scores`
                 WHERE `time` IS NOT NULL
                 AND `person_id` = '".$id."'
-                AND `discipline` = 'HL'
+                AND `discipline` = '".$key."'
             ", 'good');
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
                 FROM `scores`
                 WHERE `time` IS NULL
                 AND `person_id` = '".$id."'
-                AND `discipline` = 'HL'
+                AND `discipline` = '".$key."'
             ", 'bad');
             $title = FSS::dis2name($key);
             break;

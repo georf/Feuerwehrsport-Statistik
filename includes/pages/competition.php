@@ -15,137 +15,16 @@ foreach ($files as $key => $file) {
   $files[$key]['content'] = explode(',', $file['content']);
 }
 
-$gs = $db->getRows("
-  SELECT `best`.*,
-    `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
-    `p1`.`name` AS `name1`,`p1`.`firstname` AS `firstname1`,
-    `p2`.`name` AS `name2`,`p2`.`firstname` AS `firstname2`,
-    `p3`.`name` AS `name3`,`p3`.`firstname` AS `firstname3`,
-    `p4`.`name` AS `name4`,`p4`.`firstname` AS `firstname4`,
-    `p5`.`name` AS `name5`,`p5`.`firstname` AS `firstname5`,
-    `p6`.`name` AS `name6`,`p6`.`firstname` AS `firstname6`
-  FROM (
-    SELECT *
-    FROM (
-      (
-        SELECT `id`,`team_id`,`team_number`,
-        `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
-        `time`
-        FROM `scores_gs`
-        WHERE `time` IS NOT NULL
-        AND `competition_id` = '".$id."'
-      ) UNION (
-        SELECT `id`,`team_id`,`team_number`,
-        `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,
-        ".FSS::INVALID." AS `time`
-        FROM `scores_gs`
-        WHERE `time` IS NULL
-        AND `competition_id` = '".$id."'
-      ) ORDER BY `time`
-    ) `all`
-    GROUP BY `team_id`,`team_number`
-  ) `best`
-
-  INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
-  LEFT JOIN `persons` `p1` ON `best`.`person_1` = `p1`.`id`
-  LEFT JOIN `persons` `p2` ON `best`.`person_2` = `p2`.`id`
-  LEFT JOIN `persons` `p3` ON `best`.`person_3` = `p3`.`id`
-  LEFT JOIN `persons` `p4` ON `best`.`person_4` = `p4`.`id`
-  LEFT JOIN `persons` `p5` ON `best`.`person_5` = `p5`.`id`
-  LEFT JOIN `persons` `p6` ON `best`.`person_6` = `p6`.`id`
-  ORDER BY `time`
-");
-
+$calculation = CalculationCompetition::build($competition);
+$gs = $calculation->getDiscipline('gs', 'female');
 
 $la = array();
 $fs = array();
 $hb = array();
 $sexes = array('female', 'male');
 foreach ($sexes as $sex) {
-    $la[$sex] = $db->getRows("
-        SELECT `best`.*,
-            `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
-            `p1`.`name` AS `name1`,`p1`.`firstname` AS `firstname1`,
-            `p2`.`name` AS `name2`,`p2`.`firstname` AS `firstname2`,
-            `p3`.`name` AS `name3`,`p3`.`firstname` AS `firstname3`,
-            `p4`.`name` AS `name4`,`p4`.`firstname` AS `firstname4`,
-            `p5`.`name` AS `name5`,`p5`.`firstname` AS `firstname5`,
-            `p6`.`name` AS `name6`,`p6`.`firstname` AS `firstname6`,
-            `p7`.`name` AS `name7`,`p7`.`firstname` AS `firstname7`
-        FROM (
-            SELECT *
-            FROM (
-                (
-                    SELECT `id`,`team_id`,`team_number`,
-                    `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
-                    `time`
-                    FROM `scores_la`
-                    WHERE `time` IS NOT NULL
-                    AND `sex` = '".$sex."'
-                    AND `competition_id` = '".$id."'
-                ) UNION (
-                    SELECT `id`,`team_id`,`team_number`,
-                    `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`,
-                    ".FSS::INVALID." AS `time`
-                    FROM `scores_la`
-                    WHERE `time` IS NULL
-                    AND `sex` = '".$sex."'
-                    AND `competition_id` = '".$id."'
-                ) ORDER BY `time`
-            ) `all`
-            GROUP BY `team_id`,`team_number`
-        ) `best`
-
-        INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
-        LEFT JOIN `persons` `p1` ON `best`.`person_1` = `p1`.`id`
-        LEFT JOIN `persons` `p2` ON `best`.`person_2` = `p2`.`id`
-        LEFT JOIN `persons` `p3` ON `best`.`person_3` = `p3`.`id`
-        LEFT JOIN `persons` `p4` ON `best`.`person_4` = `p4`.`id`
-        LEFT JOIN `persons` `p5` ON `best`.`person_5` = `p5`.`id`
-        LEFT JOIN `persons` `p6` ON `best`.`person_6` = `p6`.`id`
-        LEFT JOIN `persons` `p7` ON `best`.`person_7` = `p7`.`id`
-        ORDER BY `time`
-    ");
-
-
-    $fs[$sex] = $db->getRows("
-        SELECT `best`.*,
-            `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
-            `p1`.`name` AS `name1`,`p1`.`firstname` AS `firstname1`,
-            `p2`.`name` AS `name2`,`p2`.`firstname` AS `firstname2`,
-            `p3`.`name` AS `name3`,`p3`.`firstname` AS `firstname3`,
-            `p4`.`name` AS `name4`,`p4`.`firstname` AS `firstname4`
-        FROM (
-            SELECT *
-            FROM (
-                (
-                    SELECT `id`,`team_id`,`team_number`,
-                    `person_1`,`person_2`,`person_3`,`person_4`,
-                    `time`,`run`
-                    FROM `scores_fs`
-                    WHERE `time` IS NOT NULL
-                    AND `sex` = '".$sex."'
-                    AND `competition_id` = '".$id."'
-                ) UNION (
-                    SELECT `id`,`team_id`,`team_number`,
-                    `person_1`,`person_2`,`person_3`,`person_4`,
-                    ".FSS::INVALID." AS `time`,`run`
-                    FROM `scores_fs`
-                    WHERE `time` IS NULL
-                    AND `sex` = '".$sex."'
-                    AND `competition_id` = '".$id."'
-                ) ORDER BY `time`
-            ) `all`
-            GROUP BY `team_id`,`team_number`,`run`
-        ) `best`
-
-        INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
-        LEFT JOIN `persons` `p1` ON `best`.`person_1` = `p1`.`id`
-        LEFT JOIN `persons` `p2` ON `best`.`person_2` = `p2`.`id`
-        LEFT JOIN `persons` `p3` ON `best`.`person_3` = `p3`.`id`
-        LEFT JOIN `persons` `p4` ON `best`.`person_4` = `p4`.`id`
-        ORDER BY `time`
-    ");
+    $la[$sex] = $calculation->getDiscipline('la', $sex);
+    $fs[$sex] = $calculation->getDiscipline('fs', $sex);
 
     $hb[$sex] = $db->getRows("
         SELECT `best`.*,

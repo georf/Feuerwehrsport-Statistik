@@ -1,65 +1,46 @@
 <?php
 
-class WK
-{
+class WK {
+  private static $disciplines = array(
+    'la' => array(
+      'Maschinist',
+      'A-Länge',
+      'Saugkorb',
+      'B-Schlauch',
+      'Strahlrohr links',
+      'Verteiler',
+      'Strahlrohr rechts'
+    ),
+    'gs' => array(
+      'B-Schlauch',
+      'Verteiler',
+      'C-Schlauch',
+      'Knoten',
+      'D-Schlauch',
+      'Läufer'
+    ),
+    'fs' => array(
+      array('female' => 'Leiterwand', 'male' => 'Haus'),
+      array('female' => 'Hürde', 'male' => 'Wand'),
+      'Balken',
+      'Feuer'
+    )
+  );
 
-    public static function type($wk, $sex, $key) {
-        if ($key === 'la') {
-            return self::la($wk);
-        } elseif ($key === 'gs') {
-            return self::gs($wk);
-        } elseif ($key === 'fs') {
-            return self::fs($wk, $sex);
-        }
-        return '';
-    }
+  public static function type($wk, $sex, $key) {
+    return self::get($wk, $sex, self::$disciplines[$key]);
+  }
 
-    public static function la($wk) {
-        return self::get($wk, array(
-            'Maschinist',
-            'A-Länge',
-            'Saugkorb',
-            'B-Schlauch',
-            'Strahlrohr links',
-            'Verteiler',
-            'Strahlrohr rechts'
-        ));
-    }
+  public static function count($key) {
+    return count(self::$disciplines[$key]);
+  }
 
-    public static function gs($wk) {
-        return self::get($wk, array(
-            'B-Schlauch',
-            'Verteiler',
-            'C-Schlauch',
-            'Knoten',
-            'D-Schlauch',
-            'Läufer'
-        ));
+  private static function get($pos, $sex, $wks) {
+    if (isset($wks[$pos-1])) {
+      $wk = $wks[$pos-1];
+      return (is_array($wk)) ? $wk[$sex] : $wk;
+    } else {
+      return '';
     }
-
-    public static function fs($wk, $sex) {
-        if ($sex === 'female') {
-            return self::get($wk, array(
-                'Leiterwand',
-                'Hürde',
-                'Balken',
-                'Feuer'
-            ));
-        } else {
-            return self::get($wk, array(
-                'Haus',
-                'Wand',
-                'Balken',
-                'Feuer'
-            ));
-        }
-    }
-
-    private static function get($wk, $wks) {
-        if (isset($wks[$wk-1])) {
-            return $wks[$wk-1];
-        } else {
-            return '';
-        }
-    }
+  }
 }

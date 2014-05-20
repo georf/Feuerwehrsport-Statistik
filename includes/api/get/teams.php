@@ -18,31 +18,20 @@ if ($id !== false) {
       WHERE `person_id` = '".$id."'
       AND `discipline` = 'HL'
     UNION
-      SELECT `team_id`,CONCAT('GS',`id`) AS `key`
-      FROM `scores_gs`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
+      SELECT `team_id`,CONCAT('GS',`s`.`id`) AS `key`
+      FROM `scores_gs` `s`
+      INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `person_id` = '".$id."'
     UNION
-      SELECT `team_id`,CONCAT('LA',`id`) AS `key`
-      FROM `scores_la`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
-      OR `person_5` = '".$id."'
-      OR `person_6` = '".$id."'
-      OR `person_7` = '".$id."'
+      SELECT `team_id`,CONCAT('LA',`s`.`id`) AS `key`
+      FROM `scores_la` `s`
+      INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `person_id` = '".$id."'
     UNION
-      SELECT `team_id`,CONCAT('FS',`id`) AS `key`
-      FROM `scores_fs`
-      WHERE `person_1` = '".$id."'
-      OR `person_2` = '".$id."'
-      OR `person_3` = '".$id."'
-      OR `person_4` = '".$id."'
+      SELECT `team_id`,CONCAT('FS',`s`.`id`) AS `key`
+      FROM `scores_fs` `s`
+      INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+      WHERE `person_id` = '".$id."'
     ) `i`
     INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
     GROUP BY `team_id`

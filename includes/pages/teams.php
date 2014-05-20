@@ -6,46 +6,33 @@ $teams = $db->getRows("
 ");
 
 foreach ($teams as $key => $team) {
-  $members = array();
-
-  $scores = $db->getRows("
-    SELECT `person_id`
-    FROM `scores`
-    WHERE `team_id` = '".$team['id']."'
-    GROUP BY `person_id`
-  ");
-  foreach ($scores as $score) {
-    $pid = $score['person_id'];
-    if (!isset($members[$pid])) $members[$pid] = true;
-  }
-
-  $scores = $db->getRows("
-    SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
+  $teams[$key]['members'] = $db->getFirstRow("
+    SELECT COUNT(*) AS `count`
     FROM (
-        SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,NULL AS `person_7`
-        FROM `scores_gs`
-        WHERE `team_id` = '".$team['id']."'
+      SELECT `person_id`
+      FROM (
+        SELECT `p`.`person_id`
+        FROM `scores_gs` `s`
+        INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
+        WHERE `s`.`team_id` = '".$team['id']."'
       UNION
-        SELECT `person_1`,`person_2`,`person_3`,`person_4`,`person_5`,`person_6`,`person_7`
-        FROM `scores_la`
-        WHERE `team_id` = '".$team['id']."'
+        SELECT `p`.`person_id`
+        FROM `scores_fs` `s`
+        INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
+        WHERE `s`.`team_id` = '".$team['id']."'
       UNION
-        SELECT `person_1`,`person_2`,`person_3`,`person_4`,NULL AS `person_5`,NULL AS `person_6`, NULL AS `person_7`
-        FROM `scores_fs`
+        SELECT `p`.`person_id`
+        FROM `scores_la` `s`
+        INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+        WHERE `s`.`team_id` = '".$team['id']."'
+      UNION
+        SELECT `person_id`
+        FROM `scores`
         WHERE `team_id` = '".$team['id']."'
-    ) `i`
-  ");
+      ) `i`
+      GROUP BY `person_id`
+    ) `c`", 'count');
 
-  foreach ($scores as $score) {
-    for($i = 1; $i <= 7; $i++) {
-      if (empty($score['person_'.$i])) continue;
-
-      $pid = $score['person_'.$i];
-      if (!isset($members[$pid])) $members[$pid] = true;
-    }
-  }
-
-  $teams[$key]['members'] = count($members);
   $teams[$key]['competitions'] = $db->getFirstRow("
     SELECT COUNT(*) AS `count`
     FROM (
@@ -75,7 +62,6 @@ foreach ($teams as $key => $team) {
     ) `c`
   ", 'count');
 }
-
 
 echo Title::set('Mannschaften');
 

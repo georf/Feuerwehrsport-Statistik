@@ -13,8 +13,9 @@ $labels = array();
 for ($i = 1; $i < 7; $i++) {
     $positions[] = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `scores_gs`
-        WHERE `person_".$i."` = ".$id."
+        FROM `person_participations_gs`
+        WHERE `person_id` = ".$id."
+        AND `position` = ".$i."
     ", 'count');
 }
 
@@ -22,7 +23,7 @@ $show = array();
 for ($i = 1; $i < 7; $i++) {
     if ($positions[$i - 1] != 0) {
         $show[] = $positions[$i - 1];
-        $labels[] = WK::gs($i);
+        $labels[] = WK::type($i, "female", 'gs');
     }
 }
 
