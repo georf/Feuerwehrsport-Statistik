@@ -27,11 +27,13 @@ foreach ($sexs as $sex => $title) {
     ) AS `hb`,
     (
       SELECT COUNT(`id`) AS `count`
-      FROM `person_participations_la` `pp` ON `pp`.`person_id` = `p`.`id`
+      FROM `person_participations_la`
+      WHERE `person_id` = `p`.`id`
     ) AS `la`,
     (
       SELECT COUNT(`id`) AS `count`
-      FROM `person_participations_fs` `pp` ON `pp`.`person_id` = `p`.`id`
+      FROM `person_participations_fs`
+      WHERE `person_id` = `p`.`id`
     ) AS `fs`,
     (
       SELECT COUNT(`id`) AS `count`
@@ -39,7 +41,8 @@ foreach ($sexs as $sex => $title) {
       FROM `x_scores_hl`
       WHERE `person_id` = `p`.`id`
       ":"
-      FROM `person_participations_gs` `pp` ON `pp`.`person_id` = `p`.`id`
+      FROM `person_participations_gs`
+      WHERE `person_id` = `p`.`id`
       ")."
     ) AS `fourth`
     FROM `persons` `p`
