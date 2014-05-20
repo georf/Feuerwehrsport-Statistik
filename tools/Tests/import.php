@@ -26,7 +26,7 @@ class ImportTest extends TestCase {
     $this->compare(Import::getTeamIds('Team MV II'), array('2'));
     $this->compare(Import::getTeamIds('Team MV III'), array('2'));
     $this->compare(Import::getTeamIds('Team MV IV'), array('2'));
-    $this->compare(Import::getTeamIds('FF Reinsdorf'), array('221', '1408'));
+    $this->compare(Import::getTeamIds('FF Reinsdorf'), array('221', '1408', '1561'));
   }
 
   public function testGetTime() {
