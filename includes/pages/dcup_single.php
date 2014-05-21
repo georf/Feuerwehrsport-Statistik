@@ -13,6 +13,8 @@ $dcup = $db->getFirstRow("SELECT * FROM `dcups` WHERE `year` = '".$year."' LIMIT
 Check2::page()->isTrue($dcup);
 $id = $dcup['id'];
 $key = Check2::page()->get('id2')->present();
+$under = preg_match('|u$|', $key);
+$key = preg_replace('|u$|', '', $key);
 Check2::page()->isTrue(isset($disciplines[$key]));
 
 $discipline = $disciplines[$key][0];
@@ -20,11 +22,13 @@ $sex = $disciplines[$key][1];
 $headline = FSS::dis2name($discipline);
 $year = $dcup['year'];
 if ($disciplines[$key][2]) $headline .= ' - '.FSS::sex($sex);
+if ($under) $headline .= ' - '.$dcup['u'];
+$u = ($under) ? '_u' : '';
 
 $persons = $db->getRows("
   SELECT `name`, `firstname`, `points`, `position`, `person_id`
   FROM `persons` `p`
-  INNER JOIN `dcup_points` `d` ON `d`.`person_id` = `p`.`id`
+  INNER JOIN `dcup_points".$u."` `d` ON `d`.`person_id` = `p`.`id`
   WHERE `d`.`discipline` = '".$discipline."'
   AND `d`.`dcup_id` = '".$id."'
   AND `p`.`sex` = '".$sex."'
@@ -34,7 +38,7 @@ $persons = $db->getRows("
 if ($discipline == 'zk') {
   $competitions = $db->getRows("
     SELECT `competition_id`,`place`,`place_id`,`date`, COUNT(`person_id`) AS `count`
-    FROM `scores_dcup_zk` `d`
+    FROM `scores_dcup_zk".$u."` `d`
     INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `d`.`competition_id`
     WHERE `d`.`dcup_id` = '".$id."'
     GROUP BY `d`.`competition_id`
@@ -43,7 +47,7 @@ if ($discipline == 'zk') {
 } else {
   $competitions = $db->getRows("
     SELECT `competition_id`,`place`,`place_id`,`date`, COUNT(`person_id`) AS `count`
-    FROM `scores_dcup_single` `d`
+    FROM `scores_dcup_single".$u."` `d`
     INNER JOIN `scores` `s` ON `s`.`id` = `d`.`score_id`
     INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
     INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
@@ -62,8 +66,22 @@ foreach ($competitions as $c) {
       '<br/>'.$c['count'].' Wettkämpfer';
 }
 
+
+$linkBox = '<ul><li>'.Link::dcup($year).'</li>';
+if ($dcup['u']) {
+  $linkBox .= '<li>';
+  if ($under) {
+    $linkBox .= Link::dcup_single($year, $key, FSS::dis2name($discipline).($disciplines[$key][2] ? ' '.FSS::sex($sex) : '').' (Gesamt)');
+  } else {
+    $linkBox .= Link::dcup_single($year, $key.'u', FSS::dis2name($discipline).($disciplines[$key][2] ? ' '.FSS::sex($sex) : '').' - '.$dcup['u']);
+  }
+  $linkBox .= '</li>';
+}
+$linkBox .= '</ul><hr/><ul><li>'.implode('</li><li>', $links).'</li></ul>';
+
+
 foreach ($persons as $key => $person) {
-  $persons[$key]['scores'] = DcupCalculation::getSingleScores($person['person_id'], $id, $discipline);
+  $persons[$key]['scores'] = DcupCalculation::getSingleScores($person['person_id'], $id, $discipline, 'time', $under);
 }
 
 
@@ -73,6 +91,7 @@ echo Title::set($headline.' - Deutschlandpokal '.$year);
 
 echo DcupCalculation::notReadyBox($dcup);
 
+
 echo Bootstrap::row()
 ->col(FSS::dis2img($discipline, 'middle'), 2)
 ->col(
@@ -80,7 +99,7 @@ echo Bootstrap::row()
   '<br/>Zu der Gesamtwertung zitiere ich die Ausschreibung des DFV:</p>'.
   '<img style="float:left; height:100px;padding-right: 30px;" src="/styling/images/dfv.png"/><p style="font-style:italic;">Bei Punktgleichheit von Wettkämpfern entscheidet die bessere Gesamtzeit der Bestzeiten aus den einzelnen Wettkämpfen über die bessere Platzierung. Hat ein Wettkämpfer eine geringere Anzahl von Wettkampfteilnahmen, ist er bei gleicher Gesamtpunktzahl automatisch hinter dem mit mehr Wettkämpfen platziert.</p>'
 , 6)
-->col('<ul><li>'.Link::dcup($year).'</li></ul><hr/><ul><li>'.implode('</li><li>', $links).'</li></ul>', 4);
+->col($linkBox, 4);
 
 $countTable = CountTable::build($persons)
 ->col('', 'position', 5)

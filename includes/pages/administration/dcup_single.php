@@ -38,6 +38,9 @@ if ($removeCompetitionId) {
   DcupCalculation::calculate();
 }
 
+# only for U20
+# DcupCalculation::calculate(true);
+
 TempDB::generate('x_full_competitions');
 
 echo '<form method="post" action="">';

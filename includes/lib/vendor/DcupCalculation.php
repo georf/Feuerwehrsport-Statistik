@@ -1,14 +1,16 @@
 <?php
 class DcupCalculation {
 
-  public static function getSingleScores($personId, $dcupId, $discipline, $sort = 'time') {
+  public static function getSingleScores($personId, $dcupId, $discipline, $sort = 'time', $under = false) {
     global $db;
     TempDB::generate('x_full_competitions');
     
+    $u = ($under) ? '_u' : '';
+
     if ($discipline == 'zk') {
       return $db->getRows("
         SELECT `competition_id`,`time`,`hl`,`hb`,`points`,`place`,`date`
-        FROM `scores_dcup_zk` `s`
+        FROM `scores_dcup_zk".$u."` `s`
         INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
         WHERE `dcup_id` = '".$dcupId."'
           AND `person_id` = '".$personId."'
@@ -17,7 +19,7 @@ class DcupCalculation {
     } else {
       return $db->getRows("
         SELECT `s`.`competition_id`,`s`.`time`,`d`.`points`,`place`,`date`
-        FROM `scores_dcup_single` `d`
+        FROM `scores_dcup_single".$u."` `d`
         INNER JOIN (    
           SELECT COALESCE(`time`, ".FSS::INVALID.") AS `time`,`competition_id`,`id`
           FROM `scores`
@@ -153,10 +155,13 @@ class DcupCalculation {
     }
   }
 
-  public static function calculate() {
+  public static function calculate($under = false) {
     global $db;
 
-    $db->query("TRUNCATE TABLE `dcup_points`");
+    $u = ($under) ? '_u' : '';
+    $where = ($under) ? " WHERE `u` IS NOT NULL" : '';
+
+    $db->query("TRUNCATE TABLE `dcup_points".$u."`");
 
     $disciplines = array(
       array('HL', 'male'),
@@ -179,7 +184,7 @@ class DcupCalculation {
     };
 
     foreach ($disciplines as $discipline) {
-      foreach ($db->getRows("SELECT `id` FROM `dcups`", 'id') as $dcupId) {
+      foreach ($db->getRows("SELECT `id` FROM `dcups`".$where, 'id') as $dcupId) {
         if ($discipline[0] == 'ZK') {
           $persons = $db->getRows("
             SELECT 
@@ -187,7 +192,7 @@ class DcupCalculation {
               `person_id`, 
               COUNT(`d`.`id`) AS `participations`,
               SUM(`time`) AS `time`
-            FROM `scores_dcup_zk` `d`
+            FROM `scores_dcup_zk".$u."` `d`
             WHERE `dcup_id` = '".$dcupId."'
             GROUP BY `person_id`
           ");
@@ -198,7 +203,7 @@ class DcupCalculation {
               `person_id`, 
               COUNT(`s`.`id`) AS `participations`,
               SUM(`time`) AS `time`
-            FROM `scores_dcup_single` `d`
+            FROM `scores_dcup_single".$u."` `d`
             INNER JOIN (
               SELECT COALESCE(`time`, ".FSS::INVALID.") AS `time`,
                 `id`,
@@ -222,7 +227,7 @@ class DcupCalculation {
           }
           $persons[$i]['position'] = $position;
 
-          $db->insertRow('dcup_points', array(
+          $db->insertRow("dcup_points".$u, array(
             'dcup_id' => $dcupId,
             'person_id' => $persons[$i]['person_id'],
             'points' => $persons[$i]['points'],

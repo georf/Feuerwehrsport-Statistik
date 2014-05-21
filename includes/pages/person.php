@@ -1,4 +1,5 @@
 <?php
+
 $person = Check2::page()->get('id')->isIn('persons', 'row');
 $id = $person['id'];
 
@@ -70,15 +71,23 @@ foreach ($disciplines as $disciplineConf) {
 
   if (in_array($discipline, array('hl', 'hb', 'zk'))) {
     $dcups[$discipline] = $db->getRows("
-      SELECT `points`, `position`, `year`, `ready`, `dcup_id`
-      FROM `dcup_points` `d`
-      INNER JOIN `dcups` `c` ON `c`.`id` = `d`.`dcup_id`
-      WHERE `d`.`person_id` = '".$id."'
-      AND `d`.`discipline` LIKE '".$discipline."'
-      ORDER BY `year` DESC
+      (
+        SELECT `points`, `position`, `year`, `ready`, `dcup_id`, NULL as `u`
+        FROM `dcup_points` `d`
+        INNER JOIN `dcups` `c` ON `c`.`id` = `d`.`dcup_id`
+        WHERE `d`.`person_id` = '".$id."'
+        AND `d`.`discipline` LIKE '".$discipline."'
+      ) UNION ALL (
+        SELECT `points`, `position`, `year`, `ready`, `dcup_id`, `u`
+        FROM `dcup_points_u` `d`
+        INNER JOIN `dcups` `c` ON `c`.`id` = `d`.`dcup_id`
+        WHERE `d`.`person_id` = '".$id."'
+        AND `u` IS NOT NULL
+        AND `d`.`discipline` LIKE '".$discipline."'
+      ) ORDER BY `year` DESC
     ");
     foreach ($dcups[$discipline] as $i => $dcup) {
-      $dcups[$discipline][$i]['scores'] = DcupCalculation::getSingleScores($id, $dcup['dcup_id'], $discipline, 'date');
+      $dcups[$discipline][$i]['scores'] = DcupCalculation::getSingleScores($id, $dcup['dcup_id'], $discipline, 'date', !empty($dcup['u']));
     }
   }
 
@@ -238,7 +247,9 @@ foreach ($disciplines as $disciplineConf) {
       
       foreach ($dcups[$discipline] as $dcup) {
         echo '<tr>';
-        echo '<td>'.Link::year($dcup['year']).'</td>';
+        echo '<td>'.Link::year($dcup['year']);
+        if (!empty($dcup['u'])) echo " ".$dcup['u'];
+        echo '</td>';
         for ($i = 0; $i < $maxScores; $i++) {
           if (isset($dcup['scores'][$i])) {
             $score = $dcup['scores'][$i];
