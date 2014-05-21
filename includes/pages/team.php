@@ -1,6 +1,4 @@
 <?php
-$no_cache[] = "team";
-
 $team = Check2::page()->get('id')->isIn('teams', 'row');
 $id = $team['id'];
 
