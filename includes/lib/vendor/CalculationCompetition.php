@@ -22,7 +22,7 @@ class CalculationCompetition {
     $selects = array();
     $joins = array();
     for ($p = 1; $p <= WK::count($key); $p++) {
-      $selects[] = "`p".$p."`.`person_id` AS `person_".$p."`,`p".$p."`.`name` AS `name".$p."`,`p".$p."`.`firstname` AS `firstname".$p."`";
+      $selects[] = "`p".$p."`.`id` AS `person_".$p."`,`p".$p."`.`name` AS `name".$p."`,`p".$p."`.`firstname` AS `firstname".$p."`";
       $joins[] = "LEFT JOIN `person_participations_".$key."` `pp".$p."` ON `pp".$p."`.`score_id` = `best`.`id` AND `pp".$p."`.`position` = ".$p;
       $joins[] = "LEFT JOIN `persons` `p".$p."` ON `pp".$p."`.`person_id` = `p".$p."`.`id`";
     }
