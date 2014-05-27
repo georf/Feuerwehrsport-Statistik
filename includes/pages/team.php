@@ -299,7 +299,7 @@ $logoCol = TeamLogo::getTall(
   '<div id="logo-upload" data-team-id="'.$id.'"><span class="label label-default">Logo hochladen</span></div>');
 
 if (count($members) > 0) {
-  $logoCol .= Chart::img('team_sex', array($id));
+  $logoCol .= "<hr/>".Chart::img('team_sex', array($id));
 }
 
 echo Bootstrap::row()
