@@ -630,7 +630,7 @@ if (count($missedItems)) {
   $missedCol .= "<h4>Folgende Informationen fehlen:</h4>";
   $missedCol .= "<ul><li>".implode("</li><li>", $missedItems)."</li></ul>";
 }
-$no_cache[] = 'competition';
+
 echo Title::h2('Fehler oder Hinweis melden', 'fehler');
 echo '<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>';
 echo '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>';
