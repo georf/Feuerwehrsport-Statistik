@@ -54,4 +54,50 @@ class CalculationCompetition {
       ORDER BY `time`
     ");
   }
+
+  public function missed() {
+    global $db;
+
+    return $db->getFirstRow("
+      SELECT
+        NOT EXISTS (
+          SELECT 1 FROM `links` WHERE `for`='competition' AND `for_id`=".$this->competition['id']."
+        ) AS `links`,
+        EXISTS (
+          SELECT 1 FROM (
+            SELECT (
+              SELECT COUNT(`id`) FROM `person_participations_la` WHERE score_id = s.id
+            ) AS `count` FROM `scores_la` `s` WHERE `competition_id`=".$this->competition['id']."
+          ) `i` WHERE `i`.`count` < 7
+        ) AS `la_members`,
+        EXISTS (
+          SELECT 1 FROM (
+            SELECT (
+              SELECT COUNT(`id`) FROM `person_participations_fs` WHERE score_id = s.id
+            ) AS `count` FROM `scores_fs` `s` WHERE `competition_id`=".$this->competition['id']."
+          ) `i` WHERE `i`.`count` < 4
+        ) AS `fs_members`,
+        EXISTS (
+          SELECT 1 FROM (
+            SELECT (
+              SELECT COUNT(`id`) FROM `person_participations_gs` WHERE score_id = s.id
+            ) AS `count` FROM `scores_gs` `s` WHERE `competition_id`=".$this->competition['id']."
+          ) `i` WHERE `i`.`count` < 6
+        ) AS `gs_members`,
+        EXISTS (
+          SELECT 1 FROM `scores` WHERE `competition_id`=".$this->competition['id']." AND `team_id` IS NULL
+        ) AS `team`,
+        NOT EXISTS (
+          SELECT 1 FROM `file_uploads` WHERE `competition_id`=".$this->competition['id']."
+        ) as `files`
+    ");
+  }
+  public $missedItem = array(
+    "links" => "Verlinkungen",
+    "la_members" => "Wettkämpfer beim Löschangriff",
+    "fs_members" => "Wettkämpfer bei der Feuerwehrstafette",
+    "gs_members" => "Wettkämpfer bei der Gruppenstafette",
+    "team" => "Team-Zuordnungen bei Einzeldisziplinen",
+    "files" => "Wettkampfergebnisse als Datei-Upload",
+  );
 }

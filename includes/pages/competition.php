@@ -305,31 +305,12 @@ if (count($fs['female']) || count($fs['male']))
 
 if (count($la['female']) || count($la['male']))
     $overviewTable .= '<tr title="Löschangriff"><th>LA:</th><td>'.count($la['female']).'</td><td>'.count($la['male']).'</td></tr>';
-
 $overviewTable .= '</table>';
-
-$missed = '';
-$arr = explode(',', $competition['missed']);
-$out = array();
-foreach ($config['missed'] as $key => $value) {
-  if (!in_array($key, $arr)) {
-    $out[] = $value;
-  }
-}
-if (count($out) === 0) {
-  $missed .= '<b>Vollständig erfasst</b>';
-} else {
-  $missed .= '<b>Es fehlen:</b>';
-  $missed .= '<ul class="disc">';
-  foreach ($out as $o) $missed .= '<li>'.$o.'</li>';
-  $missed .= '</ul>';
-}
 
 echo Bootstrap::row()
 ->col($toc, 4)
 ->col($overviewTable, 4)
 ->col('<h4>Fehlversuche</h4>'.Chart::img('competition_bad_good', array($id, 'full')), 4)
-->col('<div style="'.getMissedColor($competition['missed']).';padding:5px;border-radius:2px;"><h4>Status</h4>'.$missed.'</div>', 4)
 ->col('<form class="excel-box" method="post" action="/competition-'.$id.'.xlsx" id="form-excel">'.
   '<input type="hidden" name="competition_id" value="'.$id.'"/>'.
   '<img src="/styling/images/excel.png" alt="excel" style="float:right"/>'.
@@ -640,10 +621,28 @@ echo '<div id="add-file-form" style="display:none;">
 </div>
 ';
 
-
+$missedItems = array();
+foreach ($calculation->missed() as $key => $missed) {
+  if ($missed == 1) $missedItems[] = $calculation->missedItem[$key];
+}
+$missedCol = "";
+if (count($missedItems)) {
+  $missedCol .= "<h4>Folgende Informationen fehlen:</h4>";
+  $missedCol .= "<ul><li>".implode("</li><li>", $missedItems)."</li></ul>";
+}
+$no_cache[] = 'competition';
 echo Title::h2('Fehler oder Hinweis melden', 'fehler');
 echo '<p>Beim Importieren der Ergebnisse kann es immer wieder mal zu Fehlern kommen. Geraden wenn die Namen in den Ergebnislisten verkehrt geschrieben wurden, kann keine eindeutige Zuordnung stattfinden. Außerdem treten auch Probleme mit Umlauten oder anderen besonderen Buchstaben im Namen auf.</p>';
 echo '<p>Ihr könnt jetzt beim Korrigieren der Daten helfen. Dafür klickt ihr auf folgenden Link und generiert eine Meldung für den Administrator. Dieser überprüft dann die Eingaben und leitet weitere Schritte ein.</p>';
-echo '<p>Auch Hinweise können zu einem Wettkampf gegeben werden. Dazu zählen zum Beispiel:</p>';
-echo '<ul><li>Name des Wettkampfs</li><li>Besondere Bindungen</li><li>Wetter</li><li>Aufteilung auf mehrere Orte oder Tage</li></ul>';
-echo '<p><button id="report-error" data-competition-id="'.$id.'" data-competition-name="'.$competition['name'].'">Fehler oder Hinweis melden</button></p>';
+echo Bootstrap::row()
+->col(
+  '<p>Auch Hinweise können zu einem Wettkampf gegeben werden. Dazu zählen zum Beispiel:</p>'.
+  '<ul>'.
+    '<li>Name des Wettkampfs</li>'.
+    '<li>Besondere Bindungen</li>'.
+    '<li>Wetter</li>'.
+    '<li>Aufteilung auf mehrere Orte oder Tage</li>'.
+  '</ul>'.
+  '<p><button id="report-error" data-competition-id="'.$id.'" data-competition-name="'.$competition['name'].'">Fehler oder Hinweis melden</button></p>', 8)
+->col($missedCol, 4, array("missed-".count($missedItems)));
+

@@ -180,49 +180,6 @@ function getStatusColor($status) {
     return 'background:'.$c[intval($status)];
 }
 
-function getMissedColor($missed) {
-    global $config;
-
-    $arr = explode(',', $missed);
-    $arr2 = array();
-    foreach ($arr as $a) {
-        if (trim($a) != '') {
-            $arr2[] = trim($a);
-        }
-    }
-    $count = count($config['missed']) - count($arr2);
-
-    $c = array(
-        '#009200',
-        '#00C600',
-        '#60F20E',
-        '#FFEB00',
-        '#FF8100',
-        '#E73131'
-    );
-
-    return 'background:'.$c[$count];
-}
-
-
-function getMissedTitle($missed) {
-    global $config;
-    $arr = explode(',', $missed);
-
-
-    $out = array();
-    foreach ($config['missed'] as $key => $value) {
-        if (!in_array($key, $arr)) {
-            $out[] = $value;
-        }
-    }
-    if (count($out) === 0) {
-        return 'Vollständig erfasst';
-    }
-
-    return 'Es fehlen: '.implode(', ', $out);
-}
-
 function getDiscipline($id) {
     return ($id == 2)? 'Hindernisbahn' : 'Hakenleitersteigen';
 }

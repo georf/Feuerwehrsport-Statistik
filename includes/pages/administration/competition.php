@@ -43,34 +43,7 @@ if (isset($_POST['fs-type'])) {
 
 
 
-$update = array();
-foreach ($config['missed'] as $key=>$value) {
-  if (isset($_POST['missed-'.$key]) && $_POST['missed-'.$key] == 'true') {
-    $update[] = $key;
-  }
-}
-if (count($update)) {
-  $db->updateRow('competitions', $id, array(
-    'missed' => implode(',', $update)
-  ));
-
-  $competition['missed'] = implode(',', $update);
-}
-
 echo '<div class="row">';
-
-echo '<div class="six columns">';
-echo '<form method="post">';
-$m = explode(',',$competition['missed']);
-foreach ($config['missed'] as $key=>$value) {
-    echo '<input type="checkbox" ';
-    if (in_array($key, $m)) {
-        echo ' checked="checked" ';
-    }
-    echo ' name="missed-'.$key.'" value="true" id="missed-'.$key.'"/><label for="missed-'.$key.'">'.$value.'</label><br/>';
-}
-echo '<button type="submit">Speichern</button></form>';
-echo '</div>';
 
 
 echo '<div class="six columns">';
