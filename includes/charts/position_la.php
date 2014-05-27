@@ -23,7 +23,7 @@ $show = array();
 for ($i = 1; $i < 8; $i++) {
     if ($positions[$i - 1] != 0) {
         $show[] = $positions[$i - 1];
-        $labels[] = getLWK($i);
+        $labels[] = WK::type($i, null, "la");
     }
 }
 
