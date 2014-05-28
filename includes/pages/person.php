@@ -149,8 +149,12 @@ $teamLogos = '';
 foreach ($teams as $team) {
   $teamLogos .= TeamLogo::getTall($team['logo'], $team['short'], '<div class="logo-replacement">'.$team['short'].'</div>');
 }
+$personOverview = "";
+if (count($scores['hl']) || count($scores['hb'])) {
+  $personOverview = Chart::img('person_overview', array($id), true, 'person_overview');
+}
 echo Bootstrap::row()
-  ->col(Chart::img('person_overview', array($id), true, 'person_overview'), 3)
+  ->col($personOverview, 3)
   ->col($teamLogos, 6)
   ->col($toc, 3);
 
