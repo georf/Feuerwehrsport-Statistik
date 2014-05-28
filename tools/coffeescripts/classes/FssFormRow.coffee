@@ -68,7 +68,7 @@ class FssFormRowLabelField extends FssFormRow
     @label = $('<label/>')
       .addClass('text-label')
       .text(label)
-      .attr('for', rowId)
+      .attr('for', "fss-form-row-#{rowId}")
     super(@label, @field)
 
   focus: () =>
@@ -86,6 +86,13 @@ class @FssFormRowText extends FssFormRowLabelField
 class @FssFormRowTextarea extends FssFormRowLabelField
   constructor: (@name, label, @defaultValue = "") ->
     super(label, $('<textarea/>').val(@defaultValue))
+
+class @FssFormRowHtml extends FssFormRowTextarea
+  constructor: (args...) ->
+    super(args...)
+    @on 'after-add', (fssWindow) =>
+      fssWindow.on 'after-open', () =>
+        @field.htmlarea()
 
 class @FssFormRowSelect extends FssFormRowLabelField
   constructor: (@name, label, @defaultValue = "", options = []) ->

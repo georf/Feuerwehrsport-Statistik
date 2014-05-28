@@ -336,6 +336,10 @@ float:right;
 .fss-form-row .checkbox-label span {
   margin-left: 10px;
 }
+.fss-form-row textarea {
+  width: 75%;
+  height: 150px;
+}
 .fss-window .text-label {
   width: 100px;
 }

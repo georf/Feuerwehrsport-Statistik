@@ -43,6 +43,7 @@ class @FssWindow extends EventHandler
 
   add: (row) =>
     @rows.push(row)
+    row.fire('after-add', @)
     @
 
   open: () =>
@@ -61,6 +62,7 @@ class @FssWindow extends EventHandler
 
     for row in @rows
       break if row.focus() 
+    @fire('after-open')
     @
 
   close: () =>
