@@ -30,12 +30,7 @@ class @FssFormRowFile extends FssFormRow
       .on('change', (event) =>
          @files = event.target.files
       )
-
-    @label = $('<label/>')
-      .addClass('checkbox-label')
-      .append(@field)
-      .append($('<span/>').text(label))
-    super(@label)
+    super(@field)
 
   appendData: (data) =>
     return data if !@files or @files.length is 0
@@ -49,7 +44,12 @@ class @FssFormRowCheckbox extends FssFormRow
       .attr('type', 'checkbox')
 
     @field.attr('checked', true) if @defaultValue
-    super(@field)
+
+    @label = $('<label/>')
+      .addClass('checkbox-label')
+      .append(@field)
+      .append($('<span/>').text(label))
+    super(@label)
 
   appendData: (data) =>
     data[@name] = @field.is(':checked')
