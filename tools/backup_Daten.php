@@ -27,7 +27,7 @@ $tables = array(
   'dcups',
   'errors',
   'events',
-  'file_uploads',
+  'result_files',
   'links',
   'logs',
   'news',
