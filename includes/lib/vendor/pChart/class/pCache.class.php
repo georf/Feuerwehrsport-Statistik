@@ -2,9 +2,9 @@
  /*
      pCache - speed up the rendering by caching up the pictures
 
-     Version     : 2.1.3
+     Version     : 2.1.4
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 09/09/11
+     Last Update : 19/01/2014
 
      This file can be distributed under the license you can find at :
 
@@ -263,7 +263,7 @@
      /* Not in the cache */
      if (!$CacheInfo) { return(NULL); }
 
-     /* Get the database extended information */
+     /* Get the database extended information */     
      $DBPos   = $CacheInfo["DBPos"];
      $PicSize = $CacheInfo["PicSize"];
 

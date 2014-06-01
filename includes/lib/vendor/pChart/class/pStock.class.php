@@ -2,9 +2,9 @@
  /*
      pStock - class to draw stock charts
 
-     Version     : 2.1.3
+     Version     : 2.1.4
      Made by     : Jean-Damien POGOLOTTI
-     Last Update : 09/09/11
+     Last Update : 19/01/2014
 
      This file can be distributed under the license you can find at :
 
@@ -109,12 +109,7 @@
      $Unit	= $Data["Axis"][$AxisID]["Unit"];
 
      $YZero	= $this->pChartObject->scaleComputeY(0,array("AxisID"=>$AxisID));
-
-     if ($XDivs != 0) {
-         $XStep	= ($this->pChartObject->GraphAreaX2-$this->pChartObject->GraphAreaX1-$XMargin*2)/$XDivs;
-    } else {
-         $XStep	= ($this->pChartObject->GraphAreaX2-$this->pChartObject->GraphAreaX1-$XMargin*2);
-    }
+     $XStep	= ($this->pChartObject->GraphAreaX2-$this->pChartObject->GraphAreaX1-$XMargin*2)/$XDivs;
 
      $X = $this->pChartObject->GraphAreaX1 + $XMargin;
      $Y = $this->pChartObject->GraphAreaY1 + $XMargin;
@@ -131,7 +126,7 @@
 
        $Values = "Open :".$Data["Series"][$SerieOpen]["Data"][$Key]."<BR>Close : ".$Data["Series"][$SerieClose]["Data"][$Key]."<BR>Min : ".$Data["Series"][$SerieMin]["Data"][$Key]."<BR>Max : ".$Data["Series"][$SerieMax]["Data"][$Key]."<BR>";
        if ( $SerieMedian != NULL ) { $Values = $Values."Median : ".$Data["Series"][$SerieMedian]["Data"][$Key]."<BR>"; }
-       if ( $PosArray[0] > $PosArray[1] ) { $ImageMapColor = $this->pChartObject->toHTMLColor($BoxUpR,$BoxUpG,$BoxUpB); } else { $ImageMapColor = $this->pChartObject->toHTMLColor($BoxDownR,$BoxDownG,$BoxDownB); }
+       if ( $PosArray[0] > $PosArray[1] ) { $ImageMapColor = $this->pChartObject->toHTMLColor($BoxUpR,$BoxUpG,$BoxUpB); } else { $ImageMapColor = $this->pChartObject->toHTMLColor($BoxDownR,$BoxDownG,$BoxDownB); } 
 
        if ( $Data["Orientation"] == SCALE_POS_LEFTRIGHT )
         {
