@@ -11,6 +11,20 @@ class Link
         return self::page_a('competitions', $name, $title);
     }
 
+    public static function databaseLinksFor($table, $id) {
+        global $db;        
+        $links = array();
+        foreach ($db->getRows("
+          SELECT `url`, `name`
+          FROM `links`
+          WHERE `for_id` = '".$id."'
+          AND `for` = '".$table."'
+        ") as $link) {
+            $links[] = Link::a($link['url'], $link['name']);
+        }
+        return $links;
+    }
+
     public static function place($id, $name = false, $title = 'Details zu diesem Wettkampfort anzeigen') {
         global $config;
         if ($name === false) {

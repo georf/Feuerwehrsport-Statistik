@@ -165,4 +165,16 @@ class Check2 {
   public function isTrue($value) {
     return $this->escape($value);
   }
+
+  public function fullKey($orThis = false) {
+    if ($this->value === $orThis) {
+      return $this->escape($this->value);
+    }
+    $this->value = FSS::extractFullKey($this->value);
+    if (is_array($this->value))
+      $this->value = (in_array($this->value['key'], FSS::$disciplinesWithDoubleEvent)) ? $this->value : false;
+    if (is_array($this->value) && $this->value['sex'])
+    $this->value = (in_array($this->value['sex'], FSS::$sexes)) ? $this->value : false; 
+    return $this->escape($this->value);
+  }
 }

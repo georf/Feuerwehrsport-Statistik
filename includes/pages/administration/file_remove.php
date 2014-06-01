@@ -1,10 +1,10 @@
 <?php
 
-if (Check::get('id') && Check::isIn($_GET['id'], 'file_uploads')) {
+if (Check::get('id') && Check::isIn($_GET['id'], 'result_files')) {
 
   $row = $db->getFirstRow("
     SELECT *
-    FROM `file_uploads`
+    FROM `result_files`
     WHERE `id` = '".$db->escape($_GET['id'])."'
     LIMIT 1;
   ");
@@ -13,12 +13,12 @@ if (Check::get('id') && Check::isIn($_GET['id'], 'file_uploads')) {
   unlink($config['file-path'].''.$row['competition_id'].'/'.$row['name']);
   
   // del db entry
-  $db->deleteRow('file_uploads', $_GET['id']);
+  $db->deleteRow('result_files', $_GET['id']);
 }
 
 $rows = $db->getRows("
   SELECT *
-  FROM `file_uploads`
+  FROM `result_files`
   ORDER BY `competition_id` DESC
 ");
 

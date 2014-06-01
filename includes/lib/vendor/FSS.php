@@ -4,6 +4,7 @@ class FSS
 {
 
     public static $disciplines = array('hl', 'hb', 'la', 'gs', 'fs');
+    public static $disciplinesWithDoubleEvent = array('hl', 'hb', 'la', 'gs', 'fs', 'zk');
     public static $sexes = array('female', 'male');
     
     const INVALID = 99999999;
@@ -222,5 +223,24 @@ class FSS
 
         if (isset($states[$short])) return $states[$short];
         else return $short;
+    }
+
+    public static function buildSexKey($key, $sex = null) {
+        return $key.($sex? '-'.$sex : '');
+    }
+
+    public static function buildFullKey($key, $sex = null, $final = false) {
+        return $key.'-'.($sex? $sex : '').'-'.($final? 'final' : '');
+    }
+
+    public static function extractFullKey($fullKey) {
+        if (preg_match('/^([a-z]+)-((?:fe)?male)?-(final)?$/', $fullKey, $result)) {
+            return array(
+                'key' => $result[1],
+                'sex' => (isset($result[2])? $result[2] : null),
+                'final' => isset($result[3]),
+            );
+        }
+        return false;
     }
 }
