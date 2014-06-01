@@ -200,24 +200,21 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
       $basename = preg_replace('|\.[^.]+$|', '', $name);
       $newName = $basename.'.png';
 
-      if ($name != $newName) {
-        shell_exec('convert '.$config['error-file-path'].$name.' '.$config['error-file-path'].$newName);
-        unlink($config['error-file-path'].$name);
-      }
+      $logoPath = $config['base'].$config['logo-path'];
 
       $n = 1;
-      while (is_file($config['logo-path'].$n.$newName)) $n++;
+      while (is_file($logoPath.$n.$newName)) $n++;
 
       $db->updateRow('teams', $post['teamId'], array(
         'logo' => $n.$newName
       ));
 
       if ($name != $newName) {
-        shell_exec('convert '.$config['error-file-path'].$name.' '.$config['logo-path'].$n.$newName);
+        shell_exec('convert '.$config['error-file-path'].$name.' '.$logoPath.$n.$newName);
       } else {
-        rename($config['error-file-path'].$name, $config['logo-path'].$n.$newName);
+        rename($config['error-file-path'].$name, $logoPath.$n.$newName);
       }
-      shell_exec('mogrify -resize 100x100 -background transparent -gravity center -extent 100x100 -format png '.$config['logo-path'].$n.$newName);
+      shell_exec('mogrify -resize 100x100 -background transparent -gravity center -extent 100x100 -format png '.$logoPath.$n.$newName);
 
       Log::insert('add-logo', array('team_id' => $post['teamId']));
     }
