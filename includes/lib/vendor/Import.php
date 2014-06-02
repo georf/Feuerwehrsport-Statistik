@@ -58,8 +58,12 @@ class Import {
       return false;
     }
 
-    if ($time == 'D' || $time == 'd') {
+    if (in_array(strtolower($time), array('d', 'o.w.'))) {
       return null;
+    }
+
+    if (preg_match('|(.+)s\.?|', $time, $result)) {
+      $time = trim($result[1]);
     }
 
     if (!preg_match('|^[\d,:;.]+$|', $time)) {
