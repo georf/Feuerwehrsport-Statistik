@@ -1,7 +1,7 @@
 <?php
 
-$competition = Check2::page()->get('id')->isIn('competitions', 'row');
-$id = $competition['id'];
+$id = Check2::page()->get('id')->isIn('competitions');
+
 $competition = FSS::competition($id);
 $calculation = CalculationCompetition::build($competition);
 $disciplines = $calculation->disciplines();
@@ -303,7 +303,7 @@ echo Bootstrap::row()
   '<p>Auch Hinweise können zu einem Wettkampf gegeben werden. Dazu zählen zum Beispiel:</p>'.
   '<ul>'.
     '<li>Name des Wettkampfs</li>'.
-    '<li>Besondere Bindungen</li>'.
+    '<li>Besondere Bedindungen</li>'.
     '<li>Wetter</li>'.
     '<li>Aufteilung auf mehrere Orte oder Tage</li>'.
   '</ul>'.
