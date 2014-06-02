@@ -2,7 +2,7 @@
 echo Title::h1('PDF - Upload');
 
 Check2::page()->isTrue(Login::check());
-Check2::page()->isTrue(isset($_FILES);
+Check2::page()->isTrue(isset($_FILES));
 $competition = Check2::page()->post('id')->isIn('competitions', 'row');
 $calculation = CalculationCompetition::build($competition);
 $id = $competition['id'];
@@ -39,7 +39,7 @@ for ($i = 0; $i < 100; $i++) {
   $keys = array();
   foreach ($disciplines as $discipline) {
     if (isset($_POST[$discipline['sexKey'].'_'.$i])) {
-      $keys[] = $col;
+      $keys[] = $discipline['sexKey'];
     }
   }
 
