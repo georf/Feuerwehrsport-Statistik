@@ -60,7 +60,7 @@ if ($calculation->count('hb', 'female', true) || $calculation->count('hb', 'male
 if ($calculation->count('hl'))
   $overviewTable .= '<tr title="Hakenleitersteigen"><th>'.FSS::dis2img('hl').' HL:</th><td></td><td>'.$calculation->count('hl').'</td></tr>';
 if ($calculation->count('hb', null, true))
-  $overviewTable .= '<tr title="Hakenleitersteigen Finale"><th>'.FSS::dis2img('hl').' Finale:</th><td></td><td>'.$calculation->count('hb', null, true).'</td></tr>';
+  $overviewTable .= '<tr title="Hakenleitersteigen Finale"><th>'.FSS::dis2img('hl').' Finale:</th><td></td><td>'.$calculation->count('hl', null, true).'</td></tr>';
 if ($calculation->count('zk'))
   $overviewTable .= '<tr title="Zweikampf"><th>'.FSS::dis2img('zk').' ZK:</th><td></td><td>'.$calculation->count('zk').'</td></tr>';
 if ($calculation->count('gs'))
