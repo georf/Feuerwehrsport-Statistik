@@ -35,6 +35,77 @@
  */
 class PHPExcel_Worksheet implements PHPExcel_IComparable
 {
+
+	public function setTh($cell, $value) {
+    $this->setCellValue($cell, $value);
+    $this->setBold($cell);
+    $this->setBorder($cell);
+    $this->setTextCenter($cell);
+	}
+
+	public function setBackground($cell, $color) {
+    $this->getStyle($cell)->applyFromArray(array(
+      'fill' => array(
+        'type' => PHPExcel_Style_Fill::FILL_SOLID,
+        'startcolor' => array(
+          'argb' => $color,
+        ),
+      ),
+    ));
+	}
+
+	public function setBold($cell, $size = false) {
+    $this->getStyle($cell)->applyFromArray(array(
+     'font' => array(
+        'bold' => true,
+      ),
+    ));
+    
+    if ($size !== false) {
+      $this->getStyle($cell)->applyFromArray(array(
+       'font' => array(
+          'size' => $size,
+        ),
+      ));
+    }
+	}
+
+	public function setTime($cell, $time) {
+		if (FSS::isInvalid($time)) {
+      $this->setCellValue($cell, 'D');
+    } else {
+      $this->setCellValue($cell, time2string($time));
+      $this->getStyle($cell)->getNumberFormat()->setFormatCode('#.00');
+    }
+    $this->setTextCenter($cell);
+	}
+
+	public function setBorder($cell) {
+    $this->getStyle($cell)->applyFromArray(array(
+      'borders' => array(
+        'allborders' => array(
+          'style' => PHPExcel_Style_Border::BORDER_THIN,
+        ),
+      ),
+    ));
+	}
+
+	public function setTextCenter($cell) {
+    $this->getStyle($cell)->applyFromArray(array(
+      'alignment' => array(
+        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+      ),
+    ));
+	}
+
+	public function setVerticalCenter($cell) {
+    $this->getStyle($cell)->applyFromArray(array(
+      'alignment' => array(
+        'vertical' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+      ),
+    ));
+	}
+
 	/* Break types */
 	const BREAK_NONE	= 0;
 	const BREAK_ROW		= 1;

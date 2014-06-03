@@ -23,7 +23,7 @@ RewriteRule ^page/([a-z_\-]+)-([0-9]+)-([a-z]+)\.html$ index.php?page=$1&id=$2&i
 
 
 # excel/
-RewriteRule ^competition-([0-9]+)\.xlsx$ excel.php?competition=$1 [L]
+RewriteRule ^excel/([a-z_\-]+)-([0-9]+)\.xlsx$ excel.php?page=$1&id=$2 [L]
 
 # chart/
 RewriteCond %{REQUEST_URI} ^/chart/([a-z_]+)\.png$
