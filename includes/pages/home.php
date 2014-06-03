@@ -78,7 +78,7 @@ foreach ($disciplines as $d) {
   foreach ($best as $id => $item) {
     $i++;
     $output .= '<tr><td>'.$i.'.</td><td>';
-    $output .= ($group)? Link::team($id) : Link::fullPerson($id);
+    $output .= ($group)? Link::team($item['id']) : Link::fullPerson($id);
     $output .= '</td>';
 
     $ss = array();
