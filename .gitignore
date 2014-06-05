@@ -16,6 +16,7 @@ includes/lib/config.php
 includes/lib/vendor/pChart/cache/**
 page/**
 chart/**
+excel/**
 
 # generated from coffeescript
 js/**

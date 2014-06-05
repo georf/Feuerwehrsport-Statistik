@@ -78,19 +78,23 @@ class Cache {
 
         shell_exec('find '.$config['base'].'chart/ -type f | egrep "\.png$" | xargs rm');
         shell_exec('find '.$config['base'].'page/ -type f | egrep "\.html$" | xargs rm');
+        shell_exec('find '.$config['base'].'excel/ -type f | egrep "\.xlsx$" | xargs rm');
     }
 
 
-    public static function generateFile($content) {
+    public static function generateFile($content = false) {
         global $config;
 
-        if (isset($config['cache-disabled'])) return;
+        if (isset($config['cache-disabled'])) return false;
 
         $name = $_SERVER['SCRIPT_URL'];
 
-        if (preg_match('|\.php$|', $name)) return;
-        if (preg_match('|^/$|', $name)) return;
+        if (preg_match('|\.php$|', $name)) return false;
+        if (preg_match('|^/$|', $name)) return false;
 
-        file_put_contents($config['base'].preg_replace('|^/|', '', $name), $content);
+        $filename = $config['base'].preg_replace('|^/|', '', $name);
+
+        if ($content === false) return $filename;
+        file_put_contents($filename, $content);
     }
 }

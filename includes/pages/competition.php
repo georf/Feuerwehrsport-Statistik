@@ -74,7 +74,11 @@ $overviewTable .= '</table>';
 echo Bootstrap::row()
 ->col($toc, 4)
 ->col($overviewTable, 4)
-->col('<h4>Fehlversuche</h4>'.Chart::img('competition_bad_good', array($id, 'full')), 4);
+->col('<h4>Fehlversuche</h4>'.Chart::img('competition_bad_good', array($id, 'full')), 4)
+->col('<p class="bg-warning"><a href="/excel/competition-'.$id.'.xlsx">'.
+ '<img src="/styling/images/excel.png" alt="excel" style="float:left"/>'.
+ 'Auswertung des Wettkampfes als Excel-Datei herunterladen'.
+'</a></p>', 4);
 
 foreach ($disciplines as $discipline) {
   if (!$calculation->count($discipline)) continue;

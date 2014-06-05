@@ -21,8 +21,9 @@ RewriteCond %{REQUEST_URI} ^/page/([a-z_\-]+)-([0-9]+)-([a-z]+)\.html$
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
 RewriteRule ^page/([a-z_\-]+)-([0-9]+)-([a-z]+)\.html$ index.php?page=$1&id=$2&id2=$3 [L]
 
-
 # excel/
+RewriteCond %{REQUEST_URI} ^/excel/([a-z_\-]+)-([0-9]+)\.xlsx$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
 RewriteRule ^excel/([a-z_\-]+)-([0-9]+)\.xlsx$ excel.php?page=$1&id=$2 [L]
 
 # chart/

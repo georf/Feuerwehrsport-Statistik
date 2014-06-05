@@ -120,7 +120,7 @@ foreach ($disciplines as $discipline) {
         $worksheet->setTime('E'.$tr, $score['time']);
         $worksheet->setBorder('E'.$tr);
 
-        for ($time = 0; $time < $moreScoresCount; $time++) {
+        for ($time = 0; $time < count($score['times']); $time++) {
           $worksheet->setTime(chr($chr70 + $time).$tr, $score['times'][$time]);
           $worksheet->setBorder(chr($chr70 + $time).$tr);
         }
