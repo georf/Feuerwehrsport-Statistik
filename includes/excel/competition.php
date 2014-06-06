@@ -220,17 +220,21 @@ foreach ($disciplines as $discipline) {
 
 $excelFile->setActiveSheetIndex(0);
 $worksheet = $excelFile->getActiveSheet();
+
 $worksheet->setCellValue('A1', $competition['event']);
+$worksheet->getRowDimension('1')->setRowHeight(50);
 $worksheet->mergeCells('A1:C1');
 $worksheet->setBold('A1', 18);
 $worksheet->setTextCenter('A1');
 
 $worksheet->setCellValue('A2', $competition['place']);
+$worksheet->getRowDimension('2')->setRowHeight(40);
 $worksheet->mergeCells('A2:C2');
 $worksheet->setBold('A2', 18);
 $worksheet->setTextCenter('A2');
 
 $worksheet->setCellValue('A3', gdate($competition['date']));
+$worksheet->getRowDimension('3')->setRowHeight(30);
 $worksheet->mergeCells('A3:C3');
 $worksheet->setBold('A3', 14);
 $worksheet->setTextCenter('A3');

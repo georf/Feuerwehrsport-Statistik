@@ -15,9 +15,9 @@ try {
   header("Cache-Control: post-check=0, pre-check=0", false);
   header("Pragma: no-cache");
   header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  header('Content-Disposition: attachment; filename="Ergebnisse.xlsx"');
-  PHPExcel_IOFactory::createWriter($excelFile, 'Excel2007')->save('php://output');
   $filename = Cache::generateFile();
+  header('Content-Disposition: attachment; filename="'.(($filename === false)?'Ergebnisse.xlsx':basename($filename)).'"');
+  PHPExcel_IOFactory::createWriter($excelFile, 'Excel2007')->save('php://output');
   if ($filename !== false) PHPExcel_IOFactory::createWriter($excelFile, 'Excel2007')->save($filename);
 } catch (Exception $e) {
   print_r($e);
