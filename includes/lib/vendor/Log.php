@@ -70,12 +70,14 @@ class Log
 
                 $competition = FSS::competition($this->raw['competition_id']);
 
+                $keys = isset($this->raw['content']) ? $this->raw['content'] : $this->raw['keys'];
+
                 $this->content = 'Wettkampf: '.
                     Link::event($competition['event_id'], $competition['event']).', '.
                     Link::place($competition['place_id'], $competition['place']).', '.
                     gDate($competition['date']).' - '.
                     Link::competition($competition['id']).'<br/>'.
-                    $this->raw['name'].': '.$this->raw['content'];
+                    $this->raw['name'].': '.$keys;
             break;
 
 
