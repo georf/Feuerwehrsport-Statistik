@@ -34,6 +34,7 @@ $('#report-error').click (ev) ->
       { value: 'together', display: 'Team ist doppelt vorhanden'},
       { value: 'correction', display: 'Team ist falsch geschrieben'},
       { value: 'logo', display: 'Neues Logo hochladen'},
+      { value: 'map', display: 'Kartenposition ändern'},
       { value: 'other', display: 'Etwas anderes'}
     ]
     FssWindow.build('Auswahl des Fehlers')
@@ -91,12 +92,15 @@ $('#report-error').click (ev) ->
         .open()
       else if selected is 'logo'
         addLogo(teamId)
+      else if selected is 'map'
+        location.hash = '#karte'
+        loadMap(true)
     )
     .open()
 
 
-$('#map-load').click () ->
-  button = $(this)
+loadMap = (forceHandle=false) ->
+  button = $('#map-load')
   loadRow = button.closest('.row').addClass('hide')
   mapRow = $('#map-dynamic').closest('.row').removeClass('hide')
   lat = button.data('lat')
@@ -133,10 +137,12 @@ $('#map-load').click () ->
             lon: editMarker.getLatLng().lng
             teamId: teamId
 
-    if loaded
+    if loaded and !forceHandle
       mapEdit.show().click () -> handleMap()
     else
       handleMap()
+
+$('#map-load').click () -> loadMap()
 
 $('#logo-upload').click () ->
   addLogo($(this).data('team-id'))
