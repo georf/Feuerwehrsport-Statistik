@@ -56,7 +56,7 @@ if ($update) {
     SELECT 
     `s`.`id`,`team_id`,`team_number`,`competition_id`,`time`,
     ".implode(", ", $updateSqlSelect)."
-    FROM `scores_gs` `s`
+    FROM `scores_".$discipline."` `s`
     ".implode($updateSqlJoin)."
     WHERE `s`.`id` = '".$score['id']."'");
   Log::insert('set-score-wk', array(
