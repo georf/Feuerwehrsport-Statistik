@@ -29,6 +29,7 @@ foreach ($disciplines as $discipline) {
     );
   }
 }
+$toc->link('toc-karte', 'Karte');
 $toc->link('toc-weblinks', 'Weblinks');
 $toc->link('toc-files', 'Dateien');
 $toc->link('fehler', 'Fehler oder Hinweis melden');
@@ -236,6 +237,9 @@ foreach ($disciplines as $discipline) {
   }
 }
 
+echo Title::h2('Karte', 'toc-karte');
+echo '<div id="map-dynamic"></div>';
+$footerTags[] = '<script type="text/javascript">mapInformation = '.json_encode($calculation->mapInformation()).';</script>';
 
 $links = Link::databaseLinksFor('competition', $id);
 echo Title::h2('Weblinks zu diesem Wettkampf', 'toc-weblinks');

@@ -5,7 +5,7 @@ class @FssMap
     callback()
 
   @lat: 51
-  @lon = 13
+  @lon: 13
 
   @loadStyle: (callback) ->
     return callback() if FssMap.styleLoaded
@@ -21,7 +21,7 @@ class @FssMap
         else
           FssMap.loaded(callback)
 
-  @getMap: (id, zoom, lat, lon) ->
+  @getMap: (id, zoom=8, lat=FssMap.lat, lon=FssMap.lon) ->
     osmUrl = "http://b.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png"
     osmAttrib = 'Map data © <a href="http://openstreetmap.org">openstreetmap</a>'
     osm = L.tileLayer(osmUrl, {attribution: osmAttrib})
@@ -33,3 +33,8 @@ class @FssMap
       center: L.latLng(lat, lon)
       zoom: zoom
       layers: [osm, fire]
+
+  @redIcon: () -> 
+    unless FssMap.RedIcon?
+      FssMap.RedIcon = L.Icon.Default.extend(options: { iconUrl: '/styling/images/marker-icon-red.png' })
+    new FssMap.RedIcon()

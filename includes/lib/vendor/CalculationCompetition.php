@@ -214,6 +214,34 @@ class CalculationCompetition {
     ");
   }
 
+  public function mapInformation() {
+    global $db;
+    return array(
+      'place' => FSS::tableRow('places', $this->competition['place_id']),
+      'teams' => $db->getRows("
+        SELECT t.name, t.id, t.lat, t.lon
+        FROM (
+          SELECT `team_id`
+          FROM `scores`
+          WHERE `competition_id` = '".$this->competition['id']."'
+          union
+          SELECT `team_id`
+          FROM `scores_fs`
+          WHERE `competition_id` = '".$this->competition['id']."'
+          union
+          SELECT `team_id`
+          FROM `scores_gs`
+          WHERE `competition_id` = '".$this->competition['id']."'
+          union
+          SELECT `team_id`
+          FROM `scores_la`
+          WHERE `competition_id` = '".$this->competition['id']."'
+        ) s
+        INNER JOIN `teams` `t` ON `s`.`team_id` = `t`.`id`
+        WHERE `t`.`lat` IS NOT NULL AND `t`.`lon` IS NOT NULL")
+    );
+  }
+
   public function missed() {
     global $db;
 

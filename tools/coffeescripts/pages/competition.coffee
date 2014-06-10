@@ -1,3 +1,5 @@
+#= require FssMap
+
 new SortTable(selector: '.scores-hb, .scores-hl, .scores-zk', sortCol: 2, noSorting: 'last')
 new SortTable(selector: '.scores-hb-final, .scores-hl-final', sortCol: 2, noSorting: 3)
 new SortTable(selector: '.group-scores', sortCol: 1)
@@ -60,3 +62,16 @@ $('#report-error').click (ev) ->
         .open()
     )
     .open()
+
+$ ()->
+  FssMap.loadStyle () ->
+    map = FssMap.getMap('map-dynamic')
+    markers = for team in mapInformation.teams
+      continue unless team.lat? or team.lon?
+      L.marker([team.lat, team.lon]).bindPopup("<a href=\"/page/team-#{team.id}.html\">#{team.name}</a>").addTo(map)
+    place = mapInformation.place
+    if place.lat? and place.lon?
+      markers.push(L.marker([place.lat, place.lon], icon: FssMap.redIcon()).bindPopup("<a href=\"/page/place-#{place.id}.html\">#{place.name}</a>").addTo(map))
+    setTimeout( ->
+      map.fitBounds(L.featureGroup(markers).getBounds(), padding: [20, 20])
+    , 300)
