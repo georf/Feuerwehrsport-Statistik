@@ -62,7 +62,11 @@ class Import {
       return null;
     }
 
-    if (preg_match('|(.+)s\.?|', $time, $result)) {
+    if (preg_match('|(.+)s\.?|', strtolower($time), $result)) {
+      $time = trim($result[1]);
+    }
+
+    if (preg_match('|(.+)sekunden|', strtolower($time), $result)) {
       $time = trim($result[1]);
     }
 
