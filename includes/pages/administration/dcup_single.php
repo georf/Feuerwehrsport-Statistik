@@ -38,10 +38,18 @@ if ($removeCompetitionId) {
   DcupCalculation::calculate();
 }
 
-# only for U20
-# DcupCalculation::calculate(true);
+if (Check2::value()->post('u20')->getVal()) {
+  echo 'JOOOOOOOOOOOOOOOOOOOO';
+  # only for U20
+  DcupCalculation::calculate(true);
+}
 
 TempDB::generate('x_full_competitions');
+
+echo '<form method="post" action="">';
+echo '<input type="hidden" name="u20" value="true"/>';
+echo '<button>U20 berechnen</button>';
+echo '</form>';
 
 echo '<form method="post" action="">';
 echo '<select name="competitionId">';
