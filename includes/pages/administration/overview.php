@@ -39,6 +39,11 @@
       <li><?php echo Link::admin_page_a('dcup_single', 'D-Cup Einzelwertung'); ?></li>
     </ul>
   </li>
+  <li><h4>Personen korrigieren</h4>
+    <ul>
+      <li><?php echo Link::admin_page_a('find_persons_without_scores', 'Personen ohne Zuordnung'); ?></li>
+    </ul>
+  </li>
   <li><h4>Cache</h4>
     <ul>
       <li><?php echo Link::admin_page_a('clean', 'Löschen'); ?></li>
