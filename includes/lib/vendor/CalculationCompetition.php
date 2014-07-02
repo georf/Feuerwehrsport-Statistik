@@ -186,6 +186,7 @@ class CalculationCompetition {
       $joins[] = "LEFT JOIN `persons` `p".$p."` ON `pp".$p."`.`person_id` = `p".$p."`.`id`";
     }
     $sex = ($key == 'gs') ? '' : "AND `sex` = '".$sex."'";
+    $run = ($key == 'fs') ? ' ,`run` ' : ' ';
     return $db->getRows("
       SELECT `best`.*,`t`.`name` AS `team`,`t`.`short` AS `shortteam`,
       ".implode(",", $selects)."
@@ -193,20 +194,20 @@ class CalculationCompetition {
         SELECT *
         FROM (
           (
-            SELECT `id`,`team_id`,`team_number`,`time`
+            SELECT `id`,`team_id`,`team_number`,`time`".$run."
             FROM `scores_".$key."`
             WHERE `time` IS NOT NULL
             ".$sex."
             AND `competition_id` = '".$this->competition['id']."'
           ) UNION (
-            SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`
+            SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`".$run."
             FROM `scores_".$key."`
             WHERE `time` IS NULL
             ".$sex."
             AND `competition_id` = '".$this->competition['id']."'
           ) ORDER BY `time`
         ) `all`
-        GROUP BY `team_id`,`team_number`
+        GROUP BY `team_id`,`team_number`".$run."
       ) `best`
       INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
       ".implode(" ", $joins)."
