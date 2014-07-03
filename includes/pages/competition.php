@@ -162,7 +162,7 @@ foreach ($disciplines as $discipline) {
 
       foreach ($teams as $uniqTeam => $team) {
         echo '<tr>';
-        echo '<td>'.Link::team($team['id'], $team['short']).'</td>';
+        echo '<td>'.Link::team($team['id'], $team['short'].FSS::teamNumber($team['number'], $id, $team['id'], 'competition', $discipline['origSex'], ' ')).'</td>';
         echo '<td>'.FSS::time($team['time']).'</td>';
 
         $inScore = array();
@@ -206,9 +206,9 @@ foreach ($disciplines as $discipline) {
 
     $countTable = CountTable::build($scores, array('group-scores', 'scores-'.$key))
     ->rowAttribute('data-id', 'id')
-    ->col('Team', function ($row) use ($id) {
+    ->col('Team', function ($row) use ($id, $discipline) {
       $run = (array_key_exists('run', $row)) ? ' '.$row['run'] : '';
-      return Link::team($row['team_id'], $row['shortteam'].' '.FSS::teamNumber($row['team_number'], $id, $row['team_id'], 'competition').$run, 'Details zu '.$row['team'].' anzeigen');
+      return Link::team($row['team_id'], $row['shortteam'].' '.FSS::teamNumber($row['team_number'], $id, $row['team_id'], 'competition', $discipline["origSex"]).$run, 'Details zu '.$row['team'].' anzeigen');
     }, 25)
     ->col('Zeit', function ($row) { return FSS::time($row['time']); }, 10);
 

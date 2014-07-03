@@ -112,9 +112,9 @@ foreach ($disciplines as $discipline) {
         $worksheet->setBorder('F'.$tr);
       } else {
         if ($final) {
-          $worksheet->setCellValue('D'.$tr, $score['shortteam'].' '.FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition'));
-        } else {
           $worksheet->setCellValue('D'.$tr, $score['shortteam']);
+        } else {
+          $worksheet->setCellValue('D'.$tr, $score['shortteam'].FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition', $discipline['origSex'], ' '));
         }
         $worksheet->setBorder('D'.$tr);
         $worksheet->setTime('E'.$tr, $score['time']);
@@ -194,7 +194,7 @@ foreach ($disciplines as $discipline) {
       $worksheet->setTextCenter('A'.$tr);
       $worksheet->setBorder('A'.$tr);
       $run = (array_key_exists('run', $score)) ? ' '.$score['run'] : '';
-      $worksheet->setCellValue('B'.$tr, $score['shortteam'].' '.FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition').$run);
+      $worksheet->setCellValue('B'.$tr, $score['shortteam'].FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition', $discipline['origSex'], ' ').$run);
       $worksheet->setBorder('B'.$tr);
 
       $worksheet->setTime('C'.$tr, $score['time']);

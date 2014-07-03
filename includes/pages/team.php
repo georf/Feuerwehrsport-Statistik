@@ -483,7 +483,7 @@ foreach ($teamScores as $value) {
   ->col('Datum', 'date', 5, array('class' => 'small'))
   ->col('Typ', function ($row) { return Link::event($row['event_id'], $row['event']); }, 5)
   ->col('Ort', function ($row) { return Link::place($row['place_id'], $row['place']); }, 5)
-  ->col('N', function ($row) use ($id) { return FSS::teamNumber($row['team_number'], $row['competition_id'], $id, 'team'); }, 2)
+  ->col('N', function ($row) { return FSS::teamNumber($row['team_number']); }, 2)
   ->col('Zeit', function ($row) { return FSS::time($row['time']); }, 3);
 
   for ($wk = 1; $wk <= $personCount ; $wk++) {

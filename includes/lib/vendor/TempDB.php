@@ -103,29 +103,31 @@ class TempDB {
             CREATE TABLE x_team_numbers
             (
                 KEY `competition_id` (`competition_id`),
-                KEY `team_id` (`team_id`)
+                KEY `team_id` (`team_id`),
+                KEY `sex` (`sex`)
             )
             ENGINE = INNODB DEFAULT CHARSET = utf8
             SELECT *
             FROM (
-                    SELECT `competition_id` , `team_id` , `team_number`
-                    FROM `scores`
+                    SELECT `competition_id` , `team_id` , `team_number`, `sex`
+                    FROM `scores` `s`
+                    INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
                     WHERE `team_id` IS NOT NULL
                     AND `team_number` > 0
                 UNION
-                    SELECT `competition_id` , `team_id` , `team_number`
+                    SELECT `competition_id` , `team_id` , `team_number`, `sex`
                     FROM `scores_la`
                     WHERE `team_number` > 0
                 UNION
-                    SELECT `competition_id` , `team_id` , `team_number`
+                    SELECT `competition_id` , `team_id` , `team_number`, 'female' AS `sex`
                     FROM `scores_gs`
                     WHERE `team_number` > 0
                 UNION
-                    SELECT `competition_id` , `team_id` , `team_number`
+                    SELECT `competition_id` , `team_id` , `team_number`, `sex`
                     FROM `scores_fs`
                     WHERE `team_number` > 0
             ) `rows`
-            GROUP BY `competition_id` , `team_id` , `team_number`
+            GROUP BY `competition_id` , `team_id` , `team_number`, `sex`
         ",
     );
 

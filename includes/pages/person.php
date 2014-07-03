@@ -195,11 +195,11 @@ foreach ($disciplines as $disciplineConf) {
   ->col('Ort', function($row) { return Link::place($row['place_id'], $row['place']); }, 15);
 
   if ($discipline != 'zk') {
-    $countTable->col('Mannschaft', function($row) use ($teams) { 
+    $countTable->col('Mannschaft', function($row) use ($teams, $person) { 
       if ($row['team_id']) {
         $t_name = $teams[$row['team_id']]['name'];
         if ($row['score_type_id']) {
-          $t_name .= FSS::teamNumber($row['team_number'], $row['competition_id'], $row['team_id'], false, ' ');
+          $t_name .= FSS::teamNumber($row['team_number'], $row['competition_id'], $row['team_id'], false, $person['sex'], ' ');
         }
         return Link::team($row['team_id'], $t_name);
       }

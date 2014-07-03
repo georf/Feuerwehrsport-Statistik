@@ -15,28 +15,29 @@ class CalculationCompetition {
 
   public function disciplines() {
     return array(
-     $this->discipline('hb', 'female', false),
-     $this->discipline('hb', 'female', true),
-     $this->discipline('hb', 'male', false),
-     $this->discipline('hb', 'male', true),
-     $this->discipline('hl', null, false),
-     $this->discipline('hl', null, true),
-     $this->discipline('zk', null, false),
-     $this->discipline('gs', null, false),
-     $this->discipline('fs', 'female', false),
-     $this->discipline('fs', 'male', false),
-     $this->discipline('la', 'female', false),
-     $this->discipline('la', 'male', false),
+     $this->discipline('hb', 'female', false, 'female'),
+     $this->discipline('hb', 'female', true, 'female'),
+     $this->discipline('hb', 'male', false, 'male'),
+     $this->discipline('hb', 'male', true, 'male'),
+     $this->discipline('hl', null, false, 'male'),
+     $this->discipline('hl', null, true, 'male'),
+     $this->discipline('zk', null, false, 'male'),
+     $this->discipline('gs', null, false, 'female'),
+     $this->discipline('fs', 'female', false, 'female'),
+     $this->discipline('fs', 'male', false, 'male'),
+     $this->discipline('la', 'female', false, 'female'),
+     $this->discipline('la', 'male', false, 'male'),
     );
   }
 
-  public function discipline($key, $sex, $final) {
+  public function discipline($key, $sex, $final, $origSex) {
     return array(
       'key' => $key,
       'sex' => $sex,
       'final' => $final,
       'sexKey' => FSS::buildSexKey($key, $sex),
       'fullKey' => FSS::buildFullKey($key, $sex, $final),
+      'origSex' => $origSex,
     );
   }
 

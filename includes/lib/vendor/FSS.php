@@ -9,8 +9,8 @@ class FSS
     
     const INVALID = 99999999;
 
-    private static $competitionTeamNumbers = false;
-    private static $teamTeamNumbers = false;
+    private static $competitionTeamNumbers = array('female' => false, 'male' => false);
+    private static $teamTeamNumbers = array('female' => false, 'male' => false);
 
 
     public static function isInvalid($time) {
@@ -27,7 +27,7 @@ class FSS
     }
 
 
-    public static function teamNumber($number, $competition_id = false, $team_id = false, $cache = false, $pre = '') {
+    public static function teamNumber($number, $competition_id = false, $team_id = false, $cache = false, $sex = false, $pre = '') {
         global $db;
 
         if ($number == -1) {
@@ -41,42 +41,22 @@ class FSS
         }
 
         if ($cache == 'competition') {
-            if (self::$competitionTeamNumbers === false) {
+            if (self::$competitionTeamNumbers[$sex] === false) {
                 TempDB::generate('x_team_numbers');
                 $rows = $db->getRows("
                     SELECT `team_id`
                     FROM `x_team_numbers`
                     WHERE `competition_id` = '".$competition_id."'
+                    AND `sex` = '".$sex."'
                 ");
 
-                self::$competitionTeamNumbers = array();
+                self::$competitionTeamNumbers[$sex] = array();
                 foreach ($rows as $row) {
-                    self::$competitionTeamNumbers[$row['team_id']] = true;
+                    self::$competitionTeamNumbers[$sex][$row['team_id']] = true;
                 }
             }
 
-            if (isset(self::$competitionTeamNumbers[$team_id])) {
-                return $pre.(intval($number)+1);
-            }
-            return '';
-        }
-
-        if ($cache == 'team') {
-            if (self::$teamTeamNumbers === false) {
-                TempDB::generate('x_team_numbers');
-                $rows = $db->getRows("
-                    SELECT `team_id`
-                    FROM `x_team_numbers`
-                    WHERE `competition_id` = '".$competition_id."'
-                ");
-
-                self::$teamTeamNumbers = array();
-                foreach ($rows as $row) {
-                    self::$teamTeamNumbers[$row['team_id']] = true;
-                }
-            }
-
-            if (isset(self::$teamTeamNumbers[$team_id])) {
+            if (isset(self::$competitionTeamNumbers[$sex][$team_id])) {
                 return $pre.(intval($number)+1);
             }
             return '';
