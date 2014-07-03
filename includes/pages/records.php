@@ -1,6 +1,7 @@
 <?php
 
 $team2 = FSS::tableRow('teams', 2);
+$team3 = FSS::tableRow('teams', 2);
 $team11 = FSS::tableRow('teams', 11);
 $team15 = FSS::tableRow('teams', 15);
 $team61 = FSS::tableRow('teams', 61);
@@ -66,11 +67,11 @@ echo '<tr><td>'.FSS::dis2img('hb').'</td>'.
   '<td>'.Link::competition(12, '2. D-Cup 2012 - Zeulenroda').'</td></tr>';
 echo '<tr><td>'.FSS::dis2img('zk').'</td>'.
   '<td>'.FSS::dis2name('zk').'</td>'.
-  '<td>'.Link::person(239, 'full', 'Daßler', 'Adrian').'</td>'.
-  '<td>'.TeamLogo::get(15, $team15['logo']).'</td>'.
-  '<td>'.Link::team(15, 'TSV Zeulenroda').'</td>'.
-  '<td>31,63 s<br/><small>15,17 s/16,46 s</small></td>'.
-  '<td>'.Link::competition(12, '2. D-Cup 2012 - Zeulenroda').'</td></tr>';
+  '<td>'.Link::person(239, 'full', 'Gehlert', 'Tom').'</td>'.
+  '<td>'.TeamLogo::get(3, $team3['logo']).'</td>'.
+  '<td>'.Link::team(3, 'Team Lausitz').'</td>'.
+  '<td>31,41 s<br/><small>14,48 s/16,93 s</small></td>'.
+  '<td>'.Link::competition(487, '2. D-Cup 2014 - Doberlug-Kirchhain').'</td></tr>';
 echo '<tr><td>'.FSS::dis2img('fs').'</td>'.
   '<td>'.FSS::dis2name('fs').'</td>'.
   '<td><small>'.implode(', ', array(Link::person(227, 'sub'), Link::person(92, 'sub'), Link::person(68, 'sub'), Link::person(179, 'sub'))).'</small></td>'.
