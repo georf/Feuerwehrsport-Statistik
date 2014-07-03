@@ -19,6 +19,19 @@ class Import {
     return $default;
   }
 
+  public static function getTeamRun($team, $default = "A") {
+    $team = trim($team);
+
+    if (preg_match('/ A$/', $team)) {
+      return "A";
+    } elseif (preg_match('/ B$/', $team)) {
+      return "B";
+    } elseif (preg_match('/ C$/', $team)) {
+      return "C";
+    }
+    return $default;
+  }
+
   public static function getTeamIds($team) {
     global $db;
 
@@ -37,6 +50,7 @@ class Import {
     $likeTeam = preg_replace('/ E$/', '', $likeTeam);
     $likeTeam = preg_replace('/ A$/', '', $likeTeam);
     $likeTeam = preg_replace('/ B$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ C$/', '', $likeTeam);
 
     return $db->getRows("
         SELECT `id`

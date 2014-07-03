@@ -44,6 +44,7 @@ foreach ($score_lines as $score_line) {
   $score['team_number'] = '1';
   $score['oldteam']     = '';
   $score['number']      = '1';
+  $score['run']         = 'A';
 
   if (count($cols) < count($headlines)) {
     $score['correct'] = false;
@@ -75,6 +76,7 @@ foreach ($score_lines as $score_line) {
           $score['teams'] = array($teamName);
           $score['oldteam'] = $teamName;
 
+          $score['run'] = Import::getTeamRun($teamName, $score['run']);
           $score['team_number'] = Import::getTeamNumber($teamName, $score['team_number']);
           if (is_numeric($teamName) && Check::isIn($teamName, 'teams')) {
             $score['team_ids'] = array($teamName);
@@ -98,9 +100,9 @@ foreach ($score_lines as $score_line) {
           break;
 
         case 'run':
-          $score['run'] = strtoupper($cols[$i]);
-          if (!in_array($score['run'], array('A', 'B'))) {
-            $score['run'] = 'A';
+          $run = strtoupper($cols[$i]);
+          if (in_array($run, array('A', 'B', 'C'))) {
+            $score['run'] = $run;
           }
           break;
       }
