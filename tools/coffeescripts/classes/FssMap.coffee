@@ -32,6 +32,7 @@ class @FssMap
     return L.map id, 
       center: L.latLng(lat, lon)
       zoom: zoom
+      scrollWheelZoom: false
       layers: [osm, fire]
 
   @redIcon: () -> 
