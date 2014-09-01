@@ -104,10 +104,14 @@ class Analysis {
     
     TempDB::generate('x_full_competitions');
 
+    $joins = array();
+    if (!$group) $joins[] = "INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id` AND `p`.`nation_id` = 1";
+
     $result = $db->getFirstRow("
       SELECT AVG(`s`.`time`) AS `avg`, COUNT(`s`.`time`) AS `total`
       FROM `".$table."` `s` 
       INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      ".implode(" ", $joins)."
       WHERE ".implode(" AND ", $wheres)."
       ORDER BY `time`
     ");
@@ -118,6 +122,7 @@ class Analysis {
       `".(($group)?'team_id':'person_id')."`
       FROM `".$table."` `s` 
       INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      ".implode(" ", $joins)."
       WHERE ".implode(" AND ", $wheres)."
       ORDER BY `time`
     ");
@@ -142,6 +147,7 @@ class Analysis {
         `".(($group)?'team_id':'person_id')."`
         FROM `".$table."` `s` 
         INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+        ".implode(" ", $joins)."
         WHERE ".implode(" AND ", $wheres)."
         AND YEAR(`c`.`date`) = ".$year."
         ORDER BY `time`

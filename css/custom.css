@@ -447,3 +447,7 @@ background-image:url(../images/applications-internet-add.png);
 .missed-6 {
   background-color: #f36c5f;
 }
+.page-header span {
+  float: right;
+  margin-top: 20px;
+}

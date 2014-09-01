@@ -14,6 +14,7 @@ class Statistics {
       WHERE YEAR(`c`.`date`) = '".$db->escape($year)."'
       AND `discipline` = '".$discipline."'
       AND `p`.`sex` = '".$sex."'
+      AND `p`.`nation_id` = 1
     ");
 
     foreach ($scores as $score) {

@@ -59,9 +59,11 @@ $disciplines = array(
 $scores = array();
 $dcups = array();
 
-echo Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']));
+$nation = FSS::tableRow('nations', $person['nation_id']);
+echo Title::set(htmlspecialchars($person['firstname']).' '.htmlspecialchars($person['name']), $nation['name']);
 $otherNames = Import::getOtherOfficialNames($id);
 if (count($otherNames)) echo '<p>'.$person['firstname'].' ist auch unter <em>'.implode('</em>, <em>', $otherNames).'</em> bekannt.</p>';
+
 
 $toc = TableOfContents::get();
 foreach ($disciplines as $disciplineConf) {

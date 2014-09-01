@@ -38,6 +38,7 @@ foreach ($disciplines as $d) {
           INNER JOIN  `persons`  `p` ON  `p`.`id` =  `s`.`person_id` 
           WHERE `discipline` = '".$discipline."'
           AND `p`.`sex` = '".$sex."'
+          AND `p`.`nation_id` = 1
           AND  `time` IS NOT NULL 
           ORDER BY  `s`.`time`
         ) `inner` 

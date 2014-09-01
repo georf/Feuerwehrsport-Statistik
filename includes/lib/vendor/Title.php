@@ -11,12 +11,12 @@ class Title {
     return str_replace('{[PAGE_TITLE]}', $title, $header);
   }
 
-  public static function set($title) {
+  public static function set($title, $subTitle = false) {
     if (is_string($title) && !is_string(self::$title)) {
       self::$title = $title;
     }
 
-    return self::h1($title);
+    return self::h1($title, $subTitle);
   }
 
   public static function get() {
@@ -34,8 +34,10 @@ class Title {
     return $names[$key];
   }
 
-  public static function h1($title) {
-    return '<div class="page-header"><h1>'.htmlspecialchars($title).'</h1></div>';
+  public static function h1($title, $subTitle = false) {
+    $subTitleLine = '';
+    if ($subTitle) $subTitleLine = '<span>'.htmlspecialchars($subTitle).'</span>';
+    return '<div class="page-header">'.$subTitleLine.'<h1>'.htmlspecialchars($title).'</h1></div>';
   }
 
   public static function h2($title, $anchor = false) {

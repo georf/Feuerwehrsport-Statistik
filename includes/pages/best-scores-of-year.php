@@ -42,6 +42,7 @@ foreach ($disciplines as $d) {
           AND `discipline` = '".$discipline."'
           AND `p`.`sex` = '".$sex."'
           AND  `time` IS NOT NULL 
+          AND `p`.`nation_id` = 1
           ORDER BY  `s`.`time`
         ) `inner` 
         GROUP BY  `person_id` 
