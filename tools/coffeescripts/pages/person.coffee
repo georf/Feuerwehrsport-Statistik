@@ -8,6 +8,7 @@ $('#report-error').click (ev) ->
   Fss.checkLogin () ->
     options = [
       { value: 'wrong', display: 'Person ist falsch geschrieben'}
+      { value: 'nation', display: 'Person ist falscher Nation zugeordnet'}
       { value: 'other', display: 'Etwas anderes'}
     ]
     FssWindow.build('Auswahl des Fehlers')
@@ -63,6 +64,17 @@ $('#report-error').click (ev) ->
         FssWindow.build('Fehler beschreiben')
         .add(new FssFormRowDescription('Bitte beschreiben Sie das Problem:'))
         .add(new FssFormRowTextarea('description', 'Beschreibung', ''))
+        .on('submit', (data) ->
+          data.reason = selected
+          data.type = 'person'
+          data.personId = personId
+          Fss.addError(data)
+        )
+        .open()
+      else if selected is 'nation'
+        FssWindow.build('Andere Nation')
+        .add(new FssFormRowDescription('Bitte schreiben sie die richtige Nation:'))
+        .add(new FssFormRowText('nation', 'Nation', ''))
         .on('submit', (data) ->
           data.reason = selected
           data.type = 'person'
