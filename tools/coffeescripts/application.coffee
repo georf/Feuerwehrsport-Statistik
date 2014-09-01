@@ -92,6 +92,10 @@ $ ()->
           personId = scoreData.score.person_id
           Fss.getPerson personId, (person) ->
             numbers = [
+              { display: 'Außer der Wertung', value: -6 },
+              { display: 'Achtelfinale', value: -5 },
+              { display: 'Viertelfinale', value: -4 },
+              { display: 'Halbfinale', value: -3 },
               { display: 'Finale', value: -2 },
               { display: 'Einzelstarter', value: -1 },
               { display: 'Mannschaft 1', value: 0 },

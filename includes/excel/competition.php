@@ -64,7 +64,7 @@ foreach ($disciplines as $discipline) {
           WHERE `discipline` = '".$key."'
           AND `s`.`id` != '".$score['id']."'
           AND `s`.`person_id` = ".$score['person_id']."
-          AND `team_number` ".($final? "=" : ">")." -2
+          AND `team_number` ".($final !== false? "=".$final : "> -2")."
           AND `competition_id` = '".$id."'
           ".($sex? " AND `sex` = '".$sex."' " : "")."
         ", 'time');
@@ -266,12 +266,16 @@ $overview[] = array();
 $overview[] = array('', 'Frauen', 'Männer');
 if ($calculation->count('hb', 'female') || $calculation->count('hb', 'male'))
   $overview[] = array('Hindernisbahn', $calculation->count('hb', 'female'), $calculation->count('hb', 'male'));
-if ($calculation->count('hb', 'female', true) || $calculation->count('hb', 'male', true))
-  $overview[] = array('Hindernisbahn Finale', $calculation->count('hb', 'male', true), $calculation->count('hb', 'male', true));
+foreach (array(-2, -3, -4, -5) as $final) {
+  if ($calculation->count('hb', 'female', $final) || $calculation->count('hb', 'male', $final))
+    $overview[] = array('Hindernisbahn '.FSS::finalName($final), $calculation->count('hb', 'male', $final), $calculation->count('hb', 'male', $final));
+}
 if ($calculation->count('hl'))
   $overview[] = array('Hakenleitersteigen', '', $calculation->count('hl'));
-if ($calculation->count('hb', null, true))
-  $overview[] = array('Hakenleitersteigen Finale', '', $calculation->count('hl', null, true));
+foreach (array(-2, -3, -4, -5) as $final) {
+  if ($calculation->count('hb', null, $final))
+    $overview[] = array('Hakenleitersteigen '.FSS::finalName($final), '', $calculation->count('hl', null, $final));
+}
 if ($calculation->count('zk'))
   $overview[] = array('Zweikampf', '', $calculation->count('zk'));
 if ($calculation->count('gs'))

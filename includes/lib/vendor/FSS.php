@@ -32,8 +32,10 @@ class FSS
 
         if ($number == -1) {
             return $pre.'E';
-        } elseif ($number == -2) {
+        } elseif ($number <= -2 && $number >= -5) {
             return $pre.'F';
+        } elseif ($number == -6) {
+            return $pre.'A';
         }
 
         if (!$competition_id) {
@@ -210,15 +212,25 @@ class FSS
     }
 
     public static function buildFullKey($key, $sex = null, $final = false) {
-        return $key.'-'.($sex? $sex : '').'-'.($final? 'final' : '');
+        return $key.'-'.($sex? $sex : '').'-'.($final !== false? $final : '');
+    }
+
+    public static function finalName($key) {
+        $finals = array(
+            -2 => "Finale",
+            -3 => "Halbfinale",
+            -4 => "Viertelfinale",
+            -5 => "Achtelfinale",
+        );
+        return isset($finals[$key])? $finals[$key] : '';
     }
 
     public static function extractFullKey($fullKey) {
-        if (preg_match('/^([a-z]+)-((?:fe)?male)?-(final)?$/', $fullKey, $result)) {
+        if (preg_match('/^([a-z]+)-((?:fe)?male)?-(-\d)?$/', $fullKey, $result)) {
             return array(
                 'key' => $result[1],
                 'sex' => (isset($result[2])? $result[2] : null),
-                'final' => isset($result[3]),
+                'final' => (isset($result[3])? $result[3] : false),
             );
         }
         return false;

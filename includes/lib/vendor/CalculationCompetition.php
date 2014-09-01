@@ -16,11 +16,20 @@ class CalculationCompetition {
   public function disciplines() {
     return array(
      $this->discipline('hb', 'female', false, 'female'),
-     $this->discipline('hb', 'female', true, 'female'),
+     $this->discipline('hb', 'female', -2, 'female'),
+     $this->discipline('hb', 'female', -3, 'female'),
+     $this->discipline('hb', 'female', -4, 'female'),
+     $this->discipline('hb', 'female', -5, 'female'),
      $this->discipline('hb', 'male', false, 'male'),
-     $this->discipline('hb', 'male', true, 'male'),
+     $this->discipline('hb', 'male', -2, 'male'),
+     $this->discipline('hb', 'male', -3, 'male'),
+     $this->discipline('hb', 'male', -4, 'male'),
+     $this->discipline('hb', 'male', -5, 'male'),
      $this->discipline('hl', null, false, 'male'),
-     $this->discipline('hl', null, true, 'male'),
+     $this->discipline('hl', null, -2, 'male'),
+     $this->discipline('hl', null, -3, 'male'),
+     $this->discipline('hl', null, -4, 'male'),
+     $this->discipline('hl', null, -5, 'male'),
      $this->discipline('zk', null, false, 'male'),
      $this->discipline('gs', null, false, 'female'),
      $this->discipline('fs', 'female', false, 'female'),
@@ -49,7 +58,7 @@ class CalculationCompetition {
     if ($team) {
       return ($short?strtoupper($key):FSS::dis2name($key)).($sex?' '.FSS::sex($sex):'').' - Mannschaft'.($short?'':'swertung');
     } elseif ($final) {
-      return ($short?strtoupper($key):FSS::dis2name($key)).($sex?' '.FSS::sex($sex):'').' - Finale';
+      return ($short?strtoupper($key):FSS::dis2name($key)).($sex?' '.FSS::sex($sex):'').' - '.FSS::finalName($final);
     } else {
       return FSS::dis2name($key).($sex?' '.FSS::sex($sex):'');
     }
@@ -154,7 +163,7 @@ class CalculationCompetition {
             WHERE `time` IS NOT NULL
             AND `competition_id` = '".$this->competition['id']."'
             AND `discipline` = '".$key."'
-            AND `team_number` ".($final? "=" : ">")." -2
+            AND `team_number` ".($final !== false ? "=".$final : "> -2")."
           ) UNION (
             SELECT `id`,`team_id`,`team_number`,
             `person_id`,
@@ -163,7 +172,7 @@ class CalculationCompetition {
             WHERE `time` IS NULL
             AND `competition_id` = '".$this->competition['id']."'
             AND `discipline` = '".$key."'
-            AND `team_number` ".($final? "=" : ">")." -2
+            AND `team_number` ".($final !== false ? "=".$final : "> -2")."
           ) ORDER BY `time`
         ) `all`
         GROUP BY `person_id`
