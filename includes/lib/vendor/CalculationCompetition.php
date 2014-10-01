@@ -148,6 +148,12 @@ class CalculationCompetition {
   public function getSingleDiscipline($key, $sex, $final) {
     global $db;
 
+    if ($final !== false) {
+      $whereFinal = "=".$final;
+    } else {
+      $whereFinal = "> -2";
+    }
+
     return $db->getRows("
       SELECT `best`.*,
         `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
@@ -163,7 +169,7 @@ class CalculationCompetition {
             WHERE `time` IS NOT NULL
             AND `competition_id` = '".$this->competition['id']."'
             AND `discipline` = '".$key."'
-            AND `team_number` ".($final !== false ? "=".$final : "> -2")."
+            AND `team_number` ".$whereFinal."
           ) UNION (
             SELECT `id`,`team_id`,`team_number`,
             `person_id`,
@@ -172,7 +178,7 @@ class CalculationCompetition {
             WHERE `time` IS NULL
             AND `competition_id` = '".$this->competition['id']."'
             AND `discipline` = '".$key."'
-            AND `team_number` ".($final !== false ? "=".$final : "> -2")."
+            AND `team_number` ".$whereFinal."
           ) ORDER BY `time`
         ) `all`
         GROUP BY `person_id`
