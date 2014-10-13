@@ -21,15 +21,16 @@ password="'.$config['database']['password'].'"
 
 $tables = array(
   'competitions',
+  'competition_hints',
   'dates',
   'dcup_points',
   'dcup_points_u',
   'dcups',
   'errors',
   'events',
-  'result_files',
   'links',
   'logs',
+  'nations',
   'news',
   'person_participations_fs',
   'person_participations_gs',
@@ -37,6 +38,7 @@ $tables = array(
   'persons',
   'persons_spelling',
   'places',
+  'result_files',
   'score_types',
   'scores',
   'scores_dcup_single',
@@ -49,6 +51,7 @@ $tables = array(
   'scores_la',
   'teams',
   'teams_spelling',
+  'type_la',
 );
 
 foreach ($tables as $table) {
