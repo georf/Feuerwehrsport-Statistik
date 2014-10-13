@@ -5,6 +5,7 @@ $id = Check2::page()->get('id')->isIn('competitions');
 $competition = FSS::competition($id);
 $calculation = CalculationCompetition::build($competition);
 $disciplines = $calculation->disciplines();
+$hints = $db->getRows("SELECT * FROM `competition_hints` WHERE `competition_id` = ".$id, 'hint');
 
 echo Title::set(
   htmlspecialchars($competition['event']).' - '.
@@ -13,6 +14,7 @@ echo Title::set(
 );
 
 $toc = TableOfContents::get();
+if (count($hints) > 0) $toc->link('hints', 'Hinweise zum Wettkampf');
 foreach ($disciplines as $discipline) {
   if (!$calculation->count($discipline)) continue;
   $toc->link(
@@ -84,6 +86,13 @@ echo Bootstrap::row()
  '<img src="/styling/images/excel.png" alt="excel" style="float:left"/>'.
  'Auswertung des Wettkampfes als Excel-Datei herunterladen'.
 '</a></p>', 4);
+
+if (count($hints) > 0) {
+  echo '<h2 id="hints">Hinweise zum Wettkampf</h2>';
+  echo '<ul><li>';
+  echo implode("</li><li>", $hints);
+  echo '</li></ul>';
+}
 
 foreach ($disciplines as $discipline) {
   if (!$calculation->count($discipline)) continue;

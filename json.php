@@ -19,11 +19,11 @@ try {
     );
   }
   
-  if (Login::check() && preg_match('/^((get)|(set)|(add))-(.+)$/', $_type, $result)) {
+  if (Login::check() && preg_match('/^((get)|(set)|(add)|(delete))-(.+)$/', $_type, $result)) {
     $type = $result[1];
-    $request = $result[5];
+    $request = $result[6];
 
-    Check2::except()->variable($type)->isIn(array('set', 'get', 'add'));
+    Check2::except()->variable($type)->isIn(array('set', 'get', 'add', 'delete'));
     include Check2::except()->variable($request)->isInPath(__DIR__.'/includes/api/'.$type.'/');
   }
 } catch (Exception $e) {

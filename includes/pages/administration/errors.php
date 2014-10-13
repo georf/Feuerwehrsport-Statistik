@@ -297,6 +297,19 @@ foreach($errors as $error) {
         echo '<td colspan="3">'.$error['content'].'</td>';
         break;
     }
+  } elseif ($post['type'] == 'competition') {
+    switch ($post["reason"]) {
+      case 'hint':
+        $hints = $db->getRows("SELECT * FROM `competition_hints` WHERE `competition_id` = ".$post['competitionId']);
+        echo '<td>'.$post['description'].'<br/>'.Link::competition($post['competitionId']).'</td><td>';
+        if (count($hints) > 0) {
+          echo '<ul>';
+          foreach ($hints as $hint) echo '<li>'.$hint['hint'].' <button class="delete-hint" data-competition-hint-id="'.$hint['id'].'">X</button></li>';
+          echo '</ul>';
+        }
+        echo '</td><td><button class="add-hint" data-competition-id="'.$post['competitionId'].'" data-description="'.htmlspecialchars($post['description']).'">Hinweis hinzufügen</button></td>';
+        break;
+    }
   } elseif ($post['type'] == 'team') {
     switch ($post['reason']) {
       case 'wrong':
