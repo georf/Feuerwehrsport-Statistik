@@ -309,6 +309,11 @@ foreach($errors as $error) {
         }
         echo '</td><td><button class="add-hint" data-competition-id="'.$post['competitionId'].'" data-description="'.htmlspecialchars($post['description']).'">Hinweis hinzufügen</button></td>';
         break;
+      case 'name':
+        $competition = FSS::competition($post['competitionId']);
+        echo '<td>Alter Name: '.$competition['name'].'<br/>'.Link::competition($post['competitionId']).'</td><td>';
+        echo '<td>Neuer Name: '.$post['name'].'</td><td><button class="add-competition-name" data-competition-id="'.$post['competitionId'].'" data-name="'.htmlspecialchars($post['name']).'">Name eintragen</button></td>';
+        break;
     }
   } elseif ($post['type'] == 'team') {
     switch ($post['reason']) {
