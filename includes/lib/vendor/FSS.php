@@ -95,11 +95,12 @@ class FSS
         return ($sex === 'female')? '♀' : '♂';
     }
 
-    public static function palette($sex) {
-        if ($sex === 'female') {
-            return array("R"=>229,"G"=>11,"B"=>11,"Alpha"=>80);
-        } else {
-            return array("R"=>0,"G"=>113,"B"=>222,"Alpha"=>100);
+    public static function palette($key) {
+        switch ($key) {
+            case 'female':
+                return array("R"=>255,"G"=>96,"B"=>10,"Alpha"=>80);
+            default:
+                return array("R"=>32,"G"=>110,"B"=>255,"Alpha"=>80);
         }
     }
 

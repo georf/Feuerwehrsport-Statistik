@@ -1,13 +1,6 @@
 <?php
 
-// a == id
-
-if (Check::get('a')) $_GET['id'] = $_GET['a'];
-
-if (!Check::get('id') || !Check::isIn($_GET['id'], 'teams'))  throw new Exception('bad input');
-
-$_id = $_GET['id'];
-$id = $_id;
+$teamId = Check2::except()->get('a')->isIn('teams');
 
 $sexes = $db->getRows("
   SELECT `sex`
@@ -15,25 +8,22 @@ $sexes = $db->getRows("
    (
       SELECT `person_id`
       FROM `scores`
-      WHERE `team_id` = '".$id."'
+      WHERE `team_id` = '".$teamId."'
     UNION
       SELECT `p`.`person_id`
       FROM `scores_gs` `s`
       INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$id."'
-      AND `time` IS NULL
+      WHERE `s`.`team_id` = '".$teamId."'
     UNION
       SELECT `p`.`person_id`
       FROM `scores_la` `s`
       INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$id."'
-      AND `time` IS NULL
+      WHERE `s`.`team_id` = '".$teamId."'
     UNION
       SELECT `p`.`person_id`
       FROM `scores_fs` `s`
       INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$id."'
-      AND `time` IS NULL
+      WHERE `s`.`team_id` = '".$teamId."'
     ) `i`
   INNER JOIN `persons` `p` ON `p`.`id` = `i`.`person_id`
 ", 'sex');
@@ -41,24 +31,18 @@ $sexes = $db->getRows("
 $male = 0;
 $female = 0;
 foreach ($sexes as $sex) {
-  if ($sex == 'male') {
-    $male++;
-  } else {
-    $female++;
-  }
+  if ($sex == 'male')  $male++;
+  else                 $female++;
 }
 
 $MyData = new pData();
 $MyData->addPoints(array($male, $female), "time");
-$MyData->addPoints(array('Männlich', 'Weiblich'), "Platzierung");
-$MyData->setAbscissa("Platzierung");
-
+$MyData->addPoints(array('Männlich', 'Weiblich'), "Geschlechter");
+$MyData->setAbscissa("Geschlechter");
 
 $w = 140;
 $h = 65;
 $title = '';
-
-
 
 $myPicture = Chart::create($w, $h, $MyData);
 
