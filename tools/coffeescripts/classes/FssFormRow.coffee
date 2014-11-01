@@ -183,11 +183,15 @@ class @FssFormRowScores extends FssFormRow
         select = $('<select/>')
         option = $('<option/>').val("NULL").text(' ---- ').appendTo(select)
         option.attr('selected', 'selected') if score["person_#{c + 1}"] is null
+        found = false
 
         for person in persons
           option = $('<option/>').val(person.id).text(person.name + ', ' + person.firstname).appendTo(select)
-          option.attr('selected', 'selected') if person.id is score["person_#{c + 1}"]
+          if person.id is score["person_#{c + 1}"]
+            option.attr('selected', 'selected')
+            found = true
 
+        throw "not-found" if score["person_#{c + 1}"] isnt null and !found
         $('<td/>').append(select).appendTo(tr)
         @scores[i].selects[c] = select
         table.append(tr)

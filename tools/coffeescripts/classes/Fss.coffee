@@ -195,17 +195,35 @@ class @Fss
           sex = scores[0].sex
           description = "Löschangriff"
 
-        Fss.post 'get-persons', {sex: sex}, (data) ->
-          persons = data.persons
-          FssWindow.build("Wettkämpfer zuordnen")
-          .add(new FssFormRowDescription("Sie ordnen Personen diesen #{description}-Läufen zu."))
-          .add(new FssFormRowScores('scores', persons, scores, wks))
-          .on("submit", (data) ->
-            Fss.reloadOnArrayReady data.scores, 'set-score-wk', (score) ->
-              score.discipline = discipline
-              score
-          )
-          .open()
+        buildWindow = (withSex) ->
+          options = {}
+          options = { sex: sex } if withSex
+          Fss.post 'get-persons', options, (data) ->
+            persons = data.persons
+            fssWindow = FssWindow.build("Wettkämpfer zuordnen")
+            .add(new FssFormRowDescription("Sie ordnen Personen diesen #{description}-Läufen zu."))
+            try
+              fssWindow.add(new FssFormRowScores('scores', persons, scores, wks))
+            catch
+              buildWindow(false)
+              return
+
+            if sex == 'male' && withSex
+              div = $('<div/>').css(marginTop: '12px', marginBottom: '10px')
+              .append($('<span/>').text('Auch Frauen zur Auswahl stellen (für gemischte Mannschaften): '))
+              .append($('<button/>').text('Auswahl erweitern').on('click', (e) =>
+                e.preventDefault()
+                fssWindow.close()
+                buildWindow(false)
+              ))
+              fssWindow.add(new FssFormRow(div))
+            fssWindow.on("submit", (data) ->
+              Fss.reloadOnArrayReady data.scores, 'set-score-wk', (score) ->
+                score.discipline = discipline
+                score
+            )
+            .open()
+        buildWindow(true)
 
   @tdScoreHandle = (selector, buttonCallback) ->
     button = null
