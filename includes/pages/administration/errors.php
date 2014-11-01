@@ -301,7 +301,7 @@ foreach($errors as $error) {
     switch ($post["reason"]) {
       case 'hint':
         $hints = $db->getRows("SELECT * FROM `competition_hints` WHERE `competition_id` = ".$post['competitionId']);
-        echo '<td>'.$post['description'].'<br/>'.Link::competition($post['competitionId']).'</td><td>';
+        echo '<td>'.nl2br(htmlspecialchars($post['description'])).'<br/>'.Link::competition($post['competitionId']).'</td><td>';
         if (count($hints) > 0) {
           echo '<ul>';
           foreach ($hints as $hint) echo '<li>'.$hint['hint'].' <button class="delete-hint" data-competition-hint-id="'.$hint['id'].'">X</button></li>';
