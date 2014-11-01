@@ -1,9 +1,10 @@
 #!/usr/bin/php
 <?php (PHP_SAPI === 'cli') || exit();
 
-$options = getopt("fc");
+$options = getopt("fc", array('file:'));
 $force = isset($options["f"]);
 $compress = isset($options["c"]);
+$fileToForce = isset($options["file"]) ? $options["file"] : false ;
 
 $coffeePath = __DIR__."/coffeescripts/";
 $javascriptPath = __DIR__."/javascripts/";
@@ -23,7 +24,7 @@ foreach ($subPaths as $subPath) {
       if (is_file($destination)) {
         $timeCoffee = filemtime($coffeePath.$subPath.$file);
         $timeJavascript = filemtime($destination);
-        if (!$force && $timeCoffee < $timeJavascript) continue;
+        if (!$force && $timeCoffee < $timeJavascript && $fileToForce != $file) continue;
       }
 
       echo "=================================================================\n";
