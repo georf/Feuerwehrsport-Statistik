@@ -7,6 +7,22 @@ try {
   die($e->getMessage());
 }
 
+function cacheUrl($url) {
+  $errors = array(
+    "<b>Notice</b>:",
+    "<b>Warning</b>:",
+    "<b>Fatal error</b>:",
+  );
+
+  $content = file_get_contents($url);
+  foreach ($errors as $error) {
+    if (strpos($content, $error) !== false) {
+      echo "PHP-Error: $url\n\n";
+    }
+  }
+}
+
+
 foreach (array(
   'best-of',
   'competitions',
@@ -20,7 +36,7 @@ foreach (array(
   'teams',
   'years',
 ) as $name) {
-  file_get_contents("http://www.feuerwehrsport-statistik.de/page/".$name.".html");
+  cacheUrl("http://www.feuerwehrsport-statistik.de/page/".$name.".html");
 }
 
 foreach (array(
@@ -37,6 +53,6 @@ foreach (array(
   "year" => "SELECT YEAR(`date`) AS `identifier` FROM `competitions` GROUP BY `identifier`",
 ) as $name => $sql) {
   foreach ($db->getRows($sql, 'identifier') as $identifier) {
-    file_get_contents("http://www.feuerwehrsport-statistik.de/page/".$name."-".$identifier.".html");
+    cacheUrl("http://www.feuerwehrsport-statistik.de/page/".$name."-".$identifier.".html");
   }
 }
