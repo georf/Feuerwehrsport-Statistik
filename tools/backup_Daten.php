@@ -51,7 +51,6 @@ $tables = array(
   'scores_la',
   'teams',
   'teams_spelling',
-  'type_la',
 );
 
 foreach ($tables as $table) {
