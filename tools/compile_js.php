@@ -1,6 +1,12 @@
 #!/usr/bin/php
 <?php (PHP_SAPI === 'cli') || exit();
 
+# apt-get install npm
+# ln -s /usr/bin/nodejs /usr/bin/node
+# apt-get install openjdk-7-jre-headless
+# npm install -g coffee-script
+# npm install -g closurecompiler
+
 $options = getopt("fc", array('file:'));
 $force = isset($options["f"]);
 $compress = isset($options["c"]);
