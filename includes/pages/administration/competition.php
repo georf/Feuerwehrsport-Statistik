@@ -119,7 +119,7 @@ $('#add-score-type').click(function() {
                 w.submit(function(data) {
                     this.close();
 
-                    data.competition_id = <?=$_id?>;
+                    data.competition_id = <?php echo $_id?>;
 
                     wPost('set-score-type', data, function() {
                         location.reload();
