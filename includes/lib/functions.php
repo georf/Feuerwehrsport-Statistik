@@ -1,6 +1,7 @@
 <?php
-function __autoload($className)
-{
+function __autoload($className) {
+    global $config;
+
     $className = ltrim($className, '\\');
     $fileName  = '';
     $namespace = '';
@@ -11,7 +12,17 @@ function __autoload($className)
     }
     $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
 
-    require __DIR__.'/vendor/'.$fileName;
+    $searchPathes = array(
+        __DIR__.'/vendor/',
+        $config['base'].'tools/facebook-php-sdk-v4/src/'
+    );
+
+    foreach ($searchPathes as $path) {
+        if (is_file($path.$fileName)) {
+            require $path.$fileName;
+            return;
+        }
+    }
 }
 
 function post($key)

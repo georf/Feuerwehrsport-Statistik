@@ -20,6 +20,8 @@
     </div>
     <div class="col-md-2" id="competition-scores">
     </div>
+    <div class="col-md-1" id="competition-published">
+    </div>
     <div class="col-md-3" id="create-competitions">
       <button class="add-competition">Wettkampf</button>
       <button class="add-event">Typ</button>

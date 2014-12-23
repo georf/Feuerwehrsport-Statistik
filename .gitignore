@@ -24,3 +24,7 @@ js/**
 # coffeescript-concat
 # https://github.com/georf/coffeescript-concat
 tools/coffeescript-concat/**
+
+# facebook-php-sdk-v4
+# https://github.com/facebook/facebook-php-sdk-v4
+tools/facebook-php-sdk-v4/**

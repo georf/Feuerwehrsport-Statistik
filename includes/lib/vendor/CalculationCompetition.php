@@ -89,6 +89,20 @@ class CalculationCompetition {
     return count($this->scores($key, $sex, $final));
   }
 
+  public function exists($key, $final = false) {
+    return $this->count($key, 'female', $final) || $this->count($key, 'male', $final);
+  }
+
+  public function countWithSex($key, $final = false) {
+    $female = $this->count($key, 'female', $final);
+    $male = $this->count($key, 'male', $final);
+    $output = array();
+    $team = FSS::isGroupDiscipline($key) ? "mannschaften" : ""; 
+    if ($female) $output[] = $female." Frauen".$team;
+    if ($male) $output[] = $male." Männer".$team;
+    return implode(" und ", $output);
+  }
+
   public function scores($key, $sex = null, $final = false) {
     if (is_array($key)) {
       return $this->scores($key['key'], $key['sex'], $key['final']);

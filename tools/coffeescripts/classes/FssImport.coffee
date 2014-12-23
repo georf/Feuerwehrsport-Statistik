@@ -1,4 +1,5 @@
 #= require Discipline
+#= require PublishStatus
 
 class FssImport
   constructor: () ->
@@ -93,6 +94,7 @@ class FssImport
         .text("#{option.text()} - Admin")
       @loadCompetition(option.val())
     @loadScores()
+    new PublishStatus($('#competition-published'), option.val())
 
   loadCompetition: (competitionId) =>
     Fss.post 'get-competition', {competitionId: competitionId}, (data) =>
