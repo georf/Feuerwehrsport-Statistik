@@ -108,6 +108,7 @@ class FssImport
     $('#select-competitions').show()
     $('#create-competitions').hide()
     $('#competition-scores').show()
+    $('#competition-published').show()
 
     select = $('#competitions')
     select.children().remove()
@@ -122,6 +123,7 @@ class FssImport
       $('#select-competitions').hide()
       $('#create-competitions').show()
       $('#competition-scores').hide()
+      $('#competition-published').hide()
     
     for c in sortedCompetitions
       select.append($('<option/>').val(c.id).text("#{c.date} - #{c.event} - #{c.place}"))

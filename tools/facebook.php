@@ -9,7 +9,7 @@ try {
 
 $options = getopt("", array("dates", "competitions", "conclusion"));
 
-if (isset($options["conclusion"])) {
+if (isset($options["conclusion"]) && intval(date('z')) % 5 == 0) {
   $days = 5;
   $logs = array();
   foreach ($db->getRows("
