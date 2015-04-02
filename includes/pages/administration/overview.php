@@ -16,6 +16,7 @@
     <ul>
       <li><?php echo Link::admin_page_a('team_logo_add', 'hinzufügen'); ?></li>
       <li><?php echo Link::admin_page_a('team_logo_remove_unused', 'Ungenutzte löschen'); ?></li>
+      <li><?php echo Link::admin_page_a('team_explode', 'Team auseinanderziehen'); ?></li>
     </ul>
   </li>
   <li><h4>Ergebnis-Dateien</h4>
