@@ -47,6 +47,7 @@
     <div class="col-md-2">
       <h4>Hakenleitersteigen</h4>
       <button class="add-discipline discipline-hl-male">male</button>
+      <button class="add-discipline discipline-hl-female">female</button>
     </div>
     <div class="col-md-2">
       <h4>Gruppenstafette</h4>

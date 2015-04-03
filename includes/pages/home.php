@@ -6,7 +6,7 @@ echo Bootstrap::row()
 
 echo Bootstrap::row()
   ->col('<p class="lead">Diese Website dient der Auswertung des Feuerwehrsports in Deutschland über den Zeitraum der letzten Jahre. Dabei werden die Disziplinen
-    <a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Männer),
+    <a href="http://de.wikipedia.org/wiki/Hakenleitersteigen">Hakenleitersteigen</a> (Frauen und Männer),
     <a href="http://de.wikipedia.org/wiki/100-Meter-Hindernislauf">100-Meter-Hindernisbahn</a> (Frauen und Männer),
     <a href="http://de.wikipedia.org/wiki/Gruppenstafette">Gruppenstafette</a> (Frauen),
     <a href="http://de.wikipedia.org/wiki/Feuerwehrstafette">4x100-Meter-Feuerwehrstafette</a> (Frauen und Männer) und
@@ -56,6 +56,7 @@ $year = 2014;
 $disciplines = array(
   array('hb', false, 'female'),
   array('hb', false, 'male'),
+  array('hl', false, 'female'),
   array('hl', false, 'male'),
   array('gs', true,  false),
   array('la', true,  'female'),

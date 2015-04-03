@@ -3,8 +3,10 @@
 class FSS
 {
 
+    public static $singleDisciplines = array('hl', 'hb');
+    public static $singleDisciplinesWithDoubleEvent = array('hl', 'hb', 'zk');
     public static $disciplines = array('hl', 'hb', 'la', 'gs', 'fs');
-    public static $disciplinesWithDoubleEvent = array('hl', 'hb', 'la', 'gs', 'fs', 'zk');
+    public static $disciplinesWithDoubleEvent = array('hl', 'hb', 'zk', 'gs', 'fs', 'la');
     public static $sexes = array('female', 'male');
     
     const INVALID = 99999999;
@@ -168,11 +170,11 @@ class FSS
     }
 
     public static function isSingleDiscipline($key) {
-        return in_array(strtolower($key), array('hl', 'hb'));
+        return in_array(strtolower($key), self::$singleDisciplines);
     }
 
     public static function isGroupDiscipline($key) {
-        return !self::isSingleDiscipline($key);
+        return !in_array($key, self::$singleDisciplinesWithDoubleEvent);
     }
 
     public static function countNoEmpty($count) {

@@ -109,7 +109,7 @@ class Import {
     }
 
 
-    if (is_numeric($time) && $time < 1200) {
+    if (is_numeric($time) && $time < 600) {
       return null;
     }
 

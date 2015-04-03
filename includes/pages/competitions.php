@@ -3,7 +3,8 @@ TempDB::generate('x_scores_male');
 TempDB::generate('x_scores_female');
 TempDB::generate('x_scores_hbf');
 TempDB::generate('x_scores_hbm');
-TempDB::generate('x_scores_hl');
+TempDB::generate('x_scores_hlf');
+TempDB::generate('x_scores_hlm');
 TempDB::generate('x_full_competitions');
 
 
@@ -55,9 +56,14 @@ $competitions = $db->getRows("
     ) AS `fsm`,
     (
       SELECT COUNT(`id`) AS `count`
-      FROM `x_scores_hl`
+      FROM `x_scores_hlf`
       WHERE `competition_id` = `c`.`id`
-    ) AS `hl`,
+    ) AS `hlf`,
+    (
+      SELECT COUNT(`id`) AS `count`
+      FROM `x_scores_hlm`
+      WHERE `competition_id` = `c`.`id`
+    ) AS `hlm`,
     `la`, `fs`
   FROM `x_full_competitions` `c`
   ORDER BY `date` DESC
@@ -83,7 +89,8 @@ echo Bootstrap::row()->col(CountTable::build($competitions)
 ->col('LAm', function ($row) { return FSS::countNoEmpty($row['lam']); }, 5, array('title' => function ($row) { return FSS::laType($row['la']); }), array('class' => 'small'))
 ->col('FSw', function ($row) { return FSS::countNoEmpty($row['fsf']); }, 5, array('title' => function ($row) { return FSS::fsType($row['fs']); }), array('class' => 'small'))
 ->col('FSm', function ($row) { return FSS::countNoEmpty($row['fsm']); }, 5, array('title' => function ($row) { return FSS::fsType($row['fs']); }), array('class' => 'small'))
-->col('HL', function ($row) { return FSS::countNoEmpty($row['hl']); }, 5, array(), array('class' => 'small'))
+->col('HLw', function ($row) { return FSS::countNoEmpty($row['hlf']); }, 5, array(), array('class' => 'small'))
+->col('HLm', function ($row) { return FSS::countNoEmpty($row['hlm']); }, 5, array(), array('class' => 'small'))
 ->col('', function ($row) { return Link::competition($row['id'], 'Info'); }, 5)
 , 12);
 

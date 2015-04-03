@@ -12,16 +12,19 @@ echo Bootstrap::row()
 ->col(Title::set('D-Cup Gesamtwertung - '.$year), 10);
 
 echo DcupCalculation::notReadyBox($dcup);
+$hlw = $year > 2014;
 
 $under = '';
 if ($dcup['u']) {
   $under =
   '<h4>'.$dcup['u'].'</h4>'.
   '<ul>'.
-  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hbfu', 'Hindernisbahn weiblich - '.$dcup['u']).'</li>'.
-  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hbmu', 'Hindernisbahn männlich - '.$dcup['u']).'</li>'.
-  '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hlu', 'Hakenleitersteigen - '.$dcup['u']).'</li>'.
-  '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zku', 'Zweikampf - '.$dcup['u']).'</li>'.
+  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hb', 'female', true, 'Hindernisbahn weiblich - '.$dcup['u']).'</li>'.
+  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hb', 'male', true, 'Hindernisbahn männlich - '.$dcup['u']).'</li>'.
+  ($hlw ? '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hl', 'female', true, 'Hakenleitersteigen weiblich - '.$dcup['u']).'</li>' : '').
+  '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hl', 'male', true, 'Hakenleitersteigen männlich - '.$dcup['u']).'</li>'.
+  ($hlw ? '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zk', 'female', true, 'Zweikampf weiblich - '.$dcup['u']).'</li>' : '').
+  '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zk', 'male', true, 'Zweikampf männlich - '.$dcup['u']).'</li>'.
   '</ul>';
 }
 
@@ -30,10 +33,12 @@ echo Bootstrap::row()
   '<p>Diese Seite zeigt die Gesamtwertung der D-Cup-Ergebnisse. Dabei handelt es sich um selbst berechnete Daten, welche <strong>nicht offiziell</strong> sind.</p>'.
   '<p>Die Einzelergebnisse stehen auch zur Verfügung. Die Ergebnisse der Jugend kommen bei Bedarf auch noch mit rein. Die Zweikampfwertung wurde erst 2013 offiziell eingeführt.</p>', 6)
 ->col('<ul>'.
-  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hbf', 'Hindernisbahn weiblich').'</li>'.
-  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hbm', 'Hindernisbahn männlich').'</li>'.
-  '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hl', 'Hakenleitersteigen').'</li>'.
-  '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zk', 'Zweikampf').'</li>'.
+  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hb', 'female', false, 'Hindernisbahn weiblich').'</li>'.
+  '<li>'.FSS::dis2img('hb').' '.Link::dcup_single($year, 'hb', 'male', false, 'Hindernisbahn männlich').'</li>'.
+  ($hlw ? '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hl', 'female', false, 'Hakenleitersteigen weiblich').'</li>' : '').
+  '<li>'.FSS::dis2img('hl').' '.Link::dcup_single($year, 'hl', 'male', false, 'Hakenleitersteigen männlich').'</li>'.
+  ($hlw ? '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zk', 'female', false, 'Zweikampf weiblich').'</li>' : '').
+  '<li>'.FSS::dis2img('zk').' '.Link::dcup_single($year, 'zk', 'male', false, 'Zweikampf männlich').'</li>'.
   '</ul>'.$under, 6);
 echo Bootstrap::row()->col('<p>Zu jedem Wettkampf stehen die einzelnen Punkte für die Disziplin und darunter die addierten Werte. Ganz rechts ist dann die Gesamtanzahl der Punkte zu finden. Die Mannschaften sind absteigend nach Punkte geordnet. Nach der <a href="http://www.feuerwehrsport-teammv.de/wp-content/uploads/2013/08/Ausschreibung-Deutschland-Cup-2013-DFV.pdf">Ausschreibung</a> gilt bei Punktgleichheit die bessere Löschangriff-Zeit.', 12);
 

@@ -111,6 +111,13 @@ echo '<tr><td>'.FSS::dis2img('gs').'</td>'.
   '<td>'.Link::team(2, 'Team Mecklenburg-Vorpommern').'</td>'.
   '<td>82,42 s</td>'.
   '<td>'.Link::competition(53, 'DM 2012 - Cottbus').'</td></tr>';
+echo '<tr><td>'.FSS::dis2img('hl').'</td>'.
+  '<td>'.FSS::dis2name('hl').'<br/><small>(inoffiziell)</small></td>'.
+  '<td>'.Link::person(17, 'full', 'Daßler', 'Annekathrin').'</td>'.
+  '<td>'.TeamLogo::get(11, $team2['logo']).'</td>'.
+  '<td>'.Link::team(2, 'Team Mecklenburg-Vorpommern').'</td>'.
+  '<td>8,48 s</td>'.
+  '<td>'.Link::competition(530, 'Euregio-Cup 2014- Zeulenroda').'</td></tr>';
 
 echo '</table>';
 

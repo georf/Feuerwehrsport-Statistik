@@ -25,12 +25,18 @@ class CalculationCompetition {
      $this->discipline('hb', 'male', -3, 'male'),
      $this->discipline('hb', 'male', -4, 'male'),
      $this->discipline('hb', 'male', -5, 'male'),
-     $this->discipline('hl', null, false, 'male'),
-     $this->discipline('hl', null, -2, 'male'),
-     $this->discipline('hl', null, -3, 'male'),
-     $this->discipline('hl', null, -4, 'male'),
-     $this->discipline('hl', null, -5, 'male'),
-     $this->discipline('zk', null, false, 'male'),
+     $this->discipline('hl', 'female', false, 'female'),
+     $this->discipline('hl', 'female', -2, 'female'),
+     $this->discipline('hl', 'female', -3, 'female'),
+     $this->discipline('hl', 'female', -4, 'female'),
+     $this->discipline('hl', 'female', -5, 'female'),
+     $this->discipline('hl', 'male', false, 'male'),
+     $this->discipline('hl', 'male', -2, 'male'),
+     $this->discipline('hl', 'male', -3, 'male'),
+     $this->discipline('hl', 'male', -4, 'male'),
+     $this->discipline('hl', 'male', -5, 'male'),
+     $this->discipline('zk', 'female', false, 'female'),
+     $this->discipline('zk', 'male', false, 'male'),
      $this->discipline('gs', null, false, 'female'),
      $this->discipline('fs', 'female', false, 'female'),
      $this->discipline('fs', 'male', false, 'male'),
@@ -68,7 +74,8 @@ class CalculationCompetition {
     return 
       $this->count('hb', 'female') +
       $this->count('hb', 'male') +
-      $this->count('hl');
+      $this->count('hl', 'female') +
+      $this->count('hl', 'male');
   }
 
   public function getResultFiles($sexKey = false) {
@@ -83,6 +90,10 @@ class CalculationCompetition {
       if ($file->hasKey($sexKey)) $currentFiles[] = $file;
     }
     return $currentFiles;
+  }
+
+  public function c($key, $sex = null, $final = false) {
+    return FSS::countNoEmpty(self::count($key, $sex, $final));
   }
 
   public function count($key, $sex = null, $final = false) {
@@ -117,7 +128,7 @@ class CalculationCompetition {
 
   public function getDiscipline($key, $sex, $final = false) {
     if ($key == 'zk') {
-      return $this->getDoubleEvent();
+      return $this->getDoubleEvent($sex);
     } elseif (FSS::isGroupDiscipline($key)) {
       return $this->getGroupDiscipline($key, $sex);
     } else {
@@ -125,7 +136,7 @@ class CalculationCompetition {
     }
   }
 
-  public function getDoubleEvent() {
+  public function getDoubleEvent($sex) {
     global $db;
 
     return $db->getRows("
@@ -153,7 +164,7 @@ class CalculationCompetition {
         AND `team_number` > -2
         ORDER BY `time`
       ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
-      INNER JOIN `persons` `p` ON `hb`.`person_id` = `p`.`id`
+      INNER JOIN `persons` `p` ON `hb`.`person_id` = `p`.`id` AND `p`.`sex` = '".$sex."'
       GROUP BY `p`.`id`
       ORDER BY `time`
     ");
@@ -207,6 +218,8 @@ class CalculationCompetition {
 
   public function getGroupDiscipline($key, $sex) {
     global $db;
+
+    if ($key == 'gs' && $sex == 'male') return array();
 
     $selects = array();
     $joins = array();

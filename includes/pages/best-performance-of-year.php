@@ -4,16 +4,19 @@ $year = Check2::page()->get('id')->match('|^[1,2][0-9]{3}$|');
 
 TempDB::generate('x_scores_hbf');
 TempDB::generate('x_scores_hbm');
-TempDB::generate('x_scores_hl');
+TempDB::generate('x_scores_hlf');
+TempDB::generate('x_scores_hlm');
 TempDB::generate('x_full_competitions');
 
 echo Title::set('Überblick der Disziplinen im Jahr '.$year);
 
 echo Bootstrap::row()
 ->col('<p>Die Tabellen zeigen die Leistungen der 50 besten Sportler und Mannschaften im Jahr '.$year.'. Für die Rangordnung ist nicht nur die Durchschnittszeit entscheidend. Zusätzlich werden die Strafpunkte erhöht, wenn man mehr ungültige Versuche hat und verringert, wenn man mehr Läufe absolviert hat. Somit ergibt sich ein Vergleich der konstanten Leistungen.</p>', 4)
-->col('<img src="/styling/images/formel.png" alt=""/>', 5)
+->col('<img src="/styling/images/formel.png" alt=""/>'.'<ul>'.
+      '<li>'.Link::year($year, 'Jahresübersicht').'</li>'.
+      '<li>'.Link::bestScoresOfYear($year, 'Bestzeiten des Jahres').'</li>'.
+      '</ul>', 5)
 ->col('<p>Die nebenstehende Formel zeigt die Berechnung für die Strafpunkte. Dabei sind<br/><em>g</em> = Anzahl gültiger Läufe<br/><em>u</em> = Anzahl ungültiger Läufe<br/><em>a</em> = <em>g</em> + <em>u</em><br/><em>t</em> = Zeiten der gültigen Läufe</p>', 3);
-
 //\frac { \sum _{ i=1 }^{ n_{ gültig } }{ t_{ i } }  }{ n_{ gültig } } +15n_{ ungültig }-10n_{ gesamt }
 //\frac {  \frac { 1 }{ g } \sum _{ i=1 }^{ g }{ 100t_{ i } } +15u-\sum _{ i=0 }^{ a } \frac { -i^{ 2 } }{ 23 } +10}{10}
 
@@ -23,6 +26,7 @@ $navTab = Bootstrap::navTab('best-of-year');
 $disciplines = array(
   array('hb', false, 'female'),
   array('hb', false, 'male'),
+  array('hl', false, 'female'),
   array('hl', false, 'male'),
   array('gs', true,  false),
   array('la', true,  'female'),

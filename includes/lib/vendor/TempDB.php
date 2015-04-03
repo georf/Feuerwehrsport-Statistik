@@ -67,6 +67,38 @@ class TempDB {
             WHERE `p`.`sex` = 'male'
             AND `s`.`discipline` = 'HB'
         ",
+        'x_scores_hlf' => "
+            CREATE TABLE x_scores_hlf
+            (
+                UNIQUE KEY `id` (`id`),
+                KEY `person_id` (`person_id`),
+                KEY `competition_id` (`competition_id`),
+                KEY `team_id` (`team_id`),
+                KEY `time` (`time`)
+            )
+            ENGINE = INNODB DEFAULT CHARSET = utf8
+            SELECT `s`.*
+            FROM `scores` `s`
+            INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+            WHERE `p`.`sex` = 'female'
+            AND `s`.`discipline` = 'HL'
+        ",
+        'x_scores_hlm' => "
+            CREATE TABLE x_scores_hlm
+            (
+                UNIQUE KEY `id` (`id`),
+                KEY `person_id` (`person_id`),
+                KEY `competition_id` (`competition_id`),
+                KEY `team_id` (`team_id`),
+                KEY `time` (`time`)
+            )
+            ENGINE = INNODB DEFAULT CHARSET = utf8
+            SELECT `s`.*
+            FROM `scores` `s`
+            INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+            WHERE `p`.`sex` = 'male'
+            AND `s`.`discipline` = 'HL'
+        ",
         'x_scores_hl' => "
             CREATE TABLE x_scores_hl
             (

@@ -56,26 +56,16 @@ if ($competition['fs'])
 $overviewTable .= '<tr><th colspan="2">Datum:</th><td>'.gdate($competition['date']).'</td></tr>';
 $overviewTable .= '<tr><td colspan="3">&nbsp;</td></tr>';
 $overviewTable .= '<tr><td></td><th>Frauen</th><th>Männer</th></tr>';
-if ($calculation->count('hb', 'female') || $calculation->count('hb', 'male'))
-  $overviewTable .= '<tr title="Hindernisbahn"><th>'.FSS::dis2img('hb').' HB:</th><td>'.$calculation->count('hb', 'female').'</td><td>'.$calculation->count('hb', 'male').'</td></tr>';
-for ($f = -5; $f < -1; $f++) { 
-  if ($calculation->count('hb', 'female', $f) || $calculation->count('hb', 'male', $f))
-    $overviewTable .= '<tr title="Hindernisbahn '.FSS::finalName($f).'"><th>'.FSS::dis2img('hb').' '.FSS::finalName($f).':</th><td>'.$calculation->count('hb', 'male', $f).'</td><td>'.$calculation->count('hb', 'male', $f).'</td></tr>';
+foreach (FSS::$disciplinesWithDoubleEvent as $dis) {
+  if ($calculation->count($dis, 'female') || $calculation->count($dis, 'male'))
+    $overviewTable .= '<tr title="'.FSS::dis2name($dis).'"><th>'.FSS::dis2img($dis).' '.strtoupper($dis).':</th><td>'.$calculation->c($dis, 'female').'</td><td>'.$calculation->c($dis, 'male').'</td></tr>';
+  if (in_array($dis, FSS::$singleDisciplines)) {
+    for ($f = -5; $f < -1; $f++) { 
+      if ($calculation->count($dis, 'female', $f) || $calculation->count($dis, 'male', $f))
+        $overviewTable .= '<tr title="'.FSS::dis2name($dis).' '.FSS::finalName($f).'"><th>'.FSS::dis2img($dis).' '.FSS::finalName($f).':</th><td>'.$calculation->c($dis, 'female', $f).'</td><td>'.$calculation->c('hb', 'male', $f).'</td></tr>';
+    }
+  }
 }
-if ($calculation->count('hl'))
-  $overviewTable .= '<tr title="Hakenleitersteigen"><th>'.FSS::dis2img('hl').' HL:</th><td></td><td>'.$calculation->count('hl').'</td></tr>';
-for ($f = -5; $f < -1; $f++) {
-  if ($calculation->count('hb', null, $f))
-    $overviewTable .= '<tr title="Hakenleitersteigen '.FSS::finalName($f).'"><th>'.FSS::dis2img('hl').' '.FSS::finalName($f).':</th><td></td><td>'.$calculation->count('hl', null, $f).'</td></tr>';
-}
-if ($calculation->count('zk'))
-  $overviewTable .= '<tr title="Zweikampf"><th>'.FSS::dis2img('zk').' ZK:</th><td></td><td>'.$calculation->count('zk').'</td></tr>';
-if ($calculation->count('gs'))
-  $overviewTable .= '<tr title="Gruppenstafette"><th>'.FSS::dis2img('gs').' GS:</th><td>'.$calculation->count('gs').'</td><td></td></tr>';
-if ($calculation->count('fs', 'female') || $calculation->count('fs', 'male'))
-  $overviewTable .= '<tr title="Feuerwehrstafette"><th>'.FSS::dis2img('fs').' FS:</th><td>'.$calculation->count('fs', 'female').'</td><td>'.$calculation->count('fs', 'male').'</td></tr>';
-if ($calculation->count('la', 'female') || $calculation->count('la', 'male'))
-  $overviewTable .= '<tr title="Löschangriff"><th>'.FSS::dis2img('la').' LA:</th><td>'.$calculation->count('la', 'female').'</td><td>'.$calculation->count('la', 'male').'</td></tr>';
 $overviewTable .= '</table>';
 
 echo Bootstrap::row()

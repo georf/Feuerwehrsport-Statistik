@@ -16,6 +16,7 @@ $navTab = Bootstrap::navTab('best-of-year');
 $disciplines = array(
   array('hb', false, 'female'),
   array('hb', false, 'male'),
+  array('hl', false, 'female'),
   array('hl', false, 'male'),
   array('gs', true,  false),
   array('la', true,  'female'),

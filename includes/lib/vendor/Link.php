@@ -129,11 +129,12 @@ class Link
         return self::a($config['url'].'page/'.$page.'.html', $name, $title);
     }
 
-    public static function dcup_single($year, $type, $display = false, $title = false) {
+    public static function dcup_single($year, $discipline, $sex, $under, $display = false, $title = false) {
         global $config;
 
+        $under = $under ? 'u' : '';
         if ($display == false) $display = 'Details';
-        return self::page_a('dcup_single-'.$year.'-'.$type, $display, $title);
+        return self::page_a('dcup_single-'.$year.'-'.$discipline.$sex.$under, $display, $title);
     }
 
     public static function dcup($year, $display = false, $title = false) {

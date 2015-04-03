@@ -5,6 +5,8 @@ $id = $team['id'];
 
 TempDB::generate('x_scores_hbf');
 TempDB::generate('x_scores_hbm');
+TempDB::generate('x_scores_hlf');
+TempDB::generate('x_scores_hlm');
 TempDB::generate('x_scores_hl');
 TempDB::generate('x_full_competitions');
 
@@ -100,7 +102,8 @@ $teamScores = array(
 $team_scores = array(
   'hb-female' => array(),
   'hb-male' => array(),
-  'hl' => array(),
+  'hl-female' => array(),
+  'hl-male' => array(),
 );
 
 $competitions = $db->getRows("
@@ -119,7 +122,8 @@ $competitions = $db->getRows("
 $single_disciplines = array(
   'x_scores_hbf' => 'hb-female',
   'x_scores_hbm' => 'hb-male',
-  'x_scores_hl' => 'hl',
+  'x_scores_hlf' => 'hl-female',
+  'x_scores_hlm' => 'hl-male',
 );
 foreach ($competitions as $competition) {
   foreach ($single_disciplines as $table => $discipline) {

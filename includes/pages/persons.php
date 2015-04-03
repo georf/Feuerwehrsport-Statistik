@@ -1,7 +1,8 @@
 <?php
-TempDB::generate('x_scores_hbm');
 TempDB::generate('x_scores_hbf');
-TempDB::generate('x_scores_hl');
+TempDB::generate('x_scores_hbm');
+TempDB::generate('x_scores_hlf');
+TempDB::generate('x_scores_hlm');
 
 echo Bootstrap::row()
   ->col(Title::set('Wettkämpfer'), 9)
@@ -37,26 +38,31 @@ foreach ($sexs as $sex => $title) {
     ) AS `fs`,
     (
       SELECT COUNT(`id`) AS `count`
-      ".(($sex === 'male')?"
-      FROM `x_scores_hl`
+      FROM `x_scores_hl".substr($sex,0,1)."`
       WHERE `person_id` = `p`.`id`
-      ":"
+    ) AS `hl`
+    ".(($sex === 'female')?",
+    (
+      SELECT COUNT(`id`) AS `count`
       FROM `person_participations_gs`
       WHERE `person_id` = `p`.`id`
-      ")."
-    ) AS `fourth`
+    ) AS `gs`
+    ":"")."
     FROM `persons` `p`
     WHERE `sex` = '".$sex."'
   ");
-  echo Bootstrap::row()->col(CountTable::build($persons)
+  $table = CountTable::build($persons)
     ->col('Name', 'name', 15)
     ->col('Vorname', 'firstname', 15)
     ->col('HB', function ($row) { return FSS::countNoEmpty($row['hb']); }, 5) 
-    ->col(($sex === 'male')?'HL':'GS', function ($row) { return FSS::countNoEmpty($row['fourth']); }, 5)
+    ->col('HL', function ($row) { return FSS::countNoEmpty($row['hl']); }, 5)
     ->col('LA', function ($row) { return FSS::countNoEmpty($row['la']); }, 5)
-    ->col('FS', function ($row) { return FSS::countNoEmpty($row['fs']); }, 5)
-    ->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 7)
-  , 12);
+    ->col('FS', function ($row) { return FSS::countNoEmpty($row['fs']); }, 5);
+  if ($sex == 'female') {
+    $table->col('GS', function ($row) { return FSS::countNoEmpty($row['gs']); }, 5);
+  }
+  $table->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 7);
+  echo Bootstrap::row()->col($table, 12);
 }
 
 echo Title::h2('Neue Person hinzufügen', 'personhinzufuegen');

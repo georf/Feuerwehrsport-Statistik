@@ -2,26 +2,21 @@
 
 TempDB::generate('x_full_competitions');
 
-$disciplines = array(
-  'hbf' => array('hb', 'female', true),
-  'hbm' => array('hb', 'male', true),
-  'hl' => array('hl', 'male', false),
-  'zk' => array('zk', 'male', false)
-);
+
 $year = Check2::page()->get('id')->match('|^[1,2][0-9]{3}$|');
 $dcup = $db->getFirstRow("SELECT * FROM `dcups` WHERE `year` = '".$year."' LIMIT 1");
+$year = $dcup['year'];
 Check2::page()->isTrue($dcup);
 $id = $dcup['id'];
 $key = Check2::page()->get('id2')->present();
 $under = preg_match('|u$|', $key);
 $key = preg_replace('|u$|', '', $key);
-Check2::page()->isTrue(isset($disciplines[$key]));
+$discipline = substr($key, 0, 2);
+$sex = substr($key, 2);
+Check2::page()->variable($discipline)->isIn(FSS::$singleDisciplinesWithDoubleEvent);
+Check2::page()->variable($sex)->isSex();
 
-$discipline = $disciplines[$key][0];
-$sex = $disciplines[$key][1];
-$headline = FSS::dis2name($discipline);
-$year = $dcup['year'];
-if ($disciplines[$key][2]) $headline .= ' - '.FSS::sex($sex);
+$headline = FSS::dis2name($discipline).' - '.FSS::sex($sex);
 if ($under) $headline .= ' - '.$dcup['u'];
 $u = ($under) ? '_u' : '';
 
@@ -71,9 +66,9 @@ $linkBox = '<ul><li>'.Link::dcup($year).'</li>';
 if ($dcup['u']) {
   $linkBox .= '<li>';
   if ($under) {
-    $linkBox .= Link::dcup_single($year, $key, FSS::dis2name($discipline).($disciplines[$key][2] ? ' '.FSS::sex($sex) : '').' (Gesamt)');
+    $linkBox .= Link::dcup_single($year, $discipline, $sex, false, FSS::dis2name($discipline).' '.FSS::sex($sex).' (Gesamt)');
   } else {
-    $linkBox .= Link::dcup_single($year, $key.'u', FSS::dis2name($discipline).($disciplines[$key][2] ? ' '.FSS::sex($sex) : '').' - '.$dcup['u']);
+    $linkBox .= Link::dcup_single($year, $discipline, $sex, true, FSS::dis2name($discipline).' '.FSS::sex($sex).' - '.$dcup['u']);
   }
   $linkBox .= '</li>';
 }

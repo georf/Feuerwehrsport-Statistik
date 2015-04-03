@@ -48,12 +48,14 @@ class Analysis {
 
     TempDB::generate('x_scores_hbf');
     TempDB::generate('x_scores_hbm');
-    TempDB::generate('x_scores_hl');
+    TempDB::generate('x_scores_hlf');
+    TempDB::generate('x_scores_hlm');
 
     $disciplines = array(
       array('hb', false, 'female', 'x_scores_hbf'),
       array('hb', false, 'male',   'x_scores_hbm'),
-      array('hl', false, 'male',   'x_scores_hl'),
+      array('hl', false, 'female', 'x_scores_hlf'),
+      array('hl', false, 'male',   'x_scores_hlm'),
       array('gs', true,  false,    'scores_gs'),
       array('la', true,  'female', 'scores_la'),
       array('la', true,  'male',   'scores_la'),

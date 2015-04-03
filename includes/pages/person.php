@@ -48,14 +48,6 @@ $teamsUnsorted = $db->getRows("
 $teams = array();
 foreach ($teamsUnsorted as $team) $teams[$team['id']] = $team;
 
-$disciplines = array(
-  array('hb', false),
-  array('hl', false, 'male'),
-  array('zk', false, 'male'),
-  array('fs', true),
-  array('gs', true,  'female'),
-  array('la', true),
-);
 $scores = array();
 $dcups = array();
 
@@ -66,12 +58,10 @@ if (count($otherNames)) echo '<p>'.$person['firstname'].' ist auch unter <em>'.i
 
 
 $toc = TableOfContents::get();
-foreach ($disciplines as $disciplineConf) {
-  $discipline = $disciplineConf[0];
+foreach (FSS::$disciplinesWithDoubleEvent as $discipline) {
   $scores[$discipline] = array();
-  if (count($discipline) > 3 && $discipline[2] != $person['sex']) continue;
 
-  if (in_array($discipline, array('hl', 'hb', 'zk'))) {
+  if (in_array($discipline, FSS::$singleDisciplinesWithDoubleEvent)) {
     $dcups[$discipline] = $db->getRows("
       (
         SELECT `points`, `position`, `year`, `ready`, `dcup_id`, NULL as `u`
@@ -93,7 +83,7 @@ foreach ($disciplines as $disciplineConf) {
     }
   }
 
-  if (in_array($discipline, array('hl', 'hb'))) {
+  if (in_array($discipline, FSS::$singleDisciplines)) {
     $scores[$discipline] = $db->getRows("
       SELECT
         `c`.`place_id`,`c`.`place`,
@@ -161,16 +151,14 @@ echo Bootstrap::row()
   ->col($toc, 3);
 
 
-foreach ($disciplines as $disciplineConf) {
-  $discipline = $disciplineConf[0];
-  $group      = $disciplineConf[1];
+foreach (FSS::$disciplinesWithDoubleEvent as $discipline) {
   if (count($scores[$discipline]) === 0) continue;
-  $name = FSS::dis2name($discipline);
-
-  $sum  = 0;
-  $i    = 0;
-  $best = PHP_INT_MAX;
-  $bad  = 0;
+  $group = FSS::isGroupDiscipline($discipline);
+  $name  = FSS::dis2name($discipline);
+  $sum   = 0;
+  $i     = 0;
+  $best  = PHP_INT_MAX;
+  $bad   = 0;
 
   foreach ($scores[$discipline] as $score) {
     if (FSS::isInvalid($score['time'])) continue;

@@ -9,19 +9,19 @@ $scores['gs']['female'] = $db->getFirstRow("
   WHERE `competition_id` = ".$competitionId, 'count');
 
 $scores['hl'] = array();
-$scores['hl']['male'] = $db->getFirstRow("
-  SELECT COUNT(`s`.`id`) AS `count`
-  FROM `scores` `s`
-  INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
-  WHERE `p`.`sex` = 'male'
-  AND `s`.`discipline` = 'hl'
-  AND `competition_id` = ".$competitionId, 'count');
-
 $scores['hb'] = array();
 $scores['la'] = array();
 $scores['fs'] = array();
 
 foreach (array('male', 'female') as $sex) {
+  $scores['hl'][$sex] = $db->getFirstRow("
+    SELECT COUNT(`s`.`id`) AS `count`
+    FROM `scores` `s`
+    INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+    WHERE `p`.`sex` = '".$sex."'
+    AND `s`.`discipline` = 'hl'
+    AND `competition_id` = ".$competitionId, 'count');
+
   $scores['hb'][$sex] = $db->getFirstRow("
     SELECT COUNT(`s`.`id`) AS `count`
     FROM `scores` `s`
