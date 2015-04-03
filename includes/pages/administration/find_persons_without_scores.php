@@ -37,6 +37,7 @@ echo '<table class="table"><tr><th>Name</th><th>Vorname</th><th>sex</th><th>id</
 
 foreach ($persons as $person) {
   echo '<tr><td>'.$person['name'].'</td><td>'.$person['firstname'].'</td><td>'.$person['sex'].'</td><td>';
+  echo Link::person($person['id']);
   echo '<form method="post" action="">';
   echo '<input type="hidden" name="delete" value="'.$person['id'].'"/>';
   echo '<button onclick="return confirm(\'Wirklich löschen?\');">'.$person['id'].'</button>';

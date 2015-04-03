@@ -1,8 +1,6 @@
 <ul>
     <li><a href="/?page=administration&amp;admin=logout">Logout</a></li>
     <li><a href="/?page=administration&amp;admin=import">Import</a></li>
-    <li><a href="/?page=administration&amp;admin=find_bad_teams">Find same teams</a></li>
-    <li><a href="/?page=administration&amp;admin=find_bad_persons">Find bad persons</a> - <a href="/?page=administration&amp;admin=find_bad_persons2">Find same persons</a></li>
 </ul>
 
 <ul>
@@ -10,23 +8,18 @@
     <ul>
       <li><?php echo Link::admin_page_a('errors', 'Fehler bearbeiten'); ?></li>
       <li><?php echo Link::admin_page_a('logs', 'Logs anzeigen'); ?></li>
+      <li><?php echo Link::admin_page_a('users', 'anzeigen'); ?></li>
     </ul>
   </li>
-  <li><h4>Team-Logo</h4>
+  <li><h4>Team</h4>
     <ul>
-      <li><?php echo Link::admin_page_a('team_logo_add', 'hinzufügen'); ?></li>
-      <li><?php echo Link::admin_page_a('team_logo_remove_unused', 'Ungenutzte löschen'); ?></li>
+      <li><?php echo Link::admin_page_a('team_logo_remove_unused', 'Ungenutzte Logos löschen'); ?></li>
       <li><?php echo Link::admin_page_a('team_explode', 'Team auseinanderziehen'); ?></li>
     </ul>
   </li>
   <li><h4>Ergebnis-Dateien</h4>
     <ul>
       <li><?php echo Link::admin_page_a('file_remove', 'löschen'); ?></li>
-    </ul>
-  </li>
-  <li><h4>Benutzer</h4>
-    <ul>
-      <li><?php echo Link::admin_page_a('users', 'anzeigen'); ?></li>
     </ul>
   </li>
   <li><h4>Neuigkeiten</h4>
@@ -40,7 +33,7 @@
       <li><?php echo Link::admin_page_a('dcup_single', 'D-Cup Einzelwertung'); ?></li>
     </ul>
   </li>
-  <li><h4>Personen korrigieren</h4>
+  <li><h4>Personen</h4>
     <ul>
       <li><?php echo Link::admin_page_a('find_persons_without_scores', 'Personen ohne Zuordnung'); ?></li>
     </ul>
