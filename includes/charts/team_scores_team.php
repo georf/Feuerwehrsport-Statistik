@@ -1,29 +1,13 @@
 <?php
 
-// a = id
-// b = key
+$teamId = Check2::except()->get('a')->isIn('teams');
+$keys = Check2::except()->get('b')->match('/hb|l-(fe)?male/');
+list($key, $sex) = explode("-", $keys);
 
-if (Check::get('a')) $_GET['id'] = $_GET['a'];
-if (Check::get('b')) $_GET['key'] = $_GET['b'];
-
-if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
-if (!Check::isIn($_GET['id'], 'teams')) throw new Exception('bad team');
-$id = intval($_GET['id']);
-
-$keys = explode('-', $_GET['key']);
-$key = $keys[0];
-$sex = false;
-if (count($keys) > 1) {
-    $sex = $keys[1];
-}
-
-if ($sex && !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
-
-$scores = array();
-$title  = '';
-
+$title = FSS::dis2name($key);
 
 TempDB::generate('x_full_competitions');
+
 
 $competitions = $db->getRows("
     SELECT *
@@ -31,170 +15,124 @@ $competitions = $db->getRows("
     WHERE `score_type_id` IS NOT NULL
     ORDER BY `date`
 ");
+
+$scores            = array();
 $competitionScores = array();
 
 foreach ($competitions as $c_id => $competition) {
-    switch ($key) {
-        case 'hb':
-            if (!$sex) throw new Exception('sex not defined');
-            TempDB::generate('x_scores_'.$sex);
+  $tableName = 'x_scores_'.$key.substr($sex, 0, 1);
+  TempDB::generate($tableName);
 
-            $scores = $db->getRows("
-                SELECT `best`.*
-                FROM (
-                    SELECT *
-                    FROM (
-                        (
-                            SELECT `id`,`team_number`,
-                            `person_id`,
-                            `time`
-                            FROM `x_scores_".$sex."`
-                            WHERE `time` IS NOT NULL
-                            AND `competition_id` = '".$competition['id']."'
-                            AND `discipline` = 'HB'
-                            AND `team_number` > -2
-                            AND `team_id` = '".$id."'
-                        ) UNION (
-                            SELECT `id`,`team_number`,
-                            `person_id`,
-                            ".FSS::INVALID." AS `time`
-                            FROM `x_scores_".$sex."`
-                            WHERE `time` IS NULL
-                            AND `competition_id` = '".$competition['id']."'
-                            AND `discipline` = 'HB'
-                            AND `team_number` > -2
-                            AND `team_id` = '".$id."'
-                        ) ORDER BY `time`
-                    ) `all`
-                    GROUP BY `person_id`
-                ) `best`
-                ORDER BY `time`
-            ");
+  $scores = $db->getRows("
+    SELECT `best`.*
+    FROM (
+      SELECT *
+      FROM (
+        (
+          SELECT `id`,`team_number`,
+          `person_id`,
+          `time`
+          FROM `".$tableName."`
+          WHERE `time` IS NOT NULL
+          AND `competition_id` = '".$competition['id']."'
+          AND `team_number` > -2
+          AND `team_id` = '".$teamId."'
+        ) UNION (
+          SELECT `id`,`team_number`,
+          `person_id`,
+          ".FSS::INVALID." AS `time`
+          FROM `".$tableName."`
+          WHERE `time` IS NULL
+          AND `competition_id` = '".$competition['id']."'
+          AND `team_number` > -2
+          AND `team_id` = '".$teamId."'
+        ) ORDER BY `time`
+      ) `all`
+      GROUP BY `person_id`
+    ) `best`
+    ORDER BY `time`
+  ");
 
-            $title = FSS::dis2name($key);
-            break;
 
-        case 'hl':
-            TempDB::generate('x_scores_male');
+  if (!count($scores)) continue;
 
-            $scores = $db->getRows("
-                SELECT `best`.*
-                FROM (
-                    SELECT *
-                    FROM (
-                        (
-                            SELECT `id`,`team_number`,
-                            `person_id`,
-                            `time`
-                            FROM `x_scores_male`
-                            WHERE `time` IS NOT NULL
-                            AND `competition_id` = '".$competition['id']."'
-                            AND `discipline` = 'HL'
-                            AND `team_number` > -2
-                            AND `team_id` = '".$id."'
-                        ) UNION (
-                            SELECT `id`,`team_number`,
-                            `person_id`,
-                            ".FSS::INVALID." AS `time`
-                            FROM `x_scores_male`
-                            WHERE `time` IS NULL
-                            AND `competition_id` = '".$competition['id']."'
-                            AND `discipline` = 'HL'
-                            AND `team_number` > -2
-                            AND `team_id` = '".$id."'
-                        ) ORDER BY `time`
-                    ) `all`
-                    GROUP BY `person_id`
-                ) `best`
-                ORDER BY `time`
-            ");
-            $title = FSS::dis2name($key).' '.FSS::sex($sex);
-            break;
+  // Bereche die Wertung
+  $teams = array();
+  foreach ($scores as $score) {
+      if ($score['team_number'] < 0) continue;
 
-        default:
-            throw new Exception('bad key');
-            break;
-    }
+      $uniqTeam = $score['team_number'];
+      if (!isset($teams[$uniqTeam])) {
+          $teams[$uniqTeam] = array(
+              'number' => $score['team_number'],
+              'scores' => array(),
+              'time' => FSS::INVALID,
+              'time68' => -1
+          );
+      }
 
-    if (!count($scores)) continue;
+      $teams[$uniqTeam]['scores'][] = $score;
+  }
 
-    // Bereche die Wertung
-    $teams = array();
-    foreach ($scores as $score) {
-        if ($score['team_number'] < 0) continue;
+  // sort every persons in teams
+  foreach ($teams as $uniqTeam => $t) {
+      $time = 0;
+      $time68 = 0;
 
-        $uniqTeam = $score['team_number'];
-        if (!isset($teams[$uniqTeam])) {
-            $teams[$uniqTeam] = array(
-                'number' => $score['team_number'],
-                'scores' => array(),
-                'time' => FSS::INVALID,
-                'time68' => -1
-            );
-        }
+      usort($t['scores'], function($a, $b) {
+          if ($a['time'] == $b['time']) return 0;
+          elseif ($a['time'] > $b['time']) return 1;
+          else return -1;
+      });
 
-        $teams[$uniqTeam]['scores'][] = $score;
-    }
+      if (count($t['scores']) < $competition['score']) {
 
-    // sort every persons in teams
-    foreach ($teams as $uniqTeam => $t) {
-        $time = 0;
-        $time68 = 0;
+          $teams[$uniqTeam]['time'] = FSS::INVALID;
+          $teams[$uniqTeam]['time68'] = FSS::INVALID;
 
-        usort($t['scores'], function($a, $b) {
-            if ($a['time'] == $b['time']) return 0;
-            elseif ($a['time'] > $b['time']) return 1;
-            else return -1;
-        });
+          continue;
+      }
 
-        if (count($t['scores']) < $competition['score']) {
+      for($i = 0; $i < $competition['score']; $i++) {
+          if ($t['scores'][$i]['time'] == FSS::INVALID) {
+              $teams[$uniqTeam]['time'] = FSS::INVALID;
+              $teams[$uniqTeam]['time68'] = FSS::INVALID;
+              continue 2;
+          }
+          $time += $t['scores'][$i]['time'];
+      }
 
-            $teams[$uniqTeam]['time'] = FSS::INVALID;
-            $teams[$uniqTeam]['time68'] = FSS::INVALID;
+      if (count($t['scores']) < 6) {
+              $teams[$uniqTeam]['time68'] = FSS::INVALID;
+      } else {
+          for($i = 0; $i < 6; $i++) {
+              if ($t['scores'][$i]['time'] == FSS::INVALID) {
+                  $teams[$uniqTeam]['time68'] = FSS::INVALID;
+                  break;
+              }
+              $time68 += $t['scores'][$i]['time'];
+          }
 
-            continue;
-        }
+          if ($teams[$uniqTeam]['time68'] == -1) {
+              $teams[$uniqTeam]['time68'] = $time68;
+          }
+      }
+      $teams[$uniqTeam]['time'] = $time;
+  }
 
-        for($i = 0; $i < $competition['score']; $i++) {
-            if ($t['scores'][$i]['time'] == FSS::INVALID) {
-                $teams[$uniqTeam]['time'] = FSS::INVALID;
-                $teams[$uniqTeam]['time68'] = FSS::INVALID;
-                continue 2;
-            }
-            $time += $t['scores'][$i]['time'];
-        }
+  // Sortiere Teams nach Zeit
+  usort($teams, function ($a, $b) {
+      if ($a['time'] == $b['time']) return 0;
+      elseif ($a['time'] > $b['time']) return 1;
+      else return -1;
+  });
 
-        if (count($t['scores']) < 6) {
-                $teams[$uniqTeam]['time68'] = FSS::INVALID;
-        } else {
-            for($i = 0; $i < 6; $i++) {
-                if ($t['scores'][$i]['time'] == FSS::INVALID) {
-                    $teams[$uniqTeam]['time68'] = FSS::INVALID;
-                    break;
-                }
-                $time68 += $t['scores'][$i]['time'];
-            }
-
-            if ($teams[$uniqTeam]['time68'] == -1) {
-                $teams[$uniqTeam]['time68'] = $time68;
-            }
-        }
-        $teams[$uniqTeam]['time'] = $time;
-    }
-
-    // Sortiere Teams nach Zeit
-    usort($teams, function ($a, $b) {
-        if ($a['time'] == $b['time']) return 0;
-        elseif ($a['time'] > $b['time']) return 1;
-        else return -1;
-    });
-
-    if (count($teams)) {
-        $competitionScores[] = array(
-            'competition' => $competition,
-            'team' => $teams[0],
-        );
-    }
+  if (count($teams)) {
+      $competitionScores[] = array(
+          'competition' => $competition,
+          'team' => $teams[0],
+      );
+  }
 }
 
 $points4 = array();

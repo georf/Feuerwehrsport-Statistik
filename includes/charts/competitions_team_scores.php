@@ -3,120 +3,71 @@
 // a == id
 // b == name
 
-TempDB::generate('x_scores_hbf');
-TempDB::generate('x_scores_hbm');
-TempDB::generate('x_scores_hl');
-
 if (Check::get('a')) $_GET['id'] = $_GET['a'];
 if (Check::get('b')) $_GET['name'] = $_GET['b'];
 
 if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['id'], 'events')) {
-    $types = $db->getRows("
-        SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
-        FROM `competitions` `c`
-        LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
-        WHERE `c`.`id`
-        IN (
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hl` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`event_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbm` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`event_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbf` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`event_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-        )
-        GROUP BY `t`.`id`
-        ORDER BY `persons`, `run`, `score`
-    ");
+  $types = $db->getRows("
+    SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
+    FROM `competitions` `c`
+    LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
+    WHERE `c`.`id`
+    IN (
+      SELECT `s`.`competition_id`
+      FROM `scores` `s`
+      INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `c`.`event_id` = '".$db->escape($_GET['id'])."'
+      GROUP BY `s`.`competition_id`
+    )
+    GROUP BY `t`.`id`
+    ORDER BY `persons`, `run`, `score`
+  ");
 } elseif (Check::get('name', 'id') && $_GET['name'] == 'place' && Check::isIn($_GET['id'], 'places')) {
-    $types = $db->getRows("
-        SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
-        FROM `competitions` `c`
-        LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
-        WHERE `c`.`id`
-        IN (
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hl` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`place_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbm` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`place_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbf` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE `c`.`place_id` = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-        )
-        GROUP BY `t`.`id`
-        ORDER BY `persons`, `run`, `score`
-    ");
+  $types = $db->getRows("
+    SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
+    FROM `competitions` `c`
+    LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
+    WHERE `c`.`id`
+    IN (
+      SELECT `s`.`competition_id`
+      FROM `scores` `s`
+      INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE `c`.`place_id` = '".$db->escape($_GET['id'])."'
+      GROUP BY `s`.`competition_id`
+    )
+    GROUP BY `t`.`id`
+    ORDER BY `persons`, `run`, `score`
+  ");
 } elseif (Check::get('name', 'id') && $_GET['name'] == 'year' && is_numeric($_GET['id'])) {
-    $types = $db->getRows("
-        SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
-        FROM `competitions` `c`
-        LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
-        WHERE `c`.`id`
-        IN (
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hl` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE YEAR(`c`.`date`) = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbm` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE YEAR(`c`.`date`) = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-            UNION
-                SELECT `s`.`competition_id`
-                FROM `x_scores_hbf` `s`
-                INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                WHERE YEAR(`c`.`date`) = '".$db->escape($_GET['id'])."'
-                GROUP BY `s`.`competition_id`
-        )
-        GROUP BY `t`.`id`
-        ORDER BY `persons`, `run`, `score`
-    ");
+  $types = $db->getRows("
+    SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
+    FROM `competitions` `c`
+    LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
+    WHERE `c`.`id`
+    IN (
+      SELECT `s`.`competition_id`
+      FROM `scores` `s`
+      INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      WHERE YEAR(`c`.`date`) = '".$db->escape($_GET['id'])."'
+      GROUP BY `s`.`competition_id`
+    )
+    GROUP BY `t`.`id`
+    ORDER BY `persons`, `run`, `score`
+  ");
 } else {
-
-    $types = $db->getRows("
-        SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
-        FROM `competitions` `c`
-        LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
-        WHERE `c`.`id`
-        IN (
-                SELECT `competition_id`
-                FROM `x_scores_hl`
-                GROUP BY `competition_id`
-            UNION
-                SELECT `competition_id`
-                FROM `x_scores_hbm`
-                GROUP BY `competition_id`
-            UNION
-                SELECT `competition_id`
-                FROM `x_scores_hbf`
-                GROUP BY `competition_id`
-        )
-        GROUP BY `t`.`id`
-        ORDER BY `persons`, `run`, `score`
-    ");
+  $types = $db->getRows("
+    SELECT COUNT( `c`.`id` ) AS `count`, `persons`, `run`, `score`
+    FROM `competitions` `c`
+    LEFT JOIN `score_types` `t` ON `c`.`score_type_id` = `t`.`id`
+    WHERE `c`.`id`
+    IN (
+      SELECT `competition_id`
+      FROM `scores`
+      GROUP BY `competition_id`
+    )
+    GROUP BY `t`.`id`
+    ORDER BY `persons`, `run`, `score`
+  ");
 }
 
 $labels = array();

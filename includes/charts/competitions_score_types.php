@@ -3,10 +3,6 @@
 // a == id
 // b == name
 
-TempDB::generate('x_scores_hbf');
-TempDB::generate('x_scores_hbm');
-TempDB::generate('x_scores_hl');
-
 if (Check::get('a')) $_GET['id'] = $_GET['a'];
 if (Check::get('b')) $_GET['name'] = $_GET['b'];
 
@@ -47,16 +43,12 @@ if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['i
 
 foreach ($competitions as $competition) {
 
-    $hbm = $db->getFirstRow("
-        SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_hbm`
-        WHERE `competition_id` = '".$competition['id']."'
-    ", 'count');
     $hb = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_hbf`
+        FROM `scores`
         WHERE `competition_id` = '".$competition['id']."'
-    ", 'count') + $hbm;
+        AND `discipline` = 'HB'
+    ", 'count');
     $gs = $db->getFirstRow("
         SELECT COUNT(*) AS `count`
         FROM `scores_gs`
@@ -74,8 +66,9 @@ foreach ($competitions as $competition) {
     ", 'count');
     $hl = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
-        FROM `x_scores_hl`
+        FROM `scores`
         WHERE `competition_id` = '".$competition['id']."'
+        AND `discipline` = 'HL'
     ", 'count');
 
     if ($hb > 0 && $gs > 0 && $la > 0 && $fs > 0 && $hl > 0) {

@@ -16,26 +16,6 @@ $person = FSS::tableRow('persons', $id);
 switch ($key) {
 
     case 'hl':
-        $scores = $db->getRows("
-            SELECT *
-            FROM (
-                SELECT *
-                FROM (
-                    SELECT `s`.`time`,`c`.`date`,`c`.`id`
-                    FROM `scores` `s`
-                    INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-                    WHERE `s`.`person_id` = '".$id."'
-                    AND `s`.`discipline` = 'HL'
-                    AND `s`.`time` IS NOT NULL
-                    ORDER BY `s`.`time`
-                ) `i`
-                GROUP BY `i`.`id`
-            ) `i2`
-            ORDER BY `i2`.`date`
-        ");
-        $title = FSS::dis2name($key);
-        break;
-
     case 'hb':
         $scores = $db->getRows("
             SELECT *
@@ -46,7 +26,7 @@ switch ($key) {
                     FROM `scores` `s`
                     INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
                     WHERE `s`.`person_id` = '".$id."'
-                    AND `s`.`discipline` = 'HB'
+                    AND `s`.`discipline` = '".$key."'
                     AND `s`.`time` IS NOT NULL
                     ORDER BY `s`.`time`
                 ) `i`
@@ -89,35 +69,13 @@ switch ($key) {
 
 
     case 'gs':
-        $scores = $db->getRows("
-            SELECT `s`.`time`,`c`.`date`
-            FROM `scores_gs` `s`
-            INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key);
-        break;
-
     case 'fs':
-        $scores = $db->getRows("
-            SELECT `s`.`time`,`c`.`date`
-            FROM `scores_fs` `s`
-            INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key);
-        break;
-
     case 'la':
         $scores = $db->getRows("
             SELECT `s`.`time`,`c`.`date`
-            FROM `scores_la` `s`
+            FROM `scores_".$key."` `s`
             INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+            INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
             WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
             ORDER BY `c`.`date`
         ");

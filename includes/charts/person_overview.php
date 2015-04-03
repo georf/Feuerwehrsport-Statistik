@@ -41,7 +41,6 @@ for ($i = $yearRows[0]['year']; $i <= $yearRows[count($yearRows) - 1]['year']; $
 
 
 
-if ($person['sex'] == 'male') {
     $diss = array(array(
             'name' => 'HL',
             'dis' => 1,
@@ -52,15 +51,6 @@ if ($person['sex'] == 'male') {
             'avgs' => array()
         )
     );
-} else {
-    $diss = array(array(
-            'name' => 'HB',
-            'dis' => 2,
-            'avgs' => array()
-        )
-    );
-}
-
 
 $labels  = array();
 

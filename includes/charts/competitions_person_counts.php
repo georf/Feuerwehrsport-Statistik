@@ -3,10 +3,6 @@
 // a == id
 // b == name
 
-TempDB::generate('x_scores_hbf');
-TempDB::generate('x_scores_hbm');
-TempDB::generate('x_scores_hl');
-
 if (Check::get('a')) $_GET['id'] = $_GET['a'];
 if (Check::get('b')) $_GET['name'] = $_GET['b'];
 
