@@ -67,8 +67,8 @@ $ ()->
       .add(new FssFormRowDescription('Beschreibung des Links'))
       .add(new FssFormRowText('url', 'Link', 'http://'))
       .on('submit', (data) ->
-        url = url.replace(/^http:\/\/(https?:\/\/)/, "$1")
-        url = "http://#{url}" unless url.match(/^https?:\/\//)
+        data.url = data.url.replace(/^http:\/\/(https?:\/\/)/, "$1")
+        data.url = "http://#{data.url}" unless data.url.match(/^https?:\/\//)
         data['id'] = for_id
         data['for'] = for_table
         Fss.postReload 'add-link', data
