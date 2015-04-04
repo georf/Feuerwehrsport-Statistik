@@ -1,4 +1,5 @@
-new SortTable(noSorting: 6)
+new SortTable(noSorting: 8, selector: ".datatable-female")
+new SortTable(noSorting: 7, selector: ".datatable-male")
 
 $('#add-person').click (ev) ->
   ev.preventDefault()

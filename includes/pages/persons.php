@@ -20,7 +20,7 @@ $sexs = array(
 foreach ($sexs as $sex => $title) {
   echo Title::h2($title, $sex);
   $persons = $db->getRows("
-    SELECT `id`, `name`, `firstname`,
+    SELECT `p`.`id`, `p`.`name`, `p`.`firstname`,`n`.`short` AS `nation`,
     (
       SELECT COUNT(`id`) AS `count`
       FROM `x_scores_hb".substr($sex,0,1)."`
@@ -49,9 +49,10 @@ foreach ($sexs as $sex => $title) {
     ) AS `gs`
     ":"")."
     FROM `persons` `p`
+    LEFT JOIN `nations` `n` ON `p`.`nation_id` = `n`.`id`
     WHERE `sex` = '".$sex."'
   ");
-  $table = CountTable::build($persons)
+  $table = CountTable::build($persons, array('datatable-'.$sex))
     ->col('Name', 'name', 15)
     ->col('Vorname', 'firstname', 15)
     ->col('HB', function ($row) { return FSS::countNoEmpty($row['hb']); }, 5) 
@@ -61,7 +62,10 @@ foreach ($sexs as $sex => $title) {
   if ($sex == 'female') {
     $table->col('GS', function ($row) { return FSS::countNoEmpty($row['gs']); }, 5);
   }
-  $table->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 7);
+
+  $table
+    ->col('Nation', function ($row) { return $row['nation']; }, 5)
+    ->col('', function ($row) { return Link::person($row['id'], 'Details', $row['name'], $row['firstname']); }, 7);
   echo Bootstrap::row()->col($table, 12);
 }
 
