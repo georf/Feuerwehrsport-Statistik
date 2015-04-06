@@ -158,12 +158,15 @@ foreach ($disciplines as $discipline) {
 
       // search for more times
       $times = $db->getRows("
-        SELECT COALESCE(`s`.`time`, ".FSS::INVALID.") AS `time`
-        FROM `scores_".$key."` `s`
-        WHERE `s`.`id` != '".$score['id']."'
+        SELECT COALESCE(`gs`.`time`, ".FSS::INVALID.") AS `time`
+        FROM `group_scores` `gs`
+        INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+        WHERE `gs`.`id` != '".$score['id']."'
         AND `team_number` = ".$score['team_number']."
         AND `team_id` = ".$score['team_id']."
         AND `competition_id` = '".$id."'
+        AND `discipline` = '".$key."'
         ".($sex? " AND `sex` = '".$sex."' " : "")."
       ", 'time');
       sort($times);

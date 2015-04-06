@@ -11,21 +11,12 @@ $sexes = $db->getRows("
       WHERE `team_id` = '".$teamId."'
     UNION
       SELECT `p`.`person_id`
-      FROM `scores_gs` `s`
-      INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$teamId."'
-    UNION
-      SELECT `p`.`person_id`
-      FROM `scores_la` `s`
-      INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$teamId."'
-    UNION
-      SELECT `p`.`person_id`
-      FROM `scores_fs` `s`
-      INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `s`.`team_id` = '".$teamId."'
+      FROM `group_scores` `gs`
+      INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+      WHERE `gs`.`team_id` = '".$teamId."'
     ) `i`
   INNER JOIN `persons` `p` ON `p`.`id` = `i`.`person_id`
+  GROUP BY `p`.`id`
 ", 'sex');
 
 $male = 0;

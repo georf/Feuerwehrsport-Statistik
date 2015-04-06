@@ -27,14 +27,22 @@ foreach ($sexs as $sex => $title) {
       WHERE `person_id` = `p`.`id`
     ) AS `hb`,
     (
-      SELECT COUNT(`id`) AS `count`
-      FROM `person_participations_la`
+      SELECT COUNT(`pp`.`id`) AS `count`
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
       WHERE `person_id` = `p`.`id`
+      AND `gst`.`discipline` = 'LA'
     ) AS `la`,
     (
-      SELECT COUNT(`id`) AS `count`
-      FROM `person_participations_fs`
+      SELECT COUNT(`pp`.`id`) AS `count`
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
       WHERE `person_id` = `p`.`id`
+      AND `gst`.`discipline` = 'FS'
     ) AS `fs`,
     (
       SELECT COUNT(`id`) AS `count`
@@ -43,9 +51,13 @@ foreach ($sexs as $sex => $title) {
     ) AS `hl`
     ".(($sex === 'female')?",
     (
-      SELECT COUNT(`id`) AS `count`
-      FROM `person_participations_gs`
+      SELECT COUNT(`pp`.`id`) AS `count`
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
       WHERE `person_id` = `p`.`id`
+      AND `gst`.`discipline` = 'GS'
     ) AS `gs`
     ":"")."
     FROM `persons` `p`

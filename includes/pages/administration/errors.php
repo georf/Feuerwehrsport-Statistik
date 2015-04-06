@@ -57,16 +57,14 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
         $db->updateRow('scores', $score['id'], array('person_id' => $new_person['id']));
       }
 
-      foreach (array('fs', 'gs', 'la') as $key) {
-        // set scores
-        $scores = $db->getRows("
-          SELECT `id`
-          FROM `person_participations_".$key."`
-          WHERE `person_id` = '".$person['id']."'
-        ");
-        foreach ($scores as $score) {
-          $db->updateRow('person_participations_'.$key, $score['id'], array('person_id' => $new_person['id']));
-        }
+      // set scores
+      $scores = $db->getRows("
+        SELECT `id`
+        FROM `person_participations`
+        WHERE `person_id` = '".$person['id']."'
+      ");
+      foreach ($scores as $score) {
+        $db->updateRow('person_participations', $score['id'], array('person_id' => $new_person['id']));
       }
       
       // set spelling
@@ -118,31 +116,11 @@ if (isset($_GET['id']) && Check::isIn($_GET['id'], 'errors')) {
       // set scores
       $scores = $db->getRows("
         SELECT `id`
-        FROM `scores_gs`
+        FROM `group_scores`
         WHERE `team_id` = '".$team['id']."'
       ");
       foreach ($scores as $score) {
-        $db->updateRow('scores_gs', $score['id'], array('team_id' => $new_team['id']));
-      }
-
-      // set scores
-      $scores = $db->getRows("
-        SELECT `id`
-        FROM `scores_la`
-        WHERE `team_id` = '".$team['id']."'
-      ");
-      foreach ($scores as $score) {
-        $db->updateRow('scores_la', $score['id'], array('team_id' => $new_team['id']));
-      }
-
-      // set scores
-      $scores = $db->getRows("
-        SELECT `id`
-        FROM `scores_fs`
-        WHERE `team_id` = '".$team['id']."'
-      ");
-      foreach ($scores as $score) {
-        $db->updateRow('scores_fs', $score['id'], array('team_id' => $new_team['id']));
+        $db->updateRow('group_scores', $score['id'], array('team_id' => $new_team['id']));
       }
 
       // set links

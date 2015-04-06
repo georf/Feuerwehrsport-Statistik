@@ -42,46 +42,38 @@ if (Check::get('name', 'id') && $_GET['name'] == 'event' && Check::isIn($_GET['i
 }
 
 foreach ($competitions as $competition) {
-
-    $hb = $db->getFirstRow("
+  $c = array();
+  foreach (FSS::$disciplines as $discipline) {
+    if (FSS::isSingleDiscipline($discipline)) {
+      $c[$discipline] = $db->getFirstRow("
         SELECT COUNT(`id`) AS `count`
         FROM `scores`
         WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HB'
-    ", 'count');
-    $gs = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM `scores_gs`
-        WHERE `competition_id` = '".$competition['id']."'
-    ", 'count');
-    $la = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM `scores_la`
-        WHERE `competition_id` = '".$competition['id']."'
-    ", 'count');
-    $fs = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM `scores_fs`
-        WHERE `competition_id` = '".$competition['id']."'
-    ", 'count');
-    $hl = $db->getFirstRow("
-        SELECT COUNT(`id`) AS `count`
-        FROM `scores`
-        WHERE `competition_id` = '".$competition['id']."'
-        AND `discipline` = 'HL'
-    ", 'count');
-
-    if ($hb > 0 && $gs > 0 && $la > 0 && $fs > 0 && $hl > 0) {
-        $counts[0]++;
-    } elseif ($hl > 0 && $gs + $la + $fs + $hb == 0) {
-        $counts[1]++;
-    } elseif ($hb > 0 && $gs + $la + $fs + $hl == 0) {
-        $counts[2]++;
-    } elseif ($la > 0 && $gs + $hl + $fs + $hb == 0) {
-        $counts[3]++;
+        AND `discipline` = '".$discipline."'
+      ", 'count');
     } else {
-        $counts[4]++;
+      $c[$discipline] = $db->getFirstRow("
+        SELECT COUNT(*) AS `count`
+        FROM `group_scores` `gs`
+        INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+        WHERE `gsc`.`competition_id` = '".$competition['id']."'
+        AND `gst`.`discipline` = '".$discipline."'
+      ", 'count');
     }
+  }
+
+  if ($c['hb'] > 0 && $c['gs'] > 0 && $c['la'] > 0 && $c['fs'] > 0 && $c['hl'] > 0) {
+    $counts[0]++;
+  } elseif ($c['hl'] > 0 && $c['gs'] + $c['la'] + $c['fs'] + $c['hb'] == 0) {
+    $counts[1]++;
+  } elseif ($c['hb'] > 0 && $c['gs'] + $c['la'] + $c['fs'] + $c['hl'] == 0) {
+    $counts[2]++;
+  } elseif ($c['la'] > 0 && $c['gs'] + $c['hl'] + $c['fs'] + $c['hb'] == 0) {
+    $counts[3]++;
+  } else {
+    $counts[4]++;
+  }
 }
 
 $MyData = new pData();

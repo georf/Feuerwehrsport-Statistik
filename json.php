@@ -23,8 +23,14 @@ try {
     $type = $result[1];
     $request = $result[6];
 
+
     Check2::except()->variable($type)->isIn(array('set', 'get', 'add', 'delete'));
-    include Check2::except()->variable($request)->isInPath(__DIR__.'/includes/api/'.$type.'/');
+    if (false && !Check::isAdmin() && $type != 'get') {
+      $output['success'] = false;
+      $output['message'] = "Zur Zeit kann aufgrund von Umbauarbeiten keine Bearbeitungen vorgenommen werden. Bitte versuche es in ein paar Tagen erneut.";
+    } else {
+      include Check2::except()->variable($request)->isInPath(__DIR__.'/includes/api/'.$type.'/');
+    }
   }
 } catch (Exception $e) {
   $output['success'] = false;

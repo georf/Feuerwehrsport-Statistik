@@ -71,16 +71,18 @@ switch ($key) {
     case 'gs':
     case 'fs':
     case 'la':
-        $scores = $db->getRows("
-            SELECT `s`.`time`,`c`.`date`
-            FROM `scores_".$key."` `s`
-            INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
-            INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
-            WHERE `s`.`time` IS NOT NULL AND `p`.`person_id` = '".$id."'
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key);
-        break;
+      $scores = $db->getRows("
+        SELECT `gs`.`time`,`c`.`date`
+        FROM `group_scores` `gs`
+        INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+        INNER JOIN `competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
+        INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+        WHERE `gs`.`time` IS NOT NULL 
+        AND `p`.`person_id` = '".$id."'
+        ORDER BY `c`.`date`
+      ");
+      $title = FSS::dis2name($key);
+      break;
 
     default:
         throw new Exception('bad key');

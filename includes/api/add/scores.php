@@ -2,10 +2,9 @@
 
 Check2::except()->isAdmin();
 
-$competitionId = Check2::except()->post('competitionId')->isIn('competitions');
-$discipline    = Check2::except()->post('discipline')->isDiscipline();
-$sex           = Check2::except()->post('sex')->isSex();
-$scores        = Check2::except()->post('scores')->isArray();
+$discipline           = Check2::except()->post('discipline')->isDiscipline();
+$sex                  = Check2::except()->post('sex')->isSex();
+$scores               = Check2::except()->post('scores')->isArray();
 
 foreach ($scores as $score) {
   $teamNumber = strval(intval($score['team_number']) -1);
@@ -38,32 +37,26 @@ foreach ($scores as $score) {
     }
 
     $insert = array(
-      'competition_id' => $competitionId,
       'time' => $score['times'][$i],
       'team_number' => $teamNumber,
       'team_id' => $score['team_id']
     );
 
     if (FSS::isSingleDiscipline($discipline)) {
+      $competitionId = Check2::except()->post('competitionId')->isIn('competitions');
 
-      $insert['person_id']  = $person['id'];
-      $insert['discipline'] = $discipline;
+      $insert['competition_id'] = $competitionId;
+      $insert['person_id']      = $person['id'];
+      $insert['discipline']     = $discipline;
       $db->insertRow('scores', $insert, false);
 
-    } elseif ($discipline == 'fs') {
-
-      $insert['sex']  = $sex;
-      $insert['run']  = $score['run'];
-      $db->insertRow('scores_fs', $insert, false);
-
-    } elseif ($discipline == 'la') {
-
-      $insert['sex']  = $sex;
-      $db->insertRow('scores_la', $insert, false);
-
-    } elseif ($discipline == 'gs') {
-
-      $db->insertRow('scores_gs', $insert, false);
+    } else {
+      $groupScoreCategoryId = Check2::except()->post('groupScoreCategoryId')->isIn('group_score_categories');
+      $insert['group_score_category_id'] = $groupScoreCategoryId;
+      $insert['sex']                     = $sex;
+      if ($discipline == 'fs') $insert['run'] = $score['run'];
+      
+      $db->insertRow('group_scores', $insert, false);
 
     }
   }

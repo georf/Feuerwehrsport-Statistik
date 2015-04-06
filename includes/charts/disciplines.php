@@ -3,37 +3,24 @@
 $points = array();
 $labels = array();
 
-$points[] = $db->getFirstRow("
-    SELECT COUNT(*) AS `count`
-    FROM `scores`
-    WHERE `discipline` = 'HL'
-", 'count');
-$labels[] = 'HL';
-
-$points[] = $db->getFirstRow("
-    SELECT COUNT(*) AS `count`
-    FROM `scores`
-    WHERE `discipline` = 'HB'
-", 'count');
-$labels[] = 'HB';
-
-$points[] = $db->getFirstRow("
-    SELECT COUNT(*) AS `count`
-    FROM `scores_la`
-", 'count');
-$labels[] = 'LA';
-
-$points[] = $db->getFirstRow("
-    SELECT COUNT(*) AS `count`
-    FROM `scores_fs`
-", 'count');
-$labels[] = 'FS';
-
-$points[] = $db->getFirstRow("
-    SELECT COUNT(*) AS `count`
-    FROM `scores_gs`
-", 'count');
-$labels[] = 'GS';
+foreach (FSS::$disciplines as $discipline) {
+  if (FSS::isSingleDiscipline($discipline)) {
+    $points[] = $db->getFirstRow("
+      SELECT COUNT(*) AS `count`
+      FROM `scores`
+      WHERE `discipline` = '".$discipline."'
+    ", 'count');
+  } else {
+    $points[] = $db->getFirstRow("
+      SELECT COUNT(*) AS `count`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gst`.`discipline` = '".$discipline."'
+    ", 'count');
+  }
+  $labels[] = strtoupper($discipline);
+}
 
 $MyData = new pData();
 $MyData->addPoints($points, "time");

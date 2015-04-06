@@ -12,18 +12,8 @@ foreach ($teams as $key => $team) {
       SELECT `person_id`
       FROM (
         SELECT `p`.`person_id`
-        FROM `scores_gs` `s`
-        INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-        WHERE `s`.`team_id` = '".$team['id']."'
-      UNION
-        SELECT `p`.`person_id`
-        FROM `scores_fs` `s`
-        INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-        WHERE `s`.`team_id` = '".$team['id']."'
-      UNION
-        SELECT `p`.`person_id`
-        FROM `scores_la` `s`
-        INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
+        FROM `group_scores` `s`
+        INNER JOIN `person_participations` `p` ON `p`.`score_id` = `s`.`id`
         WHERE `s`.`team_id` = '".$team['id']."'
       UNION
         SELECT `person_id`
@@ -43,20 +33,11 @@ foreach ($teams as $key => $team) {
           WHERE `team_id` = '".$team['id']."'
           GROUP BY `competition_id`
         UNION
-          SELECT `competition_id`
-          FROM `scores_gs`
-          WHERE `team_id` = '".$team['id']."'
-          GROUP BY `competition_id`
-        UNION
-          SELECT `competition_id`
-          FROM `scores_la`
-          WHERE `team_id` = '".$team['id']."'
-          GROUP BY `competition_id`
-        UNION
-          SELECT `competition_id`
-          FROM `scores_fs`
-          WHERE `team_id` = '".$team['id']."'
-          GROUP BY `competition_id`
+          SELECT `sc`.`competition_id`
+          FROM `group_scores` `s`
+          INNER JOIN `group_score_categories` `sc` ON `sc`.`id` = `s`.`group_score_category_id` 
+          WHERE `s`.`team_id` = '".$team['id']."'
+          GROUP BY `sc`.`competition_id`
         ) `i`
       GROUP BY `competition_id`
     ) `c`

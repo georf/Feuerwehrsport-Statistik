@@ -17,17 +17,7 @@ $persons = $db->getRows("
     LIMIT 1
   ) AND NOT EXISTS (
     SELECT 1
-    FROM `person_participations_fs` 
-    WHERE person_id = p.id
-    LIMIT 1
-  ) AND NOT EXISTS (
-    SELECT 1
-    FROM `person_participations_gs` 
-    WHERE person_id = p.id
-    LIMIT 1
-  ) AND NOT EXISTS (
-    SELECT 1
-    FROM `person_participations_la` 
+    FROM `person_participations` 
     WHERE person_id = p.id
     LIMIT 1
   )

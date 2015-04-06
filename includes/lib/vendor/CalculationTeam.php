@@ -17,21 +17,25 @@ class CalculationTeam {
     $joins = array();
     for ($p = 1; $p <= WK::count($key); $p++) {
       $selects[] = "`p".$p."`.`person_id` AS `person_".$p."`";
-      $joins[] = "LEFT JOIN `person_participations_".$key."` `p".$p."` ON `p".$p."`.`score_id` = `s`.`id` AND `p".$p."`.`position` = ".$p;
+      $joins[] = "LEFT JOIN `person_participations` `p".$p."` ON `p".$p."`.`score_id` = `gs`.`id` AND `p".$p."`.`position` = ".$p;
     }
 
-    $sex = ($sex) ? "AND `s`.`sex` = '".$sex."'" : '';
+    $sex = ($sex) ? "AND `gs`.`sex` = '".$sex."'" : '';
 
     return $db->getRows("
-      SELECT `s`.*,
+      SELECT `gs`.*,
+        `gsc`.`competition_id`,
         `event_id`, `event`,
         `place_id`, `place`,
         `date`, '' AS `type`,
         ".implode(",", $selects)."
-      FROM `scores_".$key."` `s`
-      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
+      FROM `group_scores` `gs` 
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
       ".implode(" ", $joins)."
-      WHERE `s`.`team_id` = '".$this->team["id"]."'
+      WHERE `gs`.`team_id` = '".$this->team["id"]."'
+      AND `gst`.`discipline` = '".$key."'
       ".$sex
     );
   }

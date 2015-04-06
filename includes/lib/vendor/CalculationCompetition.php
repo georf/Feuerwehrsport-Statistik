@@ -225,32 +225,32 @@ class CalculationCompetition {
     $joins = array();
     for ($p = 1; $p <= WK::count($key); $p++) {
       $selects[] = "`p".$p."`.`id` AS `person_".$p."`,`p".$p."`.`name` AS `name".$p."`,`p".$p."`.`firstname` AS `firstname".$p."`";
-      $joins[] = "LEFT JOIN `person_participations_".$key."` `pp".$p."` ON `pp".$p."`.`score_id` = `best`.`id` AND `pp".$p."`.`position` = ".$p;
+      $joins[] = "LEFT JOIN `person_participations` `pp".$p."` ON `pp".$p."`.`score_id` = `best`.`id` AND `pp".$p."`.`position` = ".$p;
       $joins[] = "LEFT JOIN `persons` `p".$p."` ON `pp".$p."`.`person_id` = `p".$p."`.`id`";
     }
-    $sex = ($key == 'gs') ? '' : "AND `sex` = '".$sex."'";
-    $run = ($key == 'fs') ? ' ,`run` ' : ' ';
     return $db->getRows("
       SELECT `best`.*,`t`.`name` AS `team`,`t`.`short` AS `shortteam`,
       ".implode(",", $selects)."
       FROM (
-        SELECT *
+        SELECT `all`.`id`,`team_id`,`team_number`,`time`,`run`
         FROM (
           (
-            SELECT `id`,`team_id`,`team_number`,`time`".$run."
-            FROM `scores_".$key."`
+            SELECT `id`,`team_id`,`team_number`,`time`,`run`,`group_score_category_id`
+            FROM `group_scores`
             WHERE `time` IS NOT NULL
-            ".$sex."
-            AND `competition_id` = '".$this->competition['id']."'
+            AND `sex` = '".$sex."'
           ) UNION (
-            SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`".$run."
-            FROM `scores_".$key."`
+            SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`,`run`,`group_score_category_id`
+            FROM `group_scores`
             WHERE `time` IS NULL
-            ".$sex."
-            AND `competition_id` = '".$this->competition['id']."'
+            AND `sex` = '".$sex."'
           ) ORDER BY `time`
         ) `all`
-        GROUP BY `team_id`,`team_number`".$run."
+        INNER JOIN `group_score_categories` `gsc` ON `all`.`group_score_category_id` = `gsc`.`id`
+        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+        WHERE `gst`.`discipline` = '".$key."'
+        AND `gsc`.`competition_id` = '".$this->competition['id']."'
+        GROUP BY `team_id`,`team_number`,`run`
       ) `best`
       INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
       ".implode(" ", $joins)."
@@ -268,17 +268,10 @@ class CalculationCompetition {
           SELECT `team_id`
           FROM `scores`
           WHERE `competition_id` = '".$this->competition['id']."'
-          union
+        UNION
           SELECT `team_id`
-          FROM `scores_fs`
-          WHERE `competition_id` = '".$this->competition['id']."'
-          union
-          SELECT `team_id`
-          FROM `scores_gs`
-          WHERE `competition_id` = '".$this->competition['id']."'
-          union
-          SELECT `team_id`
-          FROM `scores_la`
+          FROM `group_scores` `gs` 
+          INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
           WHERE `competition_id` = '".$this->competition['id']."'
         ) s
         INNER JOIN `teams` `t` ON `s`.`team_id` = `t`.`id`
@@ -297,23 +290,47 @@ class CalculationCompetition {
         EXISTS (
           SELECT 1 FROM (
             SELECT (
-              SELECT COUNT(`id`) FROM `person_participations_la` WHERE score_id = s.id
-            ) AS `count` FROM `scores_la` `s` WHERE `competition_id`=".$this->competition['id']."
-          ) `i` WHERE `i`.`count` < 7
+              SELECT COUNT(`id`) 
+              FROM `person_participations`
+              WHERE score_id = gs.id
+            ) AS `count`
+            FROM `group_scores` `gs` 
+            INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+            INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+            WHERE `gsc`.`competition_id`= '".$this->competition['id']."'
+            AND `gst`.`discipline` = 'LA'
+          ) `i`
+          WHERE `i`.`count` < 7
         ) AS `la_members`,
         EXISTS (
           SELECT 1 FROM (
             SELECT (
-              SELECT COUNT(`id`) FROM `person_participations_fs` WHERE score_id = s.id
-            ) AS `count` FROM `scores_fs` `s` WHERE `competition_id`=".$this->competition['id']."
-          ) `i` WHERE `i`.`count` < 4
+              SELECT COUNT(`id`) 
+              FROM `person_participations`
+              WHERE score_id = gs.id
+            ) AS `count`
+            FROM `group_scores` `gs` 
+            INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+            INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+            WHERE `gsc`.`competition_id`= '".$this->competition['id']."'
+            AND `gst`.`discipline` = 'FS'
+          ) `i`
+          WHERE `i`.`count` < 4
         ) AS `fs_members`,
         EXISTS (
           SELECT 1 FROM (
             SELECT (
-              SELECT COUNT(`id`) FROM `person_participations_gs` WHERE score_id = s.id
-            ) AS `count` FROM `scores_gs` `s` WHERE `competition_id`=".$this->competition['id']."
-          ) `i` WHERE `i`.`count` < 6
+              SELECT COUNT(`id`) 
+              FROM `person_participations`
+              WHERE score_id = gs.id
+            ) AS `count`
+            FROM `group_scores` `gs` 
+            INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+            INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+            WHERE `gsc`.`competition_id`= '".$this->competition['id']."'
+            AND `gst`.`discipline` = 'GS'
+          ) `i`
+          WHERE `i`.`count` < 6
         ) AS `gs_members`,
         EXISTS (
           SELECT 1 FROM `scores` WHERE `competition_id`=".$this->competition['id']." AND `team_id` IS NULL

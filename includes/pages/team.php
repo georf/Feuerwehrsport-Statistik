@@ -27,23 +27,16 @@ $member = array(
 $scores = $db->getRows("
   SELECT `discipline`,`person_id`,`count`
   FROM (
-    SELECT 'GS' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
-    FROM `scores_gs` `s`
-    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-    WHERE `s`.`team_id` = '".$team['id']."'
-    GROUP BY `p`.`person_id`
-  UNION ALL
-    SELECT 'FS' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
-    FROM `scores_fs` `s`
-    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-    WHERE `s`.`team_id` = '".$team['id']."'
-    GROUP BY `p`.`person_id`
-  UNION ALL
-    SELECT 'LA' AS `discipline`,`p`.`person_id`,COUNT(`s`.`id`) AS `count`
-    FROM `scores_la` `s`
-    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-    WHERE `s`.`team_id` = '".$team['id']."'
-    GROUP BY `p`.`person_id`
+    SELECT `discipline`, `person_id`, COUNT(`key`) AS `count`
+    FROM (
+      SELECT `gst`.`discipline`,`pp`.`person_id`, CONCAT(`person_id`, `discipline`) AS `key`
+      FROM `group_scores` `gs`
+      INNER JOIN `person_participations` `pp` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gs`.`team_id` = '".$team['id']."'
+    ) `group_disciplines`
+    GROUP BY `key`
   UNION ALL
     SELECT `discipline`,`person_id`,COUNT(`id`) AS `count`
     FROM `scores`
@@ -91,7 +84,7 @@ foreach ($sexConfig as $sex => $name) {
 }
 
 $teamScores = array(
-   array('gs', false, $teamDisciplines['GS'],              6, array('')),
+   array('gs', 'female', $teamDisciplines['GS'],              6, array('')),
    array('fs', 'female', $teamDisciplines['FS']['female'], 4, array('feuer', 'abstellen')),
    array('fs', 'male', $teamDisciplines['FS']['male'],     4, array('feuer', 'abstellen')),
    array('la', 'female', $teamDisciplines['LA']['female'], 7, array('wko2005', 'wko2012', 'CTIF', 'ISFFR')),
@@ -229,18 +222,27 @@ $competitions = $db->getRows("
     GROUP BY `competition_id`
   UNION ALL
     SELECT `competition_id`,0 AS `single`,COUNT(*) AS `gs`,0 AS `la`,0 AS `fs`
-    FROM `scores_gs`
+    FROM `group_scores` `gs`
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
     WHERE `team_id` = '".$id."'
+    AND `gst`.`discipline` = 'GS'
     GROUP BY `competition_id`
   UNION ALL
     SELECT `competition_id`,0 AS `single`,0 AS `gs`,COUNT(*) AS `la`,0 AS `fs`
-    FROM `scores_la`
+    FROM `group_scores` `gs`
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
     WHERE `team_id` = '".$id."'
+    AND `gst`.`discipline` = 'LA'
     GROUP BY `competition_id`
   UNION ALL
     SELECT `competition_id`,0 AS `single`,0 AS `gs`,0 AS `la`,COUNT(*) AS `fs`
-    FROM `scores_fs`
+    FROM `group_scores` `gs`
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
     WHERE `team_id` = '".$id."'
+    AND `gst`.`discipline` = 'FS'
     GROUP BY `competition_id`
   ) `i`
   INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `i`.`competition_id`
@@ -476,11 +478,11 @@ foreach ($teamScores as $value) {
     $chartTable->row('Durchschnitt:', FSS::time($sum/$count).' s');
   }
   $chartTable->row('Zeiten:', count($scores));
-  $chartTable->row(Chart::img('team_scores_bad_good', array($id, $discipline.($sex?'-'.$sex:''))));
+  $chartTable->row(Chart::img('team_scores_bad_good', array($id, $discipline.'-'.$sex)));
 
   echo Bootstrap::row()
   ->col($chartTable, 3)
-  ->col(($count > 0)? Chart::img('team_scores', array($id, $discipline.($sex?'-'.$sex:''))) : '', 9);
+  ->col(($count > 0)? Chart::img('team_scores', array($id, $discipline.'-'.$sex)) : '', 9);
 
   $countTable = CountTable::build($scores,  array("scores-".$discipline, "table-small", "group-scores"))
   ->rowAttribute('data-id', 'id')

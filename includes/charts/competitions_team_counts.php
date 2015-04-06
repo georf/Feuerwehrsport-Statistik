@@ -41,37 +41,29 @@ $labels = array(
 );
 
 foreach ($competitions as $competition) {
-
-    $count = $db->getFirstRow("
-        SELECT COUNT(*) AS `count`
-        FROM (
-            SELECT `team`
-            FROM (
-                SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_la`
-                WHERE `competition_id` = '".$competition['id']."'
-            UNION
-                SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_fs`
-                WHERE `competition_id` = '".$competition['id']."'
-            UNION
-                SELECT CONCAT(CAST(`team_id` AS CHAR),'female',CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_gs`
-                WHERE `competition_id` = '".$competition['id']."'
-            UNION
-                SELECT CONCAT(CAST(`team_id` AS CHAR),`pi`.`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores` `si`
-                INNER JOIN `persons` `pi` ON `si`.`person_id` = `pi`.`id`
-                WHERE `si`.`competition_id` = '".$competition['id']."'
-            ) `i`
-            GROUP BY `i`.`team`
-        ) `i2`
-    ", 'count');
-    if ($count <= 0) $counts[0]++;
-    elseif ($count < 11) $counts[1]++;
-    elseif ($count < 21) $counts[2]++;
-    elseif ($count < 31) $counts[3]++;
-    else $counts[4]++;
+  $count = $db->getFirstRow("
+    SELECT COUNT(*) AS `count`
+    FROM (
+      SELECT `team`
+      FROM (
+        SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
+        FROM `group_scores` `gs`
+        INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+        WHERE `gsc`.`competition_id` = '".$competition['id']."'
+      UNION
+        SELECT CONCAT(CAST(`team_id` AS CHAR),`pi`.`sex`,CAST(`team_number` AS CHAR)) AS `team`
+        FROM `scores` `si`
+        INNER JOIN `persons` `pi` ON `si`.`person_id` = `pi`.`id`
+        WHERE `si`.`competition_id` = '".$competition['id']."'
+      ) `i`
+      GROUP BY `i`.`team`
+    ) `i2`
+  ", 'count');
+  if ($count <= 0) $counts[0]++;
+  elseif ($count < 11) $counts[1]++;
+  elseif ($count < 21) $counts[2]++;
+  elseif ($count < 31) $counts[3]++;
+  else $counts[4]++;
 }
 
 $MyData = new pData();

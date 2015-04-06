@@ -67,8 +67,54 @@ class Discipline extends EventHandler
     
     for resultScore in @resultScores
       table.append(resultScore.get(fields))
-    button = $('<button/>').text('Eintragen').click(@addResultScores)
+    button = $('<button/>').text('Eintragen').click(@selectCategory)
     @testScoresContainer.append(table).append(button)
+
+  getGroupScoreCategories: (callback) =>
+    input =
+      competitionId: $('#competitions').val()
+      discipline: @discipline
+    Fss.post 'get-group-score-categories', input, (data) =>
+      callback(data.categories)
+
+  selectCategory: () =>
+    if !@categoryId and $.inArray(@discipline, ['hl', 'hb']) is -1
+      @getGroupScoreCategories (categories) =>
+        return @addCategory() if categories.length is 0
+
+        options = []
+        for category in categories
+          options.push
+            display: category.name
+            value: category.id
+
+        FssWindow.build("Kategorie auswählen")
+        .add(new FssFormRowRadio('categoryId', 'Kategorie', categories[0].id, options))
+        .on('submit', (data) =>
+          @categoryId = data.categoryId
+          @addResultScores()
+        )
+        .on('cancel', () =>
+          @addCategory()
+        )
+        .open()
+    else
+      @addResultScores()
+
+  addCategory: () =>
+    Fss.post 'get-group-score-types', discipline: @discipline, (data) =>
+      types = []
+      types.push(value: type.id, display: type.name) for type in data.types
+
+      FssWindow.build("Kategorie hinzufügen")
+      .add(new FssFormRowText('name', 'Name', "default"))
+      .add(new FssFormRowRadio('groupScoreTypeId', 'Typ', null, types))
+      .on('submit', (data) =>
+        data.competitionId = $('#competitions').val()
+        Fss.post 'add-group-score-category', data, () =>
+          @selectCategory()
+      )
+      .open()
 
   addResultScores: () =>
     scores = []
@@ -78,6 +124,7 @@ class Discipline extends EventHandler
     input =
       scores: scores
       competitionId: $('#competitions').val()
+      groupScoreCategoryId: @categoryId
       discipline: @discipline
       sex: @sex
     Fss.post 'add-scores', input, (data) =>

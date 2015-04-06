@@ -27,31 +27,46 @@ $competitions = $db->getRows("
     ) AS `hbf`,
     (
       SELECT COUNT(*) AS `count`
-      FROM `scores_gs`
-      WHERE `competition_id` = `c`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gsc`.`competition_id` = `c`.`id`
+      AND `gst`.`discipline` = 'GS'
     ) AS `gs`,
     (
       SELECT COUNT(*) AS `count`
-      FROM `scores_la`
-      WHERE `competition_id` = `c`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gsc`.`competition_id` = `c`.`id`
+      AND `gst`.`discipline` = 'LA'
       AND `sex` = 'female'
     ) AS `laf`,
     (
       SELECT COUNT(*) AS `count`
-      FROM `scores_la`
-      WHERE `competition_id` = `c`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gsc`.`competition_id` = `c`.`id`
+      AND `gst`.`discipline` = 'LA'
       AND `sex` = 'male'
     ) AS `lam`,
     (
       SELECT COUNT(*) AS `count`
-      FROM `scores_fs`
-      WHERE `competition_id` = `c`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gsc`.`competition_id` = `c`.`id`
+      AND `gst`.`discipline` = 'FS'
       AND `sex` = 'female'
     ) AS `fsf`,
     (
       SELECT COUNT(*) AS `count`
-      FROM `scores_fs`
-      WHERE `competition_id` = `c`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gsc`.`competition_id` = `c`.`id`
+      AND `gst`.`discipline` = 'FS'
       AND `sex` = 'male'
     ) AS `fsm`,
     (

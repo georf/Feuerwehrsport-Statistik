@@ -43,6 +43,19 @@ class FssImport
         .on('submit', (data) => Fss.post 'add-event', data, @addSuccess)
         .open()
 
+    $(".add-group-score-type").click () =>
+      Fss.checkLogin () =>
+        options = []
+        for discipline in ['la', 'fs', 'gs']
+          options.push
+            value: discipline
+            display: Fss.disciplines[discipline]
+        FssWindow.build("Gruppen-Typ hinzufügen")
+        .add(new FssFormRowText('name', 'Name'))
+        .add(new FssFormRowRadio('discipline', 'Disziplin', null, options))
+        .on('submit', (data) => Fss.post 'add-group-score-type', data, @addSuccess)
+        .open()
+
     $(".add-competition").click () =>
       Fss.checkLogin () =>
         Fss.getEvents (events) =>
@@ -107,6 +120,7 @@ class FssImport
 
     $('#select-competitions').show()
     $('#create-competitions').hide()
+    $('#show-group-score-types').hide()
     $('#competition-scores').show()
     $('#competition-published').show()
 
@@ -122,6 +136,7 @@ class FssImport
     else
       $('#select-competitions').hide()
       $('#create-competitions').show()
+      $('#show-group-score-types').show()
       $('#competition-scores').hide()
       $('#competition-published').hide()
     
@@ -145,6 +160,13 @@ class FssImport
             )
 
   reloadCompetitions: (callback) =>
+    Fss.post 'get-group-score-types', {}, (data) =>
+      @groupScoreTypes = data.types
+      table = $('#show-group-score-types table')
+      table.children().remove()
+      for scoreType in @groupScoreTypes
+        table.append($('<tr/>').append($('<td/>').text(scoreType.discipline)).append($('<td/>').text(scoreType.name)))
+
     Fss.getCompetitions (newCompetitions) =>
       @competitions = newCompetitions
       callback()

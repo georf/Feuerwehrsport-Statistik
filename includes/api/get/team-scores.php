@@ -12,9 +12,13 @@ if (FSS::isGroupDiscipline($discipline)) {
   $scores = $db->getRows("
     SELECT MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`, `team_id`, `team_number`, 
       CONCAT(`team_id`,'-',`team_number`) AS `unique`
-    FROM `scores_".$discipline."`
-    WHERE `competition_id` = '".$competitionId."'
-    ".($discipline != 'gs'? " AND `sex` = '".$sex."' ":'')."
+    FROM `group_scores` `gs` 
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+    INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
+    WHERE `gsc`.`competition_id` = '".$competitionId."'
+    AND `gst`.`discipline` = '".$discipline."'
+    AND `sex` = '".$sex."'
     GROUP BY `unique`
     ORDER BY `time`
   ");

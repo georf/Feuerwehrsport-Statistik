@@ -26,6 +26,10 @@
       <button class="add-competition">Wettkampf</button>
       <button class="add-event">Typ</button>
       <button class="add-place">Ort</button>
+      <button class="add-group-score-type">Gruppen-Typ</button>
+    </div>
+    <div class="col-md-3" id="show-group-score-types">
+      <table class="table"></table>
     </div>
   </div>
   <div class="row">

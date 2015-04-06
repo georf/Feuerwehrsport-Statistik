@@ -1,10 +1,10 @@
 <?php
 
 $competitions = $db->getRows("
-    SELECT `c`.*,`p`.`name` AS `place`
-    FROM `competitions` `c`
-    INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
-    ORDER BY `c`.`date`;
+  SELECT `c`.*,`p`.`name` AS `place`
+  FROM `competitions` `c`
+  INNER JOIN `places` `p` ON `c`.`place_id` = `p`.`id`
+  ORDER BY `c`.`date`;
 ");
 
 $females = array();
@@ -48,16 +48,11 @@ foreach ($competitions as $competition) {
             SELECT `team`
             FROM (
                 SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_la`
-                WHERE `competition_id` = '".$competition['id']."'
-            UNION
-                SELECT CONCAT(CAST(`team_id` AS CHAR),`sex`,CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_fs`
-                WHERE `competition_id` = '".$competition['id']."'
-            UNION
-                SELECT CONCAT(CAST(`team_id` AS CHAR),'female',CAST(`team_number` AS CHAR)) AS `team`
-                FROM `scores_gs`
-                WHERE `competition_id` = '".$competition['id']."'
+
+                FROM `group_scores` `gs`
+                INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+                INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+                WHERE `gsc`.`competition_id` = '".$competition['id']."'
             UNION
                 SELECT CONCAT(CAST(`team_id` AS CHAR),`pi`.`sex`,CAST(`team_number` AS CHAR)) AS `team`
                 FROM `scores` `si`

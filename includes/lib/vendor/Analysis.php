@@ -56,11 +56,11 @@ class Analysis {
       array('hb', false, 'male',   'x_scores_hbm'),
       array('hl', false, 'female', 'x_scores_hlf'),
       array('hl', false, 'male',   'x_scores_hlm'),
-      array('gs', true,  false,    'scores_gs'),
-      array('la', true,  'female', 'scores_la'),
-      array('la', true,  'male',   'scores_la'),
-      array('fs', true,  'female', 'scores_fs'),
-      array('fs', true,  'male',   'scores_fs'),
+      array('gs', true,  false,    false),
+      array('la', true,  'female', false),
+      array('la', true,  'male',   false),
+      array('fs', true,  'female', false),
+      array('fs', true,  'male',   false),
     );
     $navTab = Bootstrap::navTab();
 
@@ -69,6 +69,15 @@ class Analysis {
       $group      = $d[1];
       $sex        = $d[2];
       $table      = $d[3];
+      if (!$table) {
+        $table = "(
+          SELECT `gs`.*, `competition_id`
+          FROM `group_scores` `gs` 
+          INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+          INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+          WHERE `gst`.`discipline` = '".$discipline."'
+        )";
+      }
       $wheres     = array("`time` IS NOT NULL");
       if ($type && $type != 'year') $wheres[] = "`c`.`".$type."_id` = '".$db->escape($id)."'";
       if ($group && $sex) $wheres[] = "`sex` = '".$sex."'";
@@ -111,7 +120,7 @@ class Analysis {
 
     $result = $db->getFirstRow("
       SELECT AVG(`s`.`time`) AS `avg`, COUNT(`s`.`time`) AS `total`
-      FROM `".$table."` `s` 
+      FROM ".$table." `s` 
       INNER JOIN `competitions` `c` ON `c`.`id` = `s`.`competition_id`
       ".implode(" ", $joins)."
       WHERE ".implode(" AND ", $wheres)."
@@ -122,7 +131,7 @@ class Analysis {
     $best = $db->getFirstRow("
       SELECT `competition_id`, `date`, `event_id`, `event`, `time`,
       `".(($group)?'team_id':'person_id')."`
-      FROM `".$table."` `s` 
+      FROM ".$table." `s` 
       INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
       ".implode(" ", $joins)."
       WHERE ".implode(" AND ", $wheres)."
@@ -147,7 +156,7 @@ class Analysis {
       $best = $db->getFirstRow("
         SELECT `competition_id`, `date`, `event_id`, `event`, `time`,
         `".(($group)?'team_id':'person_id')."`
-        FROM `".$table."` `s` 
+        FROM ".$table." `s` 
         INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `s`.`competition_id`
         ".implode(" ", $joins)."
         WHERE ".implode(" AND ", $wheres)."

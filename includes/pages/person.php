@@ -26,21 +26,30 @@ $teamsUnsorted = $db->getRows("
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 1 AS `gs`, 0 AS `fs`, 0 AS `la`
-      FROM `scores_gs` `s`
-      INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `p`.`person_id` = '".$id."'
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `person_id` = '".$id."'
+      AND `gst`.`discipline` = 'GS'
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 0 AS `fs`, 1 AS `la`
-      FROM `scores_la` `s`
-      INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `p`.`person_id` = '".$id."'
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `person_id` = '".$id."'
+      AND `gst`.`discipline` = 'LA'
     UNION ALL
       SELECT `team_id`,
       0 AS `hb`, 0 AS `hl`, 0 AS `gs`, 1 AS `fs`, 0 AS `la`
-      FROM `scores_fs` `s`
-      INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `p`.`person_id` = '".$id."'
+      FROM `person_participations` `pp`
+      INNER JOIN `group_scores` `gs` ON `pp`.`score_id` = `gs`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `person_id` = '".$id."'
+      AND `gst`.`discipline` = 'FS'
   ) `i`
   INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
   GROUP BY `team_id`
@@ -295,7 +304,7 @@ foreach (FSS::$disciplinesWithDoubleEvent as $discipline) {
       }, 20, array('class' => 'small')), 12);
     }
     echo '<h3 style="clear:both">'.$name.' - Gelaufene Positionen</h3>';
-    echo Chart::img('position_'.$discipline, array($id));
+    echo Chart::img('position', array($discipline, $id));
   }
 }
 

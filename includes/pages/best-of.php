@@ -51,15 +51,18 @@ foreach ($disciplines as $d) {
       $best = $db->getRows("
         SELECT * 
         FROM (
-          SELECT  `s` . * ,  `e`.`name` AS  `event` , 
-            `t`.`name`, `c`.`date`
-          FROM  `scores_".$discipline."`  `s` 
-          INNER JOIN  `competitions`  `c` ON  `c`.`id` =  `s`.`competition_id` 
-          INNER JOIN  `events`  `e` ON  `e`.`id` =  `c`.`event_id` 
-          INNER JOIN  `teams`  `t` ON  `t`.`id` =  `s`.`team_id` 
-          WHERE `time` IS NOT NULL
-          ".($sex? " AND `s`.`sex` = '".$sex."' ":"")."
-          ORDER BY  `s`.`time`
+          SELECT  `gs` . * ,  `e`.`name` AS  `event` , 
+            `t`.`name`, `c`.`date`, `gsc`.`competition_id`
+          FROM  `group_scores` `gs`
+          INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+          INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+          INNER JOIN `competitions` `c` ON  `c`.`id` =  `gsc`.`competition_id` 
+          INNER JOIN `events`  `e` ON  `e`.`id` =  `c`.`event_id` 
+          INNER JOIN `teams`  `t` ON  `t`.`id` =  `gs`.`team_id` 
+          WHERE `gs`.`time` IS NOT NULL 
+          ".($sex? " AND `gs`.`sex` = '".$sex."' ":"")."
+          AND `gst`.`discipline` = '".$discipline."' 
+          ORDER BY `gs`.`time`
         ) `inner` 
         GROUP BY  `team_id` 
         ORDER BY  `time`

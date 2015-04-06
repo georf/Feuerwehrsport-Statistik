@@ -22,89 +22,35 @@ if (count($keys) > 1) {
     }
 }
 
-if ($sex && !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
+if (!$sex || !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
 
 $scores = array();
 $title  = '';
 
-switch ($key) {
-    case 'gs':
 
-        $scores = $db->getRows("
-            SELECT `g`.`time`,`c`.`date` AS `date`
-            FROM (
-                SELECT *
-                FROM
-                (
-                    SELECT `competition_id`,`time`
-                    FROM `scores_gs`
-                    WHERE `time` IS NOT NULL
-                    AND `team_id` = '".$id."'
-                    ORDER BY `time`
-                ) `i`
-                GROUP BY `competition_id`
-            ) `g`
+$scores = $db->getRows("
+  SELECT `g`.`time`,`c`.`date` AS `date`
+  FROM (
+    SELECT *
+    FROM
+    (
+      SELECT `competition_id`,`time`
+      FROM `group_scores` `gs` 
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `time` IS NOT NULL
+      AND `team_id` = '".$id."'
+      AND `gst`.`discipline` = '".$key."'
+      AND `sex` = '".$sex."'
+      ORDER BY `time`
+    ) `i`
+    GROUP BY `competition_id`
+  ) `g`
 
-            INNER JOIN `competitions` `c` ON `c`.`id` = `g`.`competition_id`
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key);
-        break;
-
-    case 'la':
-        if (!$sex) throw new Exception('sex not defined');
-
-        $scores = $db->getRows("
-            SELECT `g`.`time`,`c`.`date` AS `date`
-            FROM (
-                SELECT *
-                FROM
-                (
-                    SELECT `competition_id`,`time`
-                    FROM `scores_la`
-                    WHERE `time` IS NOT NULL
-                    AND `team_id` = '".$id."'
-                    AND `sex` = '".$sex."'
-                    ORDER BY `time`
-                ) `i`
-                GROUP BY `competition_id`
-            ) `g`
-
-            INNER JOIN `competitions` `c` ON `c`.`id` = `g`.`competition_id`
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key).' '.FSS::sex($sex);
-        break;
-
-    case 'fs':
-        if (!$sex) throw new Exception('sex not defined');
-
-        $scores = $db->getRows("
-            SELECT `g`.`time`,`c`.`date` AS `date`
-            FROM (
-                SELECT *
-                FROM
-                (
-                    SELECT `competition_id`,`time`
-                    FROM `scores_fs`
-                    WHERE `time` IS NOT NULL
-                    AND `team_id` = '".$id."'
-                    AND `sex` = '".$sex."'
-                    ORDER BY `time`
-                ) `i`
-                GROUP BY `competition_id`
-            ) `g`
-
-            INNER JOIN `competitions` `c` ON `c`.`id` = `g`.`competition_id`
-            ORDER BY `c`.`date`
-        ");
-        $title = FSS::dis2name($key).' '.FSS::sex($sex);
-        break;
-
-    default:
-        throw new Exception('bad key');
-        break;
-}
+  INNER JOIN `competitions` `c` ON `c`.`id` = `g`.`competition_id`
+  ORDER BY `c`.`date`
+");
+$title = FSS::dis2name($key);
 
 $points = array();
 $labels = array();

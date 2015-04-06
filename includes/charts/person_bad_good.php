@@ -17,56 +17,32 @@
             $good = $db->getFirstRow("
                 SELECT COUNT(*) AS `good`
                 FROM (
-                    SELECT `s`.`id`
-                    FROM `scores_gs` `s`
-                    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NOT NULL
+                  SELECT `gs`.`id`
+                  FROM `group_scores` `gs`
+                  INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+                  WHERE `p`.`person_id` = '".$id."'
+                  AND `time` IS NOT NULL
                 UNION ALL
-                    SELECT `s`.`id`
-                    FROM `scores_la` `s`
-                    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NOT NULL
-                UNION ALL
-                    SELECT `s`.`id`
-                    FROM `scores_fs` `s`
-                    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NOT NULL
-                UNION ALL
-                    SELECT `id`
-                    FROM `scores`
-                    WHERE `time` IS NOT NULL
-                    AND `person_id` = '".$id."'
+                  SELECT `id`
+                  FROM `scores`
+                  WHERE `time` IS NOT NULL
+                  AND `person_id` = '".$id."'
                 ) `i`
             ", 'good');
 
             $bad = $db->getFirstRow("
                 SELECT COUNT(*) AS `bad`
                 FROM (
-                    SELECT `s`.`id`
-                    FROM `scores_gs` `s`
-                    INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NULL
+                  SELECT `gs`.`id`
+                  FROM `group_scores` `gs`
+                  INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+                  WHERE `p`.`person_id` = '".$id."'
+                  AND `time` IS NULL
                 UNION ALL
-                    SELECT `s`.`id`
-                    FROM `scores_la` `s`
-                    INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NULL
-                UNION ALL
-                    SELECT `s`.`id`
-                    FROM `scores_fs` `s`
-                    INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-                    WHERE `p`.`person_id` = '".$id."'
-                    AND `time` IS NULL
-                UNION ALL
-                    SELECT `id`
-                    FROM `scores`
-                    WHERE `time` IS NULL
-                    AND `person_id` = '".$id."'
+                  SELECT `id`
+                  FROM `scores`
+                  WHERE `time` IS NULL
+                  AND `person_id` = '".$id."'
                 ) `i`
             ", 'bad');
             $title = 'Ganzer Wettkampf';
@@ -77,21 +53,28 @@
         case 'la':
         case 'fs':
             $good = $db->getFirstRow("
-                SELECT COUNT(*) AS `good`
-                FROM `scores_".$key."` `s`
-                INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
-                WHERE `p`.`person_id` = '".$id."'
-                AND `time` IS NOT NULL
+              SELECT COUNT(`gs`.`id`) AS `good`
+              FROM `group_scores` `gs`
+              INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+              INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+              INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+              WHERE `gst`.`discipline` = '".$key."'
+              AND `p`.`person_id` = '".$id."'
+              AND `gs`.`time` IS NOT NULL
             ", 'good');
             $bad = $db->getFirstRow("
-                SELECT COUNT(*) AS `bad`
-                FROM `scores_".$key."` `s`
-                INNER JOIN `person_participations_".$key."` `p` ON `p`.`score_id` = `s`.`id`
-                WHERE `p`.`person_id` = '".$id."'
-                AND `time` IS NULL
+              SELECT COUNT(`gs`.`id`) AS `bad`
+              FROM `group_scores` `gs`
+              INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+              INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+              INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
+              WHERE `gst`.`discipline` = '".$key."'
+              AND `p`.`person_id` = '".$id."'
+              AND `gs`.`time` IS NULL
             ", 'bad');
             $title = FSS::dis2name($key);
             break;
+
 
         case 'hb':
         case 'hl':

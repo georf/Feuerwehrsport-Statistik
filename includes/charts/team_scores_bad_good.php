@@ -32,69 +32,27 @@ if ($_GET['key'] == 'full') {
     $title  = '';
 }
 
-switch ($key) {
-    case 'gs':
-        $good = $db->getFirstRow("
-            SELECT COUNT(*) AS `good`
-            FROM `scores_gs`
-            WHERE `team_id` = '".$db->escape($id)."'
-            AND `time` IS NOT NULL
-        ", 'good');
-        $bad = $db->getFirstRow("
-            SELECT COUNT(*) AS `bad`
-            FROM `scores_gs`
-            WHERE `team_id` = '".$db->escape($id)."'
-            AND `time` IS NULL
-        ", 'bad');
-        $title = FSS::dis2name($key);
-        break;
-
-    case 'la':
-        if (!$sex) throw new Exception('sex not defined');
-
-        $good = $db->getFirstRow("
-            SELECT COUNT(*) AS `good`
-            FROM `scores_la`
-            WHERE `time` IS NOT NULL
-            AND `sex` = '".$sex."'
-            AND `team_id` = '".$db->escape($id)."'
-          AND `time` IS NOT NULL
-        ", 'good');
-        $bad = $db->getFirstRow("
-            SELECT COUNT(*) AS `bad`
-            FROM `scores_la`
-            WHERE `time` IS NULL
-            AND `sex` = '".$sex."'
-            AND `team_id` = '".$db->escape($id)."'
-        ", 'bad');
-        $title = FSS::dis2name($key).' '.FSS::sex($sex);
-        break;
-
-    case 'fs':
-        if (!$sex) throw new Exception('sex not defined');
-
-        $good = $db->getFirstRow("
-            SELECT COUNT(*) AS `good`
-            FROM `scores_fs`
-            WHERE `time` IS NOT NULL
-            AND `sex` = '".$sex."'
-            AND `team_id` = '".$db->escape($id)."'
-          AND `time` IS NOT NULL
-        ", 'good');
-        $bad = $db->getFirstRow("
-            SELECT COUNT(*) AS `bad`
-            FROM `scores_fs`
-            WHERE `time` IS NULL
-            AND `sex` = '".$sex."'
-            AND `team_id` = '".$db->escape($id)."'
-        ", 'bad');
-        $title = FSS::dis2name($key).' '.FSS::sex($sex);
-        break;
-
-    default:
-        throw new Exception('bad key');
-        break;
-}
+$good = $db->getFirstRow("
+  SELECT COUNT(*) AS `good`
+  FROM `group_scores` `gs` 
+  INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+  INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+  INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
+  WHERE `gs`.`team_id` = '".$db->escape($id)."'
+  AND `gst`.`discipline` = '".$key."'
+  AND `time` IS NOT NULL
+", 'good');
+$bad = $db->getFirstRow("
+  SELECT COUNT(*) AS `bad`
+  FROM `group_scores` `gs` 
+  INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+  INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+  INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
+  WHERE `gs`.`team_id` = '".$db->escape($id)."'
+  AND `gst`.`discipline` = '".$key."'
+  AND `time` IS NULL
+", 'bad');
+$title = FSS::dis2name($key);
 
 $MyData = new pData();
 $MyData->addPoints(array($good, $bad), "time");

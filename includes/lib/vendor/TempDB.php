@@ -148,15 +148,8 @@ class TempDB {
                     AND `team_number` > 0
                 UNION
                     SELECT `competition_id` , `team_id` , `team_number`, `sex`
-                    FROM `scores_la`
-                    WHERE `team_number` > 0
-                UNION
-                    SELECT `competition_id` , `team_id` , `team_number`, 'female' AS `sex`
-                    FROM `scores_gs`
-                    WHERE `team_number` > 0
-                UNION
-                    SELECT `competition_id` , `team_id` , `team_number`, `sex`
-                    FROM `scores_fs`
+                    FROM `group_scores` `gs` 
+                    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
                     WHERE `team_number` > 0
             ) `rows`
             GROUP BY `competition_id` , `team_id` , `team_number`, `sex`

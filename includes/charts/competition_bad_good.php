@@ -9,22 +9,13 @@ if ($discipline === 'full') {
     FROM (
       SELECT `id`
       FROM `scores`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
+      WHERE `competition_id` = '".$competitionId."'
       AND `time` IS NOT NULL
-    UNION
-      SELECT `id`
-      FROM `scores_gs`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
-      AND `time` IS NOT NULL
-    UNION
-      SELECT `id`
-      FROM `scores_la`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
-      AND `time` IS NOT NULL
-    UNION
-      SELECT `id`
-      FROM `scores_fs`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
+    UNION ALL
+      SELECT `gs`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      WHERE `gsc`.`competition_id` = '".$competitionId."'
       AND `time` IS NOT NULL
     ) `i`
   ", 'good');
@@ -34,70 +25,58 @@ if ($discipline === 'full') {
     FROM (
       SELECT `id`
       FROM `scores`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
+      WHERE `competition_id` = '".$competitionId."'
       AND `time` IS NULL
-    UNION
-      SELECT `id`
-      FROM `scores_gs`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
-      AND `time` IS NULL
-    UNION
-      SELECT `id`
-      FROM `scores_la`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
-      AND `time` IS NULL
-    UNION
-      SELECT `id`
-      FROM `scores_fs`
-      WHERE `competition_id` = '".$db->escape($competitionId)."'
+    UNION ALL
+      SELECT `gs`.`id`
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      WHERE `gsc`.`competition_id` = '".$competitionId."'
       AND `time` IS NULL
     ) `i`
   ", 'bad');
-} else {
-  switch ($discipline['key']) {
-    case 'gs':
-    case 'la':
-    case 'fs':
-      $good = $db->getFirstRow("
-        SELECT COUNT(*) AS `good`
-        FROM `scores_".$discipline['key']."`
-        WHERE `competition_id` = '".$db->escape($competitionId)."'
-        ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
-        AND `time` IS NOT NULL
-      ", 'good');
-      $bad = $db->getFirstRow("
-        SELECT COUNT(*) AS `bad`
-        FROM `scores_".$discipline['key']."`
-        WHERE `competition_id` = '".$db->escape($competitionId)."'
-        ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
-        AND `time` IS NULL
-      ", 'bad');
-      break;
-
-    case 'hb':
-    case 'hl':
-      $good = $db->getFirstRow("
-        SELECT COUNT(*) AS `good`
-        FROM `scores` `s`
-        JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
-        WHERE `time` IS NOT NULL
-        ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
-        AND `s`.`discipline` = '".$discipline['key']."'
-        AND `s`.`team_number` ".($discipline['final'] ? "=" : ">")." -2
-        AND `s`.`competition_id` = '".$db->escape($competitionId)."'
-      ", 'good');
-      $bad = $db->getFirstRow("
-        SELECT COUNT(*) AS `bad`
-        FROM `scores` `s`
-        JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
-        WHERE `time` IS NULL
-        ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
-        AND `s`.`discipline` = '".$discipline['key']."'
-        AND `s`.`team_number` ".($discipline['final'] ? "=" : ">")." -2
-        AND `s`.`competition_id` = '".$db->escape($competitionId)."'
-      ", 'bad');
-      break;
-  }
+} elseif (FSS::isGroupDiscipline($discipline['key'])) {
+  $good = $db->getFirstRow("
+    SELECT COUNT(*) AS `good`
+    FROM `group_scores` `gs`
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+    WHERE `gsc`.`competition_id` = '".$competitionId."'
+    AND `gs`.`sex` = '".$discipline['sex']."'
+    AND `gst`.`discipline` = '".$discipline['key']."'
+    AND `time` IS NOT NULL
+  ", 'good');
+  $bad = $db->getFirstRow("
+    SELECT COUNT(*) AS `bad`
+    FROM `group_scores` `gs`
+    INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+    INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+    WHERE `gsc`.`competition_id` = '".$competitionId."'
+    AND `gs`.`sex` = '".$discipline['sex']."'
+    AND `gst`.`discipline` = '".$discipline['key']."'
+    AND `time` IS NULL
+  ", 'bad');
+} else  {
+  $good = $db->getFirstRow("
+    SELECT COUNT(*) AS `good`
+    FROM `scores` `s`
+    JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+    WHERE `time` IS NOT NULL
+    ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
+    AND `s`.`discipline` = '".$discipline['key']."'
+    AND `s`.`team_number` ".($discipline['final'] ? "=" : ">")." -2
+    AND `s`.`competition_id` = '".$db->escape($competitionId)."'
+  ", 'good');
+  $bad = $db->getFirstRow("
+    SELECT COUNT(*) AS `bad`
+    FROM `scores` `s`
+    JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
+    WHERE `time` IS NULL
+    ".($discipline['sex'] ? " AND `sex` = '".$discipline['sex']."' " : '')."
+    AND `s`.`discipline` = '".$discipline['key']."'
+    AND `s`.`team_number` ".($discipline['final'] ? "=" : ">")." -2
+    AND `s`.`competition_id` = '".$db->escape($competitionId)."'
+  ", 'bad');
 }
 
 $myData = new pData();

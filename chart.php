@@ -47,9 +47,15 @@ try {
     ob_end_clean();
     die($content);
 } catch (Exception $e) {
+    $message = wordwrap($e->getMessage());
+    $lines = explode("\n", $message);
+    $maxChars = 0;
+    foreach ($lines as $line) {
+        $maxChars = max($maxChars, strlen($line));
+    }
 
     /* Create the pChart object */
-    $myPicture = new pImage(200, 30);
+    $myPicture = new pImage($maxChars * 7 + 15, count($lines) * 17 + 7);
 
     /* Set the default font */
     $myPicture->setFontProperties(array(
@@ -61,7 +67,7 @@ try {
     ));
 
     /* Write text */
-    $myPicture->drawText(10, 20, $e->getMessage(), array(
+    $myPicture->drawText(10, count($lines) * 15 +1, $message, array(
         "DrawBox" => true,
         "BoxRounded" => true,
         "BoxR" => 255,

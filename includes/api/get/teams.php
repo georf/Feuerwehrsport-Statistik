@@ -12,26 +12,18 @@ if ($id !== false) {
       FROM `scores`
       WHERE `person_id` = '".$id."'
       AND `discipline` = 'HB'
-    UNION
+    UNION ALL
       SELECT `team_id`,CONCAT('HL',`id`) AS `key`
       FROM `scores`
       WHERE `person_id` = '".$id."'
       AND `discipline` = 'HL'
-    UNION
-      SELECT `team_id`,CONCAT('GS',`s`.`id`) AS `key`
-      FROM `scores_gs` `s`
-      INNER JOIN `person_participations_gs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `person_id` = '".$id."'
-    UNION
-      SELECT `team_id`,CONCAT('LA',`s`.`id`) AS `key`
-      FROM `scores_la` `s`
-      INNER JOIN `person_participations_la` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `person_id` = '".$id."'
-    UNION
-      SELECT `team_id`,CONCAT('FS',`s`.`id`) AS `key`
-      FROM `scores_fs` `s`
-      INNER JOIN `person_participations_fs` `p` ON `p`.`score_id` = `s`.`id`
-      WHERE `person_id` = '".$id."'
+    UNION ALL
+      SELECT `team_id`,CONCAT(`gst`.`discipline`,`gs`.`id`) AS `key`
+      FROM `group_scores` `gs`
+      INNER JOIN `person_participations` `p` ON `p`.`score_id` = `s`.`id`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `p`.`person_id` = '".$id."'
     ) `i`
     INNER JOIN `teams` `t` ON `t`.`id` = `i`.`team_id`
     GROUP BY `team_id`
@@ -55,18 +47,11 @@ if ($competitionId !== false) {
       FROM `scores` `s`
       INNER JOIN `persons` `p` ON `p`.`id` = `s`.`person_id`
       WHERE `competition_id` = '".$competitionId."'
-    UNION
-      SELECT `team_id`, 'female' AS `sex`
-      FROM `scores_gs`
-      WHERE `competition_id` = '".$competitionId."'
-    UNION
+    UNION ALL
       SELECT `team_id`, `sex`
-      FROM `scores_la`
-      WHERE `competition_id` = '".$competitionId."'
-    UNION
-      SELECT `team_id`, `sex`
-      FROM `scores_fs`
-      WHERE `competition_id` = '".$competitionId."'
+      FROM `group_scores` `gs`
+      INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+      WHERE `gsc`.`competition_id` = '".$competitionId."'
     ) `i`
     ".$whereSex.") ";
 }
