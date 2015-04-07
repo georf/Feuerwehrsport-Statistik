@@ -72,7 +72,7 @@ class Import {
       return false;
     }
 
-    if (in_array(strtolower($time), array('d', 'o.w.'))) {
+    if (in_array(strtolower($time), array('d', 'o.w.', 'o. w.'))) {
       return null;
     }
 

@@ -51,4 +51,10 @@ RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.pn
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
 RewriteRule ^chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3&big=1 [L]
 
+RewriteCond %{REQUEST_URI} ^/chart/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3&c=$4 [L]
 
+RewriteCond %{REQUEST_URI} ^/chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$
+RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} !-f
+RewriteRule ^chart/big/([a-z_]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.([0-9a-z-]+)\.png$ chart.php?type=$1&a=$2&b=$3&c=$4&big=1 [L]

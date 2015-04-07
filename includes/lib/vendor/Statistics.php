@@ -80,6 +80,7 @@ class Statistics {
       INNER JOIN `events` `e` ON `e`.`id` = `c`.`event_id`
       WHERE YEAR(`c`.`date`) = '".$db->escape($year)."'
       AND `gst`.`discipline` = '".$discipline."'
+      AND `gst`.`regular` = 1
       ".$where."
     ");
 

@@ -32,7 +32,7 @@ class WK {
   }
 
   public static function count($key) {
-    return count(self::$disciplines[$key]);
+    return count(self::$disciplines[strtolower($key)]);
   }
 
   private static function get($pos, $sex, $wks) {

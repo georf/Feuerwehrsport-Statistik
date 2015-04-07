@@ -46,10 +46,10 @@ class Analysis {
       $years = array();
     }
 
+
     TempDB::generate('x_scores_hbf');
     TempDB::generate('x_scores_hbm');
     TempDB::generate('x_scores_hlf');
-    TempDB::generate('x_scores_hlm');
 
     $disciplines = array(
       array('hb', false, 'female', 'x_scores_hbf'),
@@ -64,48 +64,59 @@ class Analysis {
     );
     $navTab = Bootstrap::navTab();
 
-    foreach ($disciplines as $d) {
-      $discipline = $d[0];
-      $group      = $d[1];
-      $sex        = $d[2];
-      $table      = $d[3];
-      if (!$table) {
-        $table = "(
-          SELECT `gs`.*, `competition_id`
-          FROM `group_scores` `gs` 
-          INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
-          INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
-          WHERE `gst`.`discipline` = '".$discipline."'
-        )";
-      }
-      $wheres     = array("`time` IS NOT NULL");
-      if ($type && $type != 'year') $wheres[] = "`c`.`".$type."_id` = '".$db->escape($id)."'";
-      if ($group && $sex) $wheres[] = "`sex` = '".$sex."'";
-      if ($type == 'year') $wheres[] = "YEAR(`date`) = '".$id."'";
+    foreach (FSS::$disciplines as $discipline) {
+      $group      = FSS::isGroupDiscipline($discipline);
+      foreach (FSS::$sexes as $sex) {
+        $wheres = array("`time` IS NOT NULL");
+        if ($type && $type != 'year') $wheres[] = "`c`.`".$type."_id` = '".$db->escape($id)."'";
+        if ($type == 'year')          $wheres[] = "YEAR(`date`) = '".$id."'";
 
-      if ($discipline == 'fs') {
-        $types = array(
-          'Feuer' => " = 'feuer'",
-          'Abstellen' => " = 'abstellen'",
-          'unbekannt' => ' IS NULL',
-        );
-        $outputs = array();
-        foreach ($types as $t_name => $t_type) {
-          $wheres[] = "`fs` ".$t_type;
-          $output3 = self::bestOfYearTab($type, $id, $group, $table, $wheres, $years, '<h4>Typ: '.$t_name.'</h4><img src="/styling/images/fs-'.strtolower($t_name).'.png" alt=""/>');
-          array_pop($wheres);
-          if (empty($output3)) continue;
-          $outputs[] = $output3;
+
+        if (!$group) {
+          $table = 'x_scores_'.$discipline.substr($sex, 0, 1);
+          TempDB::generate($table); 
+          $output = self::bestOfYearTab($type, $id, $group, $table, $wheres, $years);
+        } else {
+          $table = "(
+            SELECT `gs`.*, `competition_id`, `gst`.`id` AS `gst_id`
+            FROM `group_scores` `gs` 
+            INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+            INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+            WHERE `gst`.`discipline` = '".$discipline."'
+            AND `gs`.`sex` = '".$sex."'
+          )";
+          $types = $db->getRows("
+            SELECT `gst`.*
+            FROM `group_scores` `gs` 
+            INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+            INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+            INNER JOIN `competitions` `c` ON `gsc`.`competition_id` = `c`.`id`
+            WHERE `gst`.`discipline` = '".$discipline."'
+            AND `gs`.`sex` = '".$sex."'
+            AND ".implode(" AND ", $wheres)."
+            GROUP BY `gst`.`id`
+            ORDER BY `gst`.`regular` DESC
+          ");
+          $outputs = array();
+          foreach ($types as $groupType) {
+            $wheres[] = "`gst_id` = ".$groupType['id'];
+            $outputs[] = self::bestOfYearTab(
+              $type, 
+              $id, 
+              $group, 
+              $table, 
+              $wheres, 
+              $years,
+              '<h4>Typ: '.$groupType['name'].'</h4>'
+            );
+            array_pop($wheres);
+          }
+          $output = implode("<hr/>", $outputs);
         }
-        $output = implode("<hr/>", $outputs);
-      } else {
-        $output = self::bestOfYearTab($type, $id, $group, $table, $wheres, $years);
+        if (empty($output)) continue;
+        $headline = FSS::dis2img($discipline).' '.strtoupper($discipline).' '.FSS::sexSymbol($sex);
+        $navTab->tab($headline, $output, FSS::dis2name($discipline).' '.FSS::sex($sex));
       }
-      if (empty($output)) continue;
-
-      $headline = FSS::dis2img($discipline).' '.strtoupper($discipline);
-      if ($sex) $headline .= ' '.FSS::sex($sex);
-      $navTab->tab($headline, $output, FSS::dis2name($discipline));
     }
     return $navTab;
   }

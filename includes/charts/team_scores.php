@@ -1,32 +1,9 @@
 <?php
 
-// a = id
-// b = key
 
-if (Check::get('a')) $_GET['id'] = $_GET['a'];
-if (Check::get('b')) $_GET['key'] = $_GET['b'];
-
-if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
-if (!Check::isIn($_GET['id'], 'teams')) throw new Exception('bad team');
-$id = intval($_GET['id']);
-
-$keys = explode('-', $_GET['key']);
-$key = $keys[0];
-
-$sex = false;
-$final = false;
-if (count($keys) > 1) {
-    if (!empty($keys[1])) $sex = $keys[1];
-    if (count($keys) > 2) {
-        $final = true;
-    }
-}
-
-if (!$sex || !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
-
-$scores = array();
-$title  = '';
-
+$teamId = Check2::except()->get('a')->isIn('teams');
+$typeId = Check2::except()->get('b')->isIn('group_score_types');
+$sex    = Check2::except()->get('c')->isSex();
 
 $scores = $db->getRows("
   SELECT `g`.`time`,`c`.`date` AS `date`
@@ -39,9 +16,9 @@ $scores = $db->getRows("
       INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
       INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
       WHERE `time` IS NOT NULL
-      AND `team_id` = '".$id."'
-      AND `gst`.`discipline` = '".$key."'
-      AND `sex` = '".$sex."'
+      AND `gs`.`team_id` = '".$teamId."'
+      AND `gst`.`id` = '".$typeId."'
+      AND `gs`.`sex` = '".$sex."'
       ORDER BY `time`
     ) `i`
     GROUP BY `competition_id`
@@ -50,7 +27,6 @@ $scores = $db->getRows("
   INNER JOIN `competitions` `c` ON `c`.`id` = `g`.`competition_id`
   ORDER BY `c`.`date`
 ");
-$title = FSS::dis2name($key);
 
 $points = array();
 $labels = array();
@@ -68,42 +44,22 @@ $MyData->addPoints($labels, "Daten");
 $MyData->setAbscissa("Daten");
 $MyData->setSerieDescription("time", 'Zeit');
 
-$w = 700;
-$h = 260;
-$myPicture = Chart::create($w, $h, $MyData);
+$myPicture = Chart::create(700, 210, $MyData);
 
 /* Turn of Antialiasing */
 $myPicture->Antialias = FALSE;
 
-/* Draw the background #9FC5EE */
-$myPicture->drawFilledRectangle(0, 0, Chart::size($w), Chart::size($h), array(
-    "R" => 169,
-    "G" => 217,
-    "B" => 238
-));
-
-$myPicture->drawGradientArea(0, 0, Chart::size($w), Chart::size(20), DIRECTION_VERTICAL, array(
-  "StartR"=>159, "StartG"=>197, "StartB"=>238,
-  "EndR"=>133, "EndG"=>184, "EndB"=>238,
-  "Alpha"=>80
-));
-
-/* Add a border to the picture #87A8CC*/
-$myPicture->drawRectangle(0, 0, Chart::size($w-1), Chart::size($h-1), array(
-    "R"=>135,
-    "G"=>168,
-    "B"=>204
-));
-
-/* Write the chart title */
-$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/calibri.ttf","FontSize"=>Chart::size(8),"R"=>255,"G"=>255,"B"=>255));
-$myPicture->drawText(Chart::size(10), Chart::size(18), $title, array("FontSize"=>Chart::size(11),"Align"=>TEXT_ALIGN_BOTTOMLEFT));
-
 /* Set the default font */
-$myPicture->setFontProperties(array("FontName"=>PCHARTDIR."fonts/UbuntuMono-R.ttf","FontSize"=>Chart::size(7),"R"=>0,"G"=>0,"B"=>0));
+$myPicture->setFontProperties(array(
+  "FontName" => PCHARTDIR."fonts/UbuntuMono-R.ttf",
+  "FontSize" => Chart::size(7),
+  "R"        => 0,
+  "G"        => 0,
+  "B"        => 0
+));
 
 /* Define the chart area */
-$myPicture->setGraphArea(Chart::size(40),Chart::size(30),Chart::size(660),Chart::size(198));
+$myPicture->setGraphArea(Chart::size(30),Chart::size(1),Chart::size(694),Chart::size(150));
 
 /* Draw the scale */
 $scaleSettings = array(
@@ -130,13 +86,9 @@ $myPicture->drawLineChart();
 $myPicture->drawPlotChart(array("PlotSize"=>1,"DisplayValues"=>FALSE,"PlotBorder"=>TRUE,"BorderSize"=>1,"Surrounding"=>-50,"BorderAlpha"=>80));
 
 /* Write the chart legend */
-$myPicture->drawLegend(Chart::size(500),Chart::size(10),array(
-  "Style"=>LEGEND_NOBORDER,
-  "Mode"=>LEGEND_HORIZONTAL,
-  "FontR"=>255,"FontG"=>255,"FontB"=>255,
-  "FontName"=>PCHARTDIR."fonts/calibri.ttf",
-  "FontSize"=>Chart::size(10)
-));
+ $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10));
+
+ $myPicture->drawLegend(Chart::size(640),Chart::size(20),array("Style"=>LEGEND_BOX,"BoxSize"=>4,"R"=>200,"G"=>200,"B"=>200,"Surrounding"=>20,"Alpha"=>30));
 
 
 /* Draw the standard mean and the geometric one */

@@ -1,36 +1,8 @@
 <?php
 
-// a = id
-// b = key
-
-if (Check::get('a')) $_GET['id'] = $_GET['a'];
-if (Check::get('b')) $_GET['key'] = $_GET['b'];
-
-if (!Check::get('id', 'key')) throw new Exception('not enough arguments');
-if (!Check::isIn($_GET['id'], 'teams')) throw new Exception('bad team');
-$id = intval($_GET['id']);
-
-if ($_GET['key'] == 'full') {
-    $key = 'full';
-} else {
-
-    $keys = explode('-', $_GET['key']);
-    $key = $keys[0];
-
-    $sex = false;
-    $final = false;
-    if (count($keys) > 1) {
-        if (!empty($keys[1])) $sex = $keys[1];
-        if (count($keys) > 2) {
-            $final = true;
-        }
-    }
-
-    if ($sex && !in_array($sex, array('male', 'female'))) throw new Exception('bad sex');
-
-    $scores = array();
-    $title  = '';
-}
+$teamId = Check2::except()->get('a')->isIn('teams');
+$typeId = Check2::except()->get('b')->isIn('group_score_types');
+$sex    = Check2::except()->get('c')->isSex();
 
 $good = $db->getFirstRow("
   SELECT COUNT(*) AS `good`
@@ -38,8 +10,9 @@ $good = $db->getFirstRow("
   INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
   INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
   INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
-  WHERE `gs`.`team_id` = '".$db->escape($id)."'
-  AND `gst`.`discipline` = '".$key."'
+  WHERE `gs`.`team_id` = '".$teamId."'
+  AND `gst`.`id` = '".$typeId."'
+  AND `gs`.`sex` = '".$sex."'
   AND `time` IS NOT NULL
 ", 'good');
 $bad = $db->getFirstRow("
@@ -48,11 +21,11 @@ $bad = $db->getFirstRow("
   INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
   INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
   INNER JOIN `x_full_competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
-  WHERE `gs`.`team_id` = '".$db->escape($id)."'
-  AND `gst`.`discipline` = '".$key."'
+  WHERE `gs`.`team_id` = '".$teamId."'
+  AND `gst`.`id` = '".$typeId."'
+  AND `gs`.`sex` = '".$sex."'
   AND `time` IS NULL
 ", 'bad');
-$title = FSS::dis2name($key);
 
 $MyData = new pData();
 $MyData->addPoints(array($good, $bad), "time");

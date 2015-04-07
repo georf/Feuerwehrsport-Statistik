@@ -65,6 +65,7 @@ foreach ($disciplines as $d) {
           ".($sex? " AND `gs`.`sex` = '".$sex."' ":"")."
           AND `gs`.`time` IS NOT NULL 
           AND `gst`.`discipline` = '".$discipline."' 
+          AND `gst`.`regular` = 1 
           ORDER BY `gs`.`time`
         ) `inner` 
         GROUP BY  `team_id` 

@@ -44,4 +44,9 @@ class Title {
     $anchor = ($anchor)? ' id="'.$anchor.'"' : '';
     return '<h2'.$anchor.'>'.htmlspecialchars($title).'</h2>';
   }
+
+  public static function h3($title, $anchor = false) {
+    $anchor = ($anchor)? ' id="'.$anchor.'"' : '';
+    return '<h3'.$anchor.'>'.htmlspecialchars($title).'</h3>';
+  }
 }

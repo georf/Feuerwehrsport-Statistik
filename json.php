@@ -36,5 +36,6 @@ try {
   $output['success'] = false;
   $output['message'] = $e->getMessage();
   $output['trace']   = $e->getTrace();
+  $output['params']  = $_POST;
 }
 echo json_encode($output);
