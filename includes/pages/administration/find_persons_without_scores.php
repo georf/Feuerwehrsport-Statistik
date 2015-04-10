@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 $deleteId = Check2::value()->post('delete')->isIn('persons');
 if ($deleteId) {
   $db->deleteRow('persons', $deleteId);

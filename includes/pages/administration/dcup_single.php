@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 $competitionId = Check2::value()->post('competitionId')->isIn('competitions');
 $dcupId = Check2::value()->post('dcupId')->isIn('dcups');
 

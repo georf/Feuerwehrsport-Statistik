@@ -1,3 +1,7 @@
+<?php
+
+Check2::page()->isSubAdmin();
+?>
 <fieldset>
   <legend>Wettkampf</legend>
   <div class="row">

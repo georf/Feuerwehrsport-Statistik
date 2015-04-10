@@ -110,8 +110,7 @@ class FssImport
     new PublishStatus($('#competition-published'), option.val())
 
   loadCompetition: (competitionId) =>
-    Fss.post 'get-competition', {competitionId: competitionId}, (data) =>
-      @competition = data.competition
+    Fss.getCompetition competitionId, (@competition) =>
 
   selectCompetitionType: () =>
     value = $("input[name='competition-type']:checked").val()

@@ -1,6 +1,6 @@
 <?php
 
-Check2::except()->isAdmin();
+Check2::except()->isSubAdmin();
 
 $date    = Check2::except()->post('date')->isDate();
 $placeId = Check2::except()->post('placeId')->isIn('places');
@@ -14,5 +14,5 @@ $resultId = $db->insertRow('competitions', array(
   'event_id' => $eventId,
 ));
 
-Log::insert('add-competition', FSS::tableRow('competitions', $resultId));
+Log::insertWithAlert('add-competition', FSS::tableRow('competitions', $resultId));
 $output['success'] = true;

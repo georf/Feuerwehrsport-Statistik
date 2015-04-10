@@ -56,6 +56,12 @@ class Check2 {
     return $this;
   }
 
+  public function isSubAdmin() {
+    $this->name  = "subAdmin";
+    $this->value = true;
+    return $this->escape(isset($_SESSION['subadmin_loggedin']) || isset($_SESSION['loggedin']));
+  }
+
   public function isAdmin() {
     $this->name  = "admin";
     $this->value = true;

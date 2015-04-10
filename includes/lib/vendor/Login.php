@@ -55,7 +55,8 @@ class Login
             if ($row) return $row['id'];
         }
 
-        if (Check::isAdmin()) return 1;
+        if (Check2::boolean()->isAdmin()) return 1;
+        if (Check2::boolean()->isSubAdmin()) return 2;
         return false;
     }
 

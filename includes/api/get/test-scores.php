@@ -1,6 +1,6 @@
 <?php
 
-Check2::except()->isAdmin();
+Check2::except()->isSubAdmin();
 
 
 $discipline = Check2::except()->post('discipline')->isDiscipline();

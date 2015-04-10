@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 if (Check::get('id') && Check::isIn($_GET['id'], 'result_files')) {
 
   $row = $db->getFirstRow("

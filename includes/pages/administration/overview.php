@@ -8,7 +8,7 @@
     <ul>
       <li><?php echo Link::admin_page_a('errors', 'Fehler bearbeiten'); ?></li>
       <li><?php echo Link::admin_page_a('logs', 'Logs anzeigen'); ?></li>
-      <li><?php echo Link::admin_page_a('users', 'anzeigen'); ?></li>
+      <li><?php echo Link::admin_page_a('users', 'Benutzer anzeigen'); ?></li>
     </ul>
   </li>
   <li><h4>Team</h4>

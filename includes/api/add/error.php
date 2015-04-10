@@ -30,5 +30,5 @@ $db->insertRow('errors', array(
   'content' => serialize($_POST)
 ));
 
-mail($config['error-mail'], 'Fehler auf Statistik-Seite', json_encode($_POST, 2));
+Log::sendMail('Fehler auf Statistik-Seite', json_encode($_POST, 2));
 $output['success'] = true;

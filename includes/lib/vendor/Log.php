@@ -10,7 +10,17 @@ class Log
     public $type = '';
     public $inserted = 0;
 
-    public static function insert($type, $content, $cleanCache = true) {
+    public static function sendMail($subject, $content) {
+      global $config;
+      mail($config['error-mail'], $subject, $content."\n\n".$config['url'].'page/administration.html');
+    }
+
+
+    public static function insertWithAlert($type, $content, $cleanCache = true) {
+      self::insert($type, $content, $cleanCache, true);
+    }
+
+    public static function insert($type, $content, $cleanCache = true, $alert = false) {
         global $db;
 
         if (is_array($content)) {
@@ -22,6 +32,9 @@ class Log
             'type' => $type,
             'content' => $content
         ), $cleanCache);
+        if ($alert && Check2::boolean()->isSubAdmin() && !Check2::boolean()->isAdmin()) {
+          self::sendMail('Sub-Admin-Log auf Statistik-Seite ('.$type.')', $content);
+        }
     }
 
 

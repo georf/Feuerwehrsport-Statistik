@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 if (Check::post('competition', 'team', 'number','sex')) {
   foreach (array('HL','HB', 'GS','FS','LA') as $d) {
     if (Check::post($d.'-points', $d.'-time')) {

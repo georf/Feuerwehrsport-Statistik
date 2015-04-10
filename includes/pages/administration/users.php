@@ -1,3 +1,7 @@
+<?php
+
+Check2::page()->isSubAdmin();
+?>
 <h1>Benutzer</h1>
 <table class="table">
   <thead>

@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 $footerTags[] = '<script type="text/javascript" src="/js/jhtmlarea.js"></script>';
 $footerTags[] = '<link href="/css/jhtmlarea.css" type="text/css" rel="stylesheet"/>';
 

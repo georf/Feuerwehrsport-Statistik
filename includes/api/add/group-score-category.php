@@ -1,6 +1,6 @@
 <?php
 
-Check2::except()->isAdmin();
+Check2::except()->isSubAdmin();
 
 $name = Check2::except()->post('name')->present();
 $competitionId = Check2::except()->post('competitionId')->isIn('competitions');

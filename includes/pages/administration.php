@@ -7,15 +7,25 @@ if (Check2::boolean()->post('fs_username')->present() && Check2::boolean()->post
     new ChartLoader();
     $myCache = new pCache();
     $myCache->removeOlderThan(86400*3);
+    header('Location: /page/administration.html');
+    die();
+  }
+  if ($_POST['fs_username'] == $config['subadmin']['username'] && $_POST['fs_password'] == $config['subadmin']['password']) {
+    $_SESSION['subadmin_loggedin'] = $_SERVER['REMOTE_ADDR'];
+    header('Location: /page/administration.html');
+    die();
   }
 }
 
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] != $_SERVER['REMOTE_ADDR']) {
   unset($_SESSION['loggedin']);
 }
+if (isset($_SESSION['subadmin_loggedin']) && $_SESSION['subadmin_loggedin'] != $_SERVER['REMOTE_ADDR']) {
+  unset($_SESSION['subadmin_loggedin']);
+}
 
 
-if (!isset($_SESSION['loggedin'])) {
+if (!Check2::boolean()->isSubAdmin()) {
   ?>
   <h1>Administraton - Login</h1>
   <form method="post">

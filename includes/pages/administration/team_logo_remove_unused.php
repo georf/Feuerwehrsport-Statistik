@@ -1,5 +1,7 @@
 <?php
 
+Check2::page()->isAdmin();
+
 $fh = opendir($config['logo-path']);
 while ($file = readdir($fh)) {
   if (is_file($config['logo-path'].$file)) {

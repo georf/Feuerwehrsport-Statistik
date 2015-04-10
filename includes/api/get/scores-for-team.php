@@ -1,6 +1,6 @@
 <?php
 $teamId = Check2::except()->post('teamId')->isIn('teams');
-Check2::except()->isAdmin();
+Check2::except()->isSubAdmin();
 
 TempDB::generate('x_full_competitions');
 

@@ -1,10 +1,11 @@
 <?php
 
-Check2::except()->isAdmin();
+Check2::except()->isSubAdmin();
 
 $discipline           = Check2::except()->post('discipline')->isDiscipline();
 $sex                  = Check2::except()->post('sex')->isSex();
 $scores               = Check2::except()->post('scores')->isArray();
+$inserts              = array();
 
 foreach ($scores as $score) {
   $teamNumber = strval(intval($score['team_number']) -1);
@@ -59,8 +60,11 @@ foreach ($scores as $score) {
       $db->insertRow('group_scores', $insert, false);
 
     }
+    $inserts[] = $insert;
   }
 }
+
+Log::sendMail('Sub-Admin-Log auf Statistik-Seite (scores)', print_r($inserts, true));
 
 Cache::clean();
 $output['success'] = true;

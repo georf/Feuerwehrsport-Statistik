@@ -1,5 +1,6 @@
 <?php
 
+Check2::except()->isSubAdmin();
 $name = Check2::except()->post('name')->present();
 
 $resultId = $db->insertRow('places', array(

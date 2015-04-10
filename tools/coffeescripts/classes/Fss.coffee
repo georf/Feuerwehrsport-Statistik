@@ -170,6 +170,11 @@ class @Fss
       Fss.post 'get-person', {personId: personId}, (result) ->
         callback(result.person)
   
+  @getCompetition: (competitionId, callback) ->
+    Fss.checkLogin () ->
+      Fss.post 'get-competition', {competitionId: competitionId}, (result) ->
+        callback(result.competition)
+  
   @getTeams: (personId, callback) ->
     Fss.checkLogin () ->
       Fss.post 'get-teams', {personId: personId}, (result) ->
