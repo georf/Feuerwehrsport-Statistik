@@ -399,6 +399,9 @@ span.bt:hover {
 .edit-team-group {
   background-image:url(../styling/images/user-properties.png);
 }
+.edit-team-group-new {
+  background-image:url(../styling/images/user-group-new.pn);
+}
 /*span.bt:hover{
 outline:dotted 1px grey;
 }
