@@ -20,7 +20,7 @@ if ($id !== false) {
     UNION ALL
       SELECT `team_id`,CONCAT(`gst`.`discipline`,`gs`.`id`) AS `key`
       FROM `group_scores` `gs`
-      INNER JOIN `person_participations` `p` ON `p`.`score_id` = `s`.`id`
+      INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
       INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
       INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
       WHERE `p`.`person_id` = '".$id."'

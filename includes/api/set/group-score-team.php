@@ -10,6 +10,6 @@ $db->updateRow("group_scores", $scoreId, array(
   'team_id' => $teamId
 ));
 
-self::sendMail('Sub-Admin-Log auf Statistik-Seite (group-score-team)', print_r(array($scoreId, $teamId), true));
+Log::sendMail('Sub-Admin-Log auf Statistik-Seite (group-score-team)', print_r(array($scoreId, $teamId), true));
 
 $output['success'] = true;

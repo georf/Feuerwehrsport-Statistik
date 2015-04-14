@@ -7,6 +7,12 @@ reloadErrors = () ->
       error = new Error(e.id, e.user_id, e.content, e.created_at, e.email, e.name)
       table.append(error.getTr())
 
+parseDateTime = (dateTime) =>
+  result = dateTime.match(/^(\d{4})-(\d{2})-(\d{2})(\s+(\d{2}):(\d{2}):(\d{2}))?/)
+  if result
+    new Date(result[1], result[2], result[3], result[5], result[6], result[7])
+  else
+    new Date()
 
 class Error
   constructor: (@id, @userId, @content, @createdAt, @creatorEmail, @creatorName) ->
@@ -28,7 +34,7 @@ class Error
       creatorTd.append($('<a/>').attr("href", "mailto:#{@creatorEmail}").text(@creatorEmail))
       creatorTd.append(")")
     @tr = $('<tr/>')
-      .append($('<th/>').text(@formatDateTime(@createdAt)))
+      .append($('<th/>').text(parseDateTime(@createdAt).toLocaleString()))
       .append(creatorTd)
       .append($('<th/>').text(@headline))
       .append($('<th/>')
@@ -147,6 +153,9 @@ class Error
               )
               .open()
           )
+      else
+        @openType = (div) =>
+          @getActionBox(div)
 
   handlePerson: () =>
     getPersonBox = (appendTo, headline = "Person", id = @content.personId) =>
@@ -191,6 +200,9 @@ class Error
         @openType = (div) =>
           getPersonBox(div)
           @box(5, div).append($('<pre/>').text(@content.description))
+          @getActionBox(div)
+      else
+        @openType = (div) =>
           @getActionBox(div)
 
   handleTeam: () =>
@@ -252,6 +264,9 @@ class Error
           getTeamBox(div)
           @box(5, div).append($('<pre/>').text(@content.description))
           @getActionBox(div)
+      else
+        @openType = (div) =>
+          @getActionBox(div)
 
   handleDate: () =>
     getDateBox = (appendTo, headline = "Termin", id = @content.dateId) =>
@@ -265,7 +280,7 @@ class Error
             box.append(
               $('<a/>')
               .attr('href', "/page/date-#{date.id}.html")
-              .text("#{date.name} (#{(new Date(date.date)).toLocaleDateString()})")
+              .text("#{date.name} (#{parseDateTime(date.date).toLocaleDateString()})")
             )
             .append("<br/>ID: #{id}")
             .append("<br/>Ort: #{place.name}")
@@ -301,12 +316,11 @@ class Error
             data.dateId = @content.dateId
             Fss.post 'set-date', data, (d) => @confirmDone()
           , 2)
+      else
+        @openType = (div) =>
+          @getActionBox(div)
 
-  formatDateTime: (dateTime) =>
-    date = new Date(dateTime)
-    date.toLocaleString()
 
 $ ->
   reloadErrors()
-
 
