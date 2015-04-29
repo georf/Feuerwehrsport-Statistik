@@ -121,15 +121,23 @@ class Discipline extends EventHandler
     for resultScore in @resultScores
       scores.push(resultScore.getObject()) if resultScore.isCorrect()
 
-    input =
-      scores: scores
-      competitionId: $('#competitions').val()
-      groupScoreCategoryId: @categoryId
-      discipline: @discipline
-      sex: @sex
-    Fss.post 'add-scores', input, (data) =>
-      @fire('refresh-results')
-      @remove()
+    i = -1
+    importRows = =>
+      i++
+      nextScores = scores.slice(15 * i, 15 * (i + 1))
+      if nextScores.length is 0
+        @fire('refresh-results')
+        @remove()
+        return
+
+      input =
+        scores: nextScores
+        competitionId: $('#competitions').val()
+        groupScoreCategoryId: @categoryId
+        discipline: @discipline
+        sex: @sex
+      Fss.post 'add-scores', input, (data) ->
+        importRows()
 
   showMissingTeams: (teams) =>
     return unless teams.length 
