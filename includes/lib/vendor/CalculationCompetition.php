@@ -37,7 +37,7 @@ class CalculationCompetition {
      $this->discipline('hl', 'male', -5, 'male'),
      $this->discipline('zk', 'female', false, 'female'),
      $this->discipline('zk', 'male', false, 'male'),
-     $this->discipline('gs', null, false, 'female'),
+     $this->discipline('gs', 'female', false, 'female'),
      $this->discipline('fs', 'female', false, 'female'),
      $this->discipline('fs', 'male', false, 'male'),
      $this->discipline('la', 'female', false, 'female'),
