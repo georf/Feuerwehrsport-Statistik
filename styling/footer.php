@@ -14,7 +14,7 @@
 </div>
 <script type="text/javascript" src="/js/jquery.js"></script>
 <script type="text/javascript" src="/js/bootstrap.js"></script>
-<script type="text/javascript" src="/js/application.js"></script>
+<script type="text/javascript" src="/js/application.js?version=<?php echo filectime("js/application.js"); ?>"></script>
 <?php
 echo implode($footerTags);
 ?>

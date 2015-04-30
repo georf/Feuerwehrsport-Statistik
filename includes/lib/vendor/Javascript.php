@@ -5,7 +5,7 @@ class Javascript {
     $vz = opendir($path);
     while ($file = readdir($vz)) {
       if (is_file($path.$file) && $file == $page.'.js') {
-        return '<script type="text/javascript" src="/'.$path.$file.'"></script>';
+        return '<script type="text/javascript" src="/'.$path.$file.'?version='.filectime($path.$file).'"></script>';
       }
     }
     closedir($vz);
