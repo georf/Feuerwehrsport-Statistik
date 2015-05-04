@@ -138,6 +138,7 @@ class Discipline extends EventHandler
         sex: @sex
       Fss.post 'add-scores', input, (data) ->
         importRows()
+    importRows()
 
   showMissingTeams: (teams) =>
     return unless teams.length 
