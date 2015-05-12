@@ -33,7 +33,8 @@ if ($discipline === 'zk') {
       `p4`.`person_id` AS `person_4`,
       `p5`.`person_id` AS `person_5`,
       `p6`.`person_id` AS `person_6`,
-      `p7`.`person_id` AS `person_7`
+      `p7`.`person_id` AS `person_7`,
+      `gs`.`sex`
     FROM `group_scores` `gs`
     INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
     INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
@@ -46,6 +47,7 @@ if ($discipline === 'zk') {
     LEFT JOIN `person_participations` `p7` ON `p7`.`score_id` =  `gs`.`id` AND `p6`.`position` = 7    
     WHERE `gs`.`team_id` = '".$score['team_id']."'
     AND `gs`.`team_number` = '".$score['team_number']."'
+    AND `gs`.`sex` = '".$score['sex']."'
     AND `gsc`.`competition_id` = '".$score['competition_id']."'
     AND `gst`.`discipline` = '".$score['discipline']."'
   ");
