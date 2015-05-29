@@ -43,6 +43,7 @@
 <li class="dropdown-header">Interessantes</li>
 <li><a href="/page/records.html">Rekorde</a></li>
 <li><a href="/page/best-of.html">100 Bestzeiten</a></li>
+<li><a href="/page/year-2015.html">Statistiken 2015</a></li>
 <li><a href="/page/year-2014.html">Statistiken 2014</a></li>
 <li><a href="/page/year-2013.html">Statistiken 2013</a></li>
 <li><a href="/page/logs.html">Letzte Änderungen</a></li>
