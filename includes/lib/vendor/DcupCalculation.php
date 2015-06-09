@@ -43,33 +43,61 @@ class DcupCalculation {
     return '';
   }
 
+  public static function zkYouth($competitionId, $dcupId, $personIds) {
+    global $db;
+
+    foreach (FSS::$sexes as $sex) {
+      $scores = $db->getRows("
+        SELECT zk.*
+        FROM scores_dcup_zk zk
+        INNER JOIN `persons` `p` ON `zk`.`person_id` = `p`.`id`
+        WHERE zk.person_id IN ('".implode("','", $personIds)."')
+        AND `sex` = '".$sex."'
+        AND zk.competition_id = '".$competitionId."'
+        GROUP BY zk.id
+      ");
+      self::zkSortAndPoint($competitionId, $dcupId, $scores, true);
+    }
+  }
+      
+
   public static function zk($competitionId, $dcupId) {
     global $db;
 
-    $scores = $db->getRows("
-      SELECT `hb`.`person_id`, `hb`.`time` AS `hb`, `hl`.`time` AS `hl`, 
-        `hl`.`time` + `hb`.`time` AS `time`
-      FROM (
-        SELECT `person_id`,
-          MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
-        FROM `scores`
-        WHERE `competition_id` = '".$competitionId."'
-          AND `discipline` = 'HL'
-          AND `team_number` > -2
+    foreach (FSS::$sexes as $sex) {
+
+      $scores = $db->getRows("
+        SELECT `hb`.`person_id`, `hb`.`time` AS `hb`, `hl`.`time` AS `hl`, 
+          `hl`.`time` + `hb`.`time` AS `time`
+        FROM (
+          SELECT `person_id`,
+            MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
+          FROM `scores`
+          WHERE `competition_id` = '".$competitionId."'
+            AND `discipline` = 'HL'
+            AND `team_number` > -2
+          GROUP BY `person_id`
+        ) `hl`
+        INNER JOIN (
+          SELECT `person_id`,
+            MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
+          FROM `scores`
+          WHERE `competition_id` = '".$competitionId."'
+            AND `discipline` = 'HB'
+            AND `team_number` > -2
+          GROUP BY `person_id`
+        ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
+        INNER JOIN `persons` `p` ON `p`.`id` = `hb`.`person_id` AND `p`.`sex` = '".$sex."'
         GROUP BY `person_id`
-      ) `hl`
-      INNER JOIN (
-        SELECT `person_id`,
-          MIN(COALESCE(`time`, ".FSS::INVALID.")) AS `time`
-        FROM `scores`
-        WHERE `competition_id` = '".$competitionId."'
-          AND `discipline` = 'HB'
-          AND `team_number` > -2
-        GROUP BY `person_id`
-      ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
-      GROUP BY `person_id`
-      ORDER BY `time`
-    ");
+        ORDER BY `time`
+      ");
+      self::zkSortAndPoint($competitionId, $dcupId, $scores);
+    }
+  }
+
+  private static function zkSortAndPoint($competitionId, $dcupId, $scores, $youth = false) {
+    global $db;
+
     foreach ($scores as $key => $score) {
       $scores[$key]['time'] = min($score['time'], FSS::INVALID);
       $scores[$key]['other'] = array($scores[$key]['time']);
@@ -77,9 +105,13 @@ class DcupCalculation {
 
     $scores = self::sortSingle($scores);
     $scores = self::givePoints($scores);
+    $table = "scores_dcup_zk";
+    if ($youth) {
+      $table .= '_u';
+    }
 
     foreach ($scores as $score) {
-      $db->insertRow("scores_dcup_zk", array(
+      $db->insertRow($table, array(
         'dcup_id' => $dcupId,
         'person_id' => $score['person_id'],
         'competition_id' => $competitionId,
@@ -89,9 +121,25 @@ class DcupCalculation {
         'hb' => $score['hb'],
       ), false);
     }
-
   }
 
+  public static function singleYouth($competitionId, $personIds, $discipline, $sex) {
+    global $db;
+
+    $scores = $db->getRows("
+      SELECT s.*
+      FROM scores_dcup_single ds
+      INNER JOIN scores s ON s.id = ds.score_id
+      INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
+      WHERE s.person_id IN ('".implode("','", $personIds)."')
+      AND `discipline` = '".$discipline."'
+      AND `sex` = '".$sex."'
+      AND s.competition_id = '".$competitionId."'
+      GROUP BY s.id
+    ");
+    return self::sortAndPoint($scores, $competitionId, $discipline, $sex);
+  }
+    
   public static function single($competitionId, $discipline, $sex) {
     global $db;
     
@@ -115,6 +163,11 @@ class DcupCalculation {
       WHERE `sex` = '".$sex."'
       ORDER BY `time`
     ");
+    return self::sortAndPoint($scores, $competitionId, $disciplines, $sex);
+  }
+
+  private static function sortAndPoint($scores, $competitionId, $discipline, $sex) {
+    global $db;
 
     foreach ($scores as $key => $score) {
       $scores[$key]['other'] = $db->getRows("
@@ -144,10 +197,14 @@ class DcupCalculation {
     return $scores;
   }
 
-  public static function insertSingle($scores, $dcupId) {
+  public static function insertSingle($scores, $dcupId, $youth = false) {
     global $db;
+    $table = "scores_dcup_single";
+    if ($youth) {
+      $table .= "_u";
+    }
     foreach ($scores as $score) {
-      $db->insertRow("scores_dcup_single", array(
+      $db->insertRow($table, array(
         'dcup_id' => $dcupId,
         'score_id' => $score['id'],
         'points' => $score['points'],
@@ -165,9 +222,11 @@ class DcupCalculation {
 
     $disciplines = array(
       array('HL', 'male'),
+      array('HL', 'female'),
       array('HB', 'male'),
       array('HB', 'female'),
       array('ZK', 'male'),
+      array('ZK', 'female'),
     );
 
     $compare = function($a , $b) {
@@ -193,7 +252,9 @@ class DcupCalculation {
               COUNT(`d`.`id`) AS `participations`,
               SUM(`time`) AS `time`
             FROM `scores_dcup_zk".$u."` `d`
+            INNER JOIN `persons` `p` ON `p`.`id` = `d`.`person_id`
             WHERE `dcup_id` = '".$dcupId."'
+              AND `p`.`sex` = '".$discipline[1]."'
             GROUP BY `person_id`
           ");
         } else {
