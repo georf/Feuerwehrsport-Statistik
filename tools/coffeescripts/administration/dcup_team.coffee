@@ -20,13 +20,11 @@ $ ->
     selectCompetition.change()
 
     if selectSex.val() == 'female'
-      disciplines = ['hb', 'gs', 'la', 'fs']
-      hide($('#hl'))
+      disciplines = ['hb', 'hl', 'gs', 'la', 'fs']
       $('#gs').show()
     else
       disciplines = ['hb', 'hl', 'la', 'fs']
       hide($('#gs'))
-      $('#hl').show()
 
   selectTeam.change () ->
     selectTeamNumber.change()
