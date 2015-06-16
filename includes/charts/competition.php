@@ -2,9 +2,17 @@
 
 $competition = Check2::except()->get('a')->isIn('competitions', 'row');
 $discipline = Check2::except()->get('b')->fullKey();
-$scores = array();
+$categoryId = Check2::value()->get('c')->isIn('group_score_categories');
 $calculation = CalculationCompetition::build($competition);
-$scores = $calculation->scores($discipline);
+$groupScores = $calculation->scores($discipline);
+
+$scores = array();
+foreach ($groupScores as $gScore) {
+  if ($gScore->categoryId() == $categoryId) {
+    $scores = $gScore->scores();
+  }
+}
+
 
 $points = array();
 $labels = array();

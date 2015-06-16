@@ -103,7 +103,9 @@ foreach ($disciplines as $discipline) {
     $ave = FSS::INVALID;
     $ave5 = FSS::INVALID;
     $ave10 = FSS::INVALID;
-    foreach ($scores as $score) {
+    $singleScores = $scores[0];
+    $timeScores = $singleScores->scores();
+    foreach ($timeScores as $score) {
       if (FSS::isInvalid($score['time'])) continue;
 
       $sum += $score['time'];
@@ -127,8 +129,8 @@ foreach ($disciplines as $discipline) {
     echo '<h2 id="dis-'.$fullKey.'">'.FSS::dis2img($key).' '.$calculation->disciplineName($discipline).'</h2>';
 
     $chartTable = ChartTable::build()
-      ->row('Bestzeit', FSS::time($scores[0]['time']))
-      ->row('Wettkämpfer', count($scores))
+      ->row('Bestzeit', FSS::time($timeScores[0]['time']))
+      ->row('Wettkämpfer', count($timeScores))
       ->row('Durchschnitt', FSS::time($ave));
 
     if ($i5 == 5) $chartTable->row('Beste 5', FSS::time($ave5), 'Durchschnitt der besten Fünf');
@@ -139,7 +141,7 @@ foreach ($disciplines as $discipline) {
     if ($i != 0) $bootstrap->col(Chart::img('competition', array($id, $fullKey), true, 'competition_platzierung'), 9);
     echo $bootstrap;
 
-    $countTable = CountTable::build($scores, array('single-scores', 'scores-'.$key.($final?'-final':'')))
+    $countTable = CountTable::build($timeScores, array('single-scores', 'scores-'.$key.($final?'-final':'')))
       ->rowAttribute('data-id', 'id')
       ->col('Name', 'name', 20)
       ->col('Vorname', 'firstname', 20)
@@ -159,7 +161,7 @@ foreach ($disciplines as $discipline) {
     if (!$final && $key != 'zk' && $competition['score_type']) {
       echo '<h2 id="dis-'.$fullKey.'-mannschaft">'.FSS::dis2img($key).' '.$calculation->disciplineName($discipline, false, true).'</h2>';
 
-      $teams = TeamScore::build($scores, $competition['score'])->sorted();
+      $teams = TeamScore::build($timeScores, $competition['score'])->sorted();
 
       echo '<table class="table">';
 
@@ -189,41 +191,45 @@ foreach ($disciplines as $discipline) {
     }
   } else {
     echo '<h2 id="dis-'.$fullKey.'">'.FSS::dis2img($key).' '.$calculation->disciplineName($discipline).'</h2>';
+    foreach ($scores as $groupScores) {
+      echo '<h3>'.$groupScores->name().' <small>'.$groupScores->typeName().'</small></h3>';
 
-    $sum = 0;
-    $i = 0;
-    foreach ($scores as $score) {
-      if (FSS::isInvalid($score['time'])) continue;
-      $sum += $score['time'];
-      $i++;
-    }
-    $ave = ($i > 0) ? $sum/$i : FSS::INVALID;
-
-    echo Bootstrap::row()
-    ->col(ChartTable::build()
-      ->row('Bestzeit', FSS::time($scores[0]['time']))
-      ->row('Mannschaften', count($scores))
-      ->row('Durchschnitt', FSS::time($ave))
-      ->row(Chart::img('competition_bad_good', array($id, $fullKey))), 3)
-    ->col(($i > 0) ? Chart::img('competition', array($id, $fullKey)) : "", 9);
-
-    $countTable = CountTable::build($scores, array('group-scores', 'scores-'.$key))
-    ->rowAttribute('data-id', 'id')
-    ->col('Team', function ($row) use ($id, $discipline) {
-      $run = (array_key_exists('run', $row)) ? ' '.$row['run'] : '';
-      return Link::team($row['team_id'], $row['shortteam'].' '.FSS::teamNumber($row['team_number'], $id, $row['team_id'], 'competition', $discipline["origSex"]).$run, 'Details zu '.$row['team'].' anzeigen');
-    }, 25)
-    ->col('Zeit', function ($row) { return FSS::time($row['time']); }, 10);
-
-    for ($wk = 1; $wk < 8; $wk++) {
-      if (array_key_exists('person_'.$wk, $scores[0])) {
-        //'title="'.WK::type($wk, $sex, $key).'
-        $countTable->col('WK'.$wk, function ($row) use ($wk) {
-          return (!empty($row['person_'.$wk])) ? Link::person($row['person_'.$wk], 'sub', $row['name'.$wk], $row['firstname'.$wk]) : '';
-        }, 25, array('class' => 'person'));
+      $sum = 0;
+      $i = 0;
+      $timeScores = $groupScores->scores();
+      foreach ($timeScores as $score) {
+        if (FSS::isInvalid($score['time'])) continue;
+        $sum += $score['time'];
+        $i++;
       }
+      $ave = ($i > 0) ? $sum/$i : FSS::INVALID;
+
+      echo Bootstrap::row()
+      ->col(ChartTable::build()
+        ->row('Bestzeit', FSS::time($timeScores[0]['time']))
+        ->row('Mannschaften', $groupScores->count())
+        ->row('Durchschnitt', FSS::time($ave))
+        ->row(Chart::img('competition_bad_good', array($id, $fullKey, $groupScores->categoryId()))), 3)
+      ->col(($i > 0) ? Chart::img('competition', array($id, $fullKey, $groupScores->categoryId())) : "", 9);
+
+      $countTable = CountTable::build($timeScores, array('group-scores', 'scores-'.$key))
+      ->rowAttribute('data-id', 'id')
+      ->col('Team', function ($row) use ($id, $discipline) {
+        $run = (array_key_exists('run', $row)) ? ' '.$row['run'] : '';
+        return Link::team($row['team_id'], $row['shortteam'].' '.FSS::teamNumber($row['team_number'], $id, $row['team_id'], 'competition', $discipline["origSex"]).$run, 'Details zu '.$row['team'].' anzeigen');
+      }, 25)
+      ->col('Zeit', function ($row) { return FSS::time($row['time']); }, 10);
+
+      for ($wk = 1; $wk < 8; $wk++) {
+        if (array_key_exists('person_'.$wk, $timeScores[0])) {
+          //'title="'.WK::type($wk, $sex, $key).'
+          $countTable->col('WK'.$wk, function ($row) use ($wk) {
+            return (!empty($row['person_'.$wk])) ? Link::person($row['person_'.$wk], 'sub', $row['name'.$wk], $row['firstname'.$wk]) : '';
+          }, 25, array('class' => 'person'));
+        }
+      }
+      echo Bootstrap::row()->col($countTable, 12);
     }
-    echo Bootstrap::row()->col($countTable, 12);
   }
 
   $lis = array();

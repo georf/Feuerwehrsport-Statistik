@@ -66,7 +66,7 @@ class CalculationCompetition {
     } elseif ($final) {
       return ($short?strtoupper($key):FSS::dis2name($key)).($sex?' '.FSS::sex($sex):'').' - '.FSS::finalName($final);
     } else {
-      return FSS::dis2name($key).($sex?' '.FSS::sex($sex):'');
+      return ($short?strtoupper($key):FSS::dis2name($key)).($sex?' '.FSS::sex($sex):'');
     }
   }
 
@@ -97,7 +97,7 @@ class CalculationCompetition {
   }
 
   public function count($key, $sex = null, $final = false) {
-    return count($this->scores($key, $sex, $final));
+    return array_sum(array_map(function ($s) { return $s->count(); }, $this->scores($key, $sex, $final)));
   }
 
   public function exists($key, $final = false) {
@@ -126,136 +126,14 @@ class CalculationCompetition {
     return $this->scores[$fullKey];
   }
 
-  public function getDiscipline($key, $sex, $final = false) {
+  private function getDiscipline($key, $sex, $final = false) {
     if ($key == 'zk') {
-      return $this->getDoubleEvent($sex);
+      return DoubleEventScores::getDiscipline($sex, $this->competition['id']);
     } elseif (FSS::isGroupDiscipline($key)) {
-      return $this->getGroupDiscipline($key, $sex);
+      return GroupScores::getDiscipline($key, $sex, $this->competition['id']);
     } else {
-      return $this->getSingleDiscipline($key, $sex, $final);
+      return SingleScores::getDiscipline($key, $sex, $final, $this->competition['id']);
     }
-  }
-
-  public function getDoubleEvent($sex) {
-    global $db;
-
-    return $db->getRows("
-      SELECT
-        0 AS `id`,
-        `hl`.`person_id`,`p`.`name` AS `name`,`p`.`firstname` AS `firstname`,
-        `hb`.`time` AS `hb`,
-        `hl`.`time` AS `hl`,
-        `hb`.`time` + `hl`.`time` AS `time`
-      FROM (
-        SELECT `person_id`,`time`
-        FROM `scores`
-        WHERE `time` IS NOT NULL
-        AND `competition_id` = '".$this->competition['id']."'
-        AND `discipline` = 'HL'
-        AND `team_number` > -2
-        ORDER BY `time`
-      ) `hl`
-      INNER JOIN (
-        SELECT `person_id`,`time`
-        FROM `scores`
-        WHERE `time` IS NOT NULL
-        AND `competition_id` = '".$this->competition['id']."'
-        AND `discipline` = 'HB'
-        AND `team_number` > -2
-        ORDER BY `time`
-      ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
-      INNER JOIN `persons` `p` ON `hb`.`person_id` = `p`.`id` AND `p`.`sex` = '".$sex."'
-      GROUP BY `p`.`id`
-      ORDER BY `time`
-    ");
-  }
-
-  public function getSingleDiscipline($key, $sex, $final) {
-    global $db;
-
-    if ($final !== false) {
-      $whereFinal = "=".$final;
-    } else {
-      $whereFinal = "> -2";
-    }
-
-    return $db->getRows("
-      SELECT `best`.*,
-        `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
-        `p`.`name` AS `name`,`p`.`firstname` AS `firstname`
-      FROM (
-        SELECT *
-        FROM (
-          (
-            SELECT `id`,`team_id`,`team_number`,
-            `person_id`,
-            `time`
-            FROM `scores`
-            WHERE `time` IS NOT NULL
-            AND `competition_id` = '".$this->competition['id']."'
-            AND `discipline` = '".$key."'
-            AND `team_number` ".$whereFinal."
-          ) UNION (
-            SELECT `id`,`team_id`,`team_number`,
-            `person_id`,
-            ".FSS::INVALID." AS `time`
-            FROM `scores`
-            WHERE `time` IS NULL
-            AND `competition_id` = '".$this->competition['id']."'
-            AND `discipline` = '".$key."'
-            AND `team_number` ".$whereFinal."
-          ) ORDER BY `time`
-        ) `all`
-        GROUP BY `person_id`
-      ) `best`
-      LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
-      INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
-      ".($sex? " WHERE `sex` = '".$sex."' " : "")."
-      ORDER BY `time`
-    ");
-  }
-
-
-  public function getGroupDiscipline($key, $sex) {
-    global $db;
-
-    if ($key == 'gs' && $sex == 'male') return array();
-
-    $selects = array();
-    $joins = array();
-    for ($p = 1; $p <= WK::count($key); $p++) {
-      $selects[] = "`p".$p."`.`id` AS `person_".$p."`,`p".$p."`.`name` AS `name".$p."`,`p".$p."`.`firstname` AS `firstname".$p."`";
-      $joins[] = "LEFT JOIN `person_participations` `pp".$p."` ON `pp".$p."`.`score_id` = `best`.`id` AND `pp".$p."`.`position` = ".$p;
-      $joins[] = "LEFT JOIN `persons` `p".$p."` ON `pp".$p."`.`person_id` = `p".$p."`.`id`";
-    }
-    return $db->getRows("
-      SELECT `best`.*,`t`.`name` AS `team`,`t`.`short` AS `shortteam`,
-      ".implode(",", $selects)."
-      FROM (
-        SELECT `all`.`id`,`team_id`,`team_number`,`time`,`run`
-        FROM (
-          (
-            SELECT `id`,`team_id`,`team_number`,`time`,`run`,`group_score_category_id`
-            FROM `group_scores`
-            WHERE `time` IS NOT NULL
-            AND `sex` = '".$sex."'
-          ) UNION (
-            SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`,`run`,`group_score_category_id`
-            FROM `group_scores`
-            WHERE `time` IS NULL
-            AND `sex` = '".$sex."'
-          ) ORDER BY `time`
-        ) `all`
-        INNER JOIN `group_score_categories` `gsc` ON `all`.`group_score_category_id` = `gsc`.`id`
-        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
-        WHERE `gst`.`discipline` = '".$key."'
-        AND `gsc`.`competition_id` = '".$this->competition['id']."'
-        GROUP BY `team_id`,`team_number`,`run`
-      ) `best`
-      INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
-      ".implode(" ", $joins)."
-      ORDER BY `time`
-    ");
   }
 
   public function mapInformation() {
@@ -348,4 +226,200 @@ class CalculationCompetition {
     "team" => "Team-Zuordnungen bei Einzeldisziplinen",
     "files" => "Wettkampfergebnisse als Datei-Upload",
   );
+}
+
+class CompetitionScores {
+  protected $scores;
+
+  public function count() {
+    return count($this->scores());
+  }
+
+  public function scores() {
+    return $this->scores;
+  }
+
+  public function categoryId() {
+    return false;
+  }
+}
+
+class DoubleEventScores extends CompetitionScores {
+  public static function getDiscipline($sex, $competitionId) {
+    global $db;
+
+    $scores = $db->getRows("
+      SELECT
+        0 AS `id`,
+        `hl`.`person_id`,`p`.`name` AS `name`,`p`.`firstname` AS `firstname`,
+        `hb`.`time` AS `hb`,
+        `hl`.`time` AS `hl`,
+        `hb`.`time` + `hl`.`time` AS `time`
+      FROM (
+        SELECT `person_id`,`time`
+        FROM `scores`
+        WHERE `time` IS NOT NULL
+        AND `competition_id` = '".$competitionId."'
+        AND `discipline` = 'HL'
+        AND `team_number` > -2
+        ORDER BY `time`
+      ) `hl`
+      INNER JOIN (
+        SELECT `person_id`,`time`
+        FROM `scores`
+        WHERE `time` IS NOT NULL
+        AND `competition_id` = '".$competitionId."'
+        AND `discipline` = 'HB'
+        AND `team_number` > -2
+        ORDER BY `time`
+      ) `hb` ON `hl`.`person_id` = `hb`.`person_id`
+      INNER JOIN `persons` `p` ON `hb`.`person_id` = `p`.`id` AND `p`.`sex` = '".$sex."'
+      GROUP BY `p`.`id`
+      ORDER BY `time`
+    ");
+
+    if (count($scores)) {
+      return array(new self($scores));
+    } else {
+      return array();
+    }
+  }
+
+  protected function __construct($scores) {
+    $this->scores = $scores;
+  }
+}
+
+class SingleScores extends CompetitionScores {
+  public static function getDiscipline($key, $sex, $final, $competitionId) {
+    global $db;
+
+    if ($final !== false) {
+      $whereFinal = "=".$final;
+    } else {
+      $whereFinal = "> -2";
+    }
+
+    $scores = $db->getRows("
+      SELECT `best`.*,
+        `t`.`name` AS `team`,`t`.`short` AS `shortteam`,
+        `p`.`name` AS `name`,`p`.`firstname` AS `firstname`
+      FROM (
+        SELECT *
+        FROM (
+          (
+            SELECT `id`,`team_id`,`team_number`,
+            `person_id`,
+            `time`
+            FROM `scores`
+            WHERE `time` IS NOT NULL
+            AND `competition_id` = '".$competitionId."'
+            AND `discipline` = '".$key."'
+            AND `team_number` ".$whereFinal."
+          ) UNION (
+            SELECT `id`,`team_id`,`team_number`,
+            `person_id`,
+            ".FSS::INVALID." AS `time`
+            FROM `scores`
+            WHERE `time` IS NULL
+            AND `competition_id` = '".$competitionId."'
+            AND `discipline` = '".$key."'
+            AND `team_number` ".$whereFinal."
+          ) ORDER BY `time`
+        ) `all`
+        GROUP BY `person_id`
+      ) `best`
+      LEFT JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+      INNER JOIN `persons` `p` ON `best`.`person_id` = `p`.`id`
+      ".($sex? " WHERE `sex` = '".$sex."' " : "")."
+      ORDER BY `time`
+    ");
+
+    if (count($scores)) {
+      return array(new self($scores));
+    } else {
+      return array();
+    }
+  }
+
+  protected function __construct($scores) {
+    $this->scores = $scores;
+  }
+}
+
+class GroupScores extends CompetitionScores {
+  protected $name;
+  protected $typeName;
+  protected $categoryId;
+
+  public static function getDiscipline($key, $sex, $competitionId) {
+    global $db;
+
+    if ($key == 'gs' && $sex == 'male') return array();
+
+    $groupScores = array();
+    foreach ($db->getRows("
+      SELECT gsc.id, gsc.name, gst.name AS `type`
+      FROM `group_score_categories` `gsc`
+      INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
+      WHERE `gst`.`discipline` = '".$key."'
+      AND `gsc`.`competition_id` = '".$competitionId."'
+    ") as $category) {
+      $selects = array();
+      $joins = array();
+      for ($p = 1; $p <= WK::count($key); $p++) {
+        $selects[] = "`p".$p."`.`id` AS `person_".$p."`,`p".$p."`.`name` AS `name".$p."`,`p".$p."`.`firstname` AS `firstname".$p."`";
+        $joins[] = "LEFT JOIN `person_participations` `pp".$p."` ON `pp".$p."`.`score_id` = `best`.`id` AND `pp".$p."`.`position` = ".$p;
+        $joins[] = "LEFT JOIN `persons` `p".$p."` ON `pp".$p."`.`person_id` = `p".$p."`.`id`";
+      }
+      $scores = $db->getRows("
+        SELECT `best`.*,`t`.`name` AS `team`,`t`.`short` AS `shortteam`,
+        ".implode(",", $selects)."
+        FROM (
+          SELECT `all`.`id`,`team_id`,`team_number`,`time`,`run`
+          FROM (
+            (
+              SELECT `id`,`team_id`,`team_number`,`time`,`run`,`group_score_category_id`
+              FROM `group_scores`
+              WHERE `time` IS NOT NULL
+              AND `sex` = '".$sex."'
+            ) UNION (
+              SELECT `id`,`team_id`,`team_number`,".FSS::INVALID." AS `time`,`run`,`group_score_category_id`
+              FROM `group_scores`
+              WHERE `time` IS NULL
+              AND `sex` = '".$sex."'
+            ) ORDER BY `time`
+          ) `all`
+          WHERE `all`.`group_score_category_id` = '".$category['id']."'
+          GROUP BY `team_id`,`team_number`,`run`
+        ) `best`
+        INNER JOIN `teams` `t` ON `t`.`id` = `best`.`team_id`
+        ".implode(" ", $joins)."
+        ORDER BY `time`
+      ");
+      if (count($scores)) {
+        $groupScores[] = new self($category['name'], $category['type'], $scores, $category['id']);
+      }
+    }
+    return $groupScores;
+  }
+
+  public function __construct($name, $typeName, $scores, $categoryId) {
+    $this->name = $name;
+    $this->typeName = $typeName;
+    $this->scores = $scores;
+    $this->categoryId = $categoryId;
+  }
+  
+  public function name($default = "Standardwertung") {
+    return (empty($this->name) || $this->name == 'default') ? $default : $this->name;
+  }
+
+  public function typeName() {
+    return $this->typeName;
+  }
+
+  public function categoryId() {
+    return $this->categoryId;
+  }
 }

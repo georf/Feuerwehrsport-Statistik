@@ -22,22 +22,23 @@ foreach ($disciplines as $discipline) {
   if (!$calculation->count($discipline)) continue;
   $worksheetCount++;
 
-  $worksheet = $excelFile->createSheet($worksheetCount);
-
-  $worksheet->setTitle($calculation->disciplineName($discipline, true));
-  $worksheet->mergeCells('A1:E1');
-  $worksheet->setCellValue('A1', $calculation->disciplineName($discipline));
-  $worksheet->setBold('A1');
-  $worksheet->setTextCenter('A1');
-
-
-  $scores = $calculation->scores($discipline);
+  $allScores = $calculation->scores($discipline);
   $fullKey = $discipline['fullKey'];
   $key = $discipline['key'];
   $final = $discipline['final'];
   $sex = $discipline['sex'];
 
   if (in_array($discipline['key'], array('hb', 'hl', 'zk'))) {
+    $scores = $allScores[0]->scores();
+
+    $worksheet = $excelFile->createSheet($worksheetCount);
+
+    $worksheet->setTitle($calculation->disciplineName($discipline, true));
+    $worksheet->mergeCells('A1:E1');
+    $worksheet->setCellValue('A1', $calculation->disciplineName($discipline));
+    $worksheet->setBold('A1');
+    $worksheet->setTextCenter('A1');
+
     $worksheet->setTh('A3', 'Platz');
     $worksheet->setTh('B3', 'Name');
     $worksheet->setTh('C3', 'Vorname');
@@ -52,7 +53,6 @@ foreach ($disciplines as $discipline) {
 
     if (in_array($discipline['key'], array('hb', 'hl'))) {
       $moreScoresCount = 0;
-      $scores = $calculation->scores($discipline);
       for ($line = 0; $line < count($scores); $line++) {
         $score = $scores[$line];
 
@@ -146,77 +146,91 @@ foreach ($disciplines as $discipline) {
     }
 
   } else {
+    foreach ($allScores as $groupScores) {
+      $scores = $groupScores->scores();
 
-    $worksheet->setTh('A3', 'Platz');
-    $worksheet->setTh('B3', 'Mannschaft');
-    $worksheet->setTh('C3', 'Zeit');
+      $worksheet = $excelFile->createSheet($worksheetCount);
 
-    $moreScoresCount = 0;
-    $scores = $calculation->scores($discipline);
-    for ($line = 0; $line < count($scores); $line++) {
-      $score = $scores[$line];
-
-      // search for more times
-      $times = $db->getRows("
-        SELECT COALESCE(`gs`.`time`, ".FSS::INVALID.") AS `time`
-        FROM `group_scores` `gs`
-        INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
-        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
-        WHERE `gs`.`id` != '".$score['id']."'
-        AND `team_number` = ".$score['team_number']."
-        AND `team_id` = ".$score['team_id']."
-        AND `competition_id` = '".$id."'
-        AND `discipline` = '".$key."'
-        ".($sex? " AND `sex` = '".$sex."' " : "")."
-      ", 'time');
-      sort($times);
-      $scores[$line]['times'] = $times;
-      $moreScoresCount = max($moreScoresCount, count($times));
-    }
-    usort($scores, function($a, $b) {
-      if ($a['time'] < $b['time']) return -1;
-      if ($a['time'] > $b['time']) return 1;
-      for ($i=0; $i < min(count($a['times']), count($b['times'])); $i++) { 
-        if ($a['times'][$i] < $b['times'][$i]) return -1;
-        if ($a['times'][$i] > $b['times'][$i]) return 1;
+      if (count($allScores) > 1) {
+        $titleShort = $calculation->disciplineName($discipline, true).' '.$groupScores->name("");
+        $titleLong = $calculation->disciplineName($discipline, true).' '.$groupScores->name().' '.$groupScores->typeName();
+      } else {
+        $titleShort = $calculation->disciplineName($discipline, true);
+        $titleLong = $calculation->disciplineName($discipline).' '.$groupScores->typeName();
       }
-      return 0;
-    });
+      $worksheet->setTitle($titleShort);
+      $worksheet->mergeCells('A1:E1');
+      $worksheet->setCellValue('A1', $titleLong);
+      $worksheet->setBold('A1');
+      $worksheet->setTextCenter('A1');
 
-    for ($i = 0; $i < $moreScoresCount; $i++) {
-      $worksheet->setTh(chr($chr68+$i).'3', 'Zeit '.($i+2));
-      $calculatedWidth = $worksheet->getColumnDimension(chr($chr68+$i))->getWidth();
-      $worksheet->getColumnDimension(chr($chr68+$i))->setWidth((int) $calculatedWidth * 1.05);
-    }
+      $worksheet->setTh('A3', 'Platz');
+      $worksheet->setTh('B3', 'Mannschaft');
+      $worksheet->setTh('C3', 'Zeit');
 
-    $place = 0;
-    foreach ($scores as $score) {
-      $place++;
-      $tr = $place + 4;
-      $worksheet->setCellValueExplicit('A'.$tr, $place.'.');
-      $worksheet->setTextCenter('A'.$tr);
-      $worksheet->setBorder('A'.$tr);
-      $run = (array_key_exists('run', $score)) ? ' '.$score['run'] : '';
-      $worksheet->setCellValue('B'.$tr, $score['shortteam'].FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition', $discipline['origSex'], ' ').$run);
-      $worksheet->setBorder('B'.$tr);
+      $moreScoresCount = 0;
+      for ($line = 0; $line < count($scores); $line++) {
+        $score = $scores[$line];
 
-      $worksheet->setTime('C'.$tr, $score['time']);
-      $worksheet->setBorder('C'.$tr);
-
-      for ($time = 0; $time < count($score['times']); $time++) { 
-        $worksheet->setTime(chr($chr68 + $time).$tr, $score['times'][$time]);
-        $worksheet->setBorder(chr($chr68 + $time).$tr);
+        // search for more times
+        $times = $db->getRows("
+          SELECT COALESCE(`gs`.`time`, ".FSS::INVALID.") AS `time`
+          FROM `group_scores` `gs`
+          WHERE `gs`.`id` != '".$score['id']."'
+          AND `team_number` = ".$score['team_number']."
+          AND `team_id` = ".$score['team_id']."
+          AND `group_score_category_id` = '".$groupScores->categoryId()."'
+          ".($sex? " AND `sex` = '".$sex."' " : "")."
+        ", 'time');
+        sort($times);
+        $scores[$line]['times'] = $times;
+        $moreScoresCount = max($moreScoresCount, count($times));
       }
-    }
+      usort($scores, function($a, $b) {
+        if ($a['time'] < $b['time']) return -1;
+        if ($a['time'] > $b['time']) return 1;
+        for ($i=0; $i < min(count($a['times']), count($b['times'])); $i++) { 
+          if ($a['times'][$i] < $b['times'][$i]) return -1;
+          if ($a['times'][$i] > $b['times'][$i]) return 1;
+        }
+        return 0;
+      });
 
-    foreach (array('A','B') as $letter) {
-      $worksheet->getColumnDimension($letter)->setAutoSize(true);
-    }
+      for ($i = 0; $i < $moreScoresCount; $i++) {
+        $worksheet->setTh(chr($chr68+$i).'3', 'Zeit '.($i+2));
+        $calculatedWidth = $worksheet->getColumnDimension(chr($chr68+$i))->getWidth();
+        $worksheet->getColumnDimension(chr($chr68+$i))->setWidth((int) $calculatedWidth * 1.05);
+      }
 
-    $calculatedWidth = (int) $worksheet->getColumnDimension('C')->getWidth() * 1.05;
-    $worksheet->getColumnDimension('C')->setWidth($calculatedWidth);
-    for ($time = 0; $time < $moreScoresCount; $time++) {
-      $worksheet->getColumnDimension(chr($chr68 + $time))->setWidth($calculatedWidth);
+      $place = 0;
+      foreach ($scores as $score) {
+        $place++;
+        $tr = $place + 4;
+        $worksheet->setCellValueExplicit('A'.$tr, $place.'.');
+        $worksheet->setTextCenter('A'.$tr);
+        $worksheet->setBorder('A'.$tr);
+        $run = (array_key_exists('run', $score)) ? ' '.$score['run'] : '';
+        $worksheet->setCellValue('B'.$tr, $score['shortteam'].FSS::teamNumber($score['team_number'], $id, $score['team_id'], 'competition', $discipline['origSex'], ' ').$run);
+        $worksheet->setBorder('B'.$tr);
+
+        $worksheet->setTime('C'.$tr, $score['time']);
+        $worksheet->setBorder('C'.$tr);
+
+        for ($time = 0; $time < count($score['times']); $time++) { 
+          $worksheet->setTime(chr($chr68 + $time).$tr, $score['times'][$time]);
+          $worksheet->setBorder(chr($chr68 + $time).$tr);
+        }
+      }
+
+      foreach (array('A','B') as $letter) {
+        $worksheet->getColumnDimension($letter)->setAutoSize(true);
+      }
+
+      $calculatedWidth = (int) $worksheet->getColumnDimension('C')->getWidth() * 1.05;
+      $worksheet->getColumnDimension('C')->setWidth($calculatedWidth);
+      for ($time = 0; $time < $moreScoresCount; $time++) {
+        $worksheet->getColumnDimension(chr($chr68 + $time))->setWidth($calculatedWidth);
+      }
     }
   }
 }
