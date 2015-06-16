@@ -33,6 +33,7 @@ class Discipline extends EventHandler
     @selectSeparator = $('<select/>')
       .append($('<option/>').text('TAB').val("\t"))
       .append($('<option/>').text(',').val(","))
+      .append($('<option/>').text('|').val("|"))
 
     content = $('<div/>')
       .append(@textarea)
@@ -85,17 +86,22 @@ class Discipline extends EventHandler
         options = []
         for category in categories
           options.push
-            display: category.name
+            display: "#{category.name} - #{category.type_name}"
             value: category.id
 
-        FssWindow.build("Kategorie auswählen")
+
+        addCategoryButton = $('<button/>').text('Neue Kategorie').on('click', (e) => 
+          e.preventDefault()
+          currentWindow.close()
+          @addCategory()
+        )
+
+        currentWindow = FssWindow.build("Kategorie auswählen")
         .add(new FssFormRowRadio('categoryId', 'Kategorie', categories[0].id, options))
+        .add(new FssFormRow(addCategoryButton))
         .on('submit', (data) =>
           @categoryId = data.categoryId
           @addResultScores()
-        )
-        .on('cancel', () =>
-          @addCategory()
         )
         .open()
     else

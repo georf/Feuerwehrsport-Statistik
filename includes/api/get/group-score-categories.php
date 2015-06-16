@@ -12,7 +12,7 @@ if ($competitionId) {
 }
 
 $output['categories'] = $db->getRows("
-  SELECT `gsc`.*
+  SELECT `gsc`.*, gst.name AS type_name
   FROM `group_score_categories` `gsc`
   INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
   WHERE ".implode(" AND ", $where)."
