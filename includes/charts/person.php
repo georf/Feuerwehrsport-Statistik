@@ -75,10 +75,12 @@ switch ($key) {
         SELECT `gs`.`time`,`c`.`date`
         FROM `group_scores` `gs`
         INNER JOIN `group_score_categories` `gsc` ON `gs`.`group_score_category_id` = `gsc`.`id`
+        INNER JOIN `group_score_types` `gst` ON `gsc`.`group_score_type_id` = `gst`.`id`
         INNER JOIN `competitions` `c` ON `c`.`id` = `gsc`.`competition_id`
         INNER JOIN `person_participations` `p` ON `p`.`score_id` = `gs`.`id`
         WHERE `gs`.`time` IS NOT NULL 
         AND `p`.`person_id` = '".$id."'
+        AND `gst`.`discipline` = '".$key."'
         ORDER BY `c`.`date`
       ");
       $title = FSS::dis2name($key);
