@@ -9,6 +9,7 @@ try {
   $output['success'] = true;
 
   $_type = Check2::except()->get('type')->getVal();
+  $_apiVersion = intval(Check2::value('0')->get('api')->isNumber());
 
   if ($_type === 'login') {
     $output['login'] = Login::in(
