@@ -163,7 +163,7 @@ class DcupCalculation {
       WHERE `sex` = '".$sex."'
       ORDER BY `time`
     ");
-    return self::sortAndPoint($scores, $competitionId, $disciplines, $sex);
+    return self::sortAndPoint($scores, $competitionId, $discipline, $sex);
   }
 
   private static function sortAndPoint($scores, $competitionId, $discipline, $sex) {
