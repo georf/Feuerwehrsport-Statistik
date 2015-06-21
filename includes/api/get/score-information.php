@@ -44,7 +44,7 @@ if ($discipline === 'zk') {
     LEFT JOIN `person_participations` `p4` ON `p4`.`score_id` =  `gs`.`id` AND `p4`.`position` = 4
     LEFT JOIN `person_participations` `p5` ON `p5`.`score_id` =  `gs`.`id` AND `p5`.`position` = 5
     LEFT JOIN `person_participations` `p6` ON `p6`.`score_id` =  `gs`.`id` AND `p6`.`position` = 6    
-    LEFT JOIN `person_participations` `p7` ON `p7`.`score_id` =  `gs`.`id` AND `p6`.`position` = 7    
+    LEFT JOIN `person_participations` `p7` ON `p7`.`score_id` =  `gs`.`id` AND `p7`.`position` = 7    
     WHERE `gs`.`team_id` = '".$score['team_id']."'
     AND `gs`.`team_number` = '".$score['team_number']."'
     AND `gs`.`sex` = '".$score['sex']."'
