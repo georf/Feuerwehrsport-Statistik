@@ -127,7 +127,7 @@ class DcupCalculation {
     global $db;
 
     $scores = $db->getRows("
-      SELECT s.*
+      SELECT s.id, COALESCE(s.`time`, ".FSS::INVALID.") AS `time`, s.person_id
       FROM scores_dcup_single ds
       INNER JOIN scores s ON s.id = ds.score_id
       INNER JOIN `persons` `p` ON `s`.`person_id` = `p`.`id`
