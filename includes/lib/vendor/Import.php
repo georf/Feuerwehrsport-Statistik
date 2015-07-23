@@ -4,6 +4,10 @@ class Import {
 
   public static function getTeamNumber($team, $default = 1) {
     $team = trim($team);
+    $team = preg_replace('/ A$/', '', $team);
+    $team = preg_replace('/ B$/', '', $team);
+    $team = preg_replace('/ C$/', '', $team);
+
 
     if (preg_match('/ 1$/', $team) || preg_match('/ I$/', $team)) {
       return 1;
@@ -38,11 +42,16 @@ class Import {
     $team = trim($team);
 
     $likeTeam = preg_replace('/^FF /i', '', $team);
+    $likeTeam = preg_replace('/^Feuerwehr /i', '', $team);
     $likeTeam = preg_replace('/^Team /i', '', $likeTeam);
     $likeTeam = preg_replace('/ I$/', '', $likeTeam);
     $likeTeam = preg_replace('/ II$/', '', $likeTeam);
     $likeTeam = preg_replace('/ III$/', '', $likeTeam);
     $likeTeam = preg_replace('/ IV$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ E$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ A$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ B$/', '', $likeTeam);
+    $likeTeam = preg_replace('/ C$/', '', $likeTeam);
     $likeTeam = preg_replace('/ 1$/', '', $likeTeam);
     $likeTeam = preg_replace('/ 2$/', '', $likeTeam);
     $likeTeam = preg_replace('/ 3$/', '', $likeTeam);
