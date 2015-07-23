@@ -3,6 +3,8 @@
 Check2::except()->isSubAdmin();
 $team        = Check2::except()->post('teamId')->isIn('teams', 'row');
 $correctTeam = Check2::except()->post('newTeamId')->isIn('teams', 'row');
+
+if ($team['id'] == $correctTeam['id']) throw new Exception("Same Team!");
     
 if (Check2::value()->post("always")->present()) {
   $db->insertRow('teams_spelling', array(

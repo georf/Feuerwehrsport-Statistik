@@ -4,6 +4,8 @@ Check2::except()->isSubAdmin();
 $person        = Check2::except()->post('personId')->isIn('persons', 'row');
 $correctPerson = Check2::except()->post('newPersonId')->isIn('persons', 'row');
     
+if ($person['id'] == $correctPerson['id']) throw new Exception("Same Person!");
+
 if (Check2::value()->post("always")->present()) {
   $db->insertRow('persons_spelling', array(
     'name' => $person['name'],
