@@ -454,3 +454,7 @@ background-image:url(../images/applications-internet-add.png);
   float: right;
   margin-top: 20px;
 }
+
+.news-selection {
+  border-top: 1px solid #EEE; 
+}

@@ -8,7 +8,7 @@ if ($news) {
 
   echo Bootstrap::row()->col($news['content'], 12);
 
-  $bottom = Bootstrap::row();
+  $bottom = Bootstrap::row("news-selection");
 
   $prev = $db->getFirstRow("
     SELECT *
