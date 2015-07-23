@@ -73,6 +73,9 @@ class Log
         if (isset($types[$this->type])) {
           $this->typeArray = $types[$this->type];
           $this->typeArray[0]($this);
+          $this->translations = $this->typeArray[1];
+        } else {
+          $this->translations = array();
         }
 
     }
@@ -377,7 +380,7 @@ class LogGroup {
   }
 
   public function showContent() {
-    return count($this->logs[0]->typeArray[1]) == 2;
+    return count($this->logs[0]->translations) == 2;
   }
 
   public function count() {

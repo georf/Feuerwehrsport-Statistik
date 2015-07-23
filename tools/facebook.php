@@ -7,9 +7,10 @@ try {
   die($e->getMessage());
 }
 
-$options = getopt("", array("dates", "competitions", "conclusion"));
+$options = getopt("n", array("dates", "competitions", "conclusion"));
+$dryRun = isset($options["n"]);
 
-if (isset($options["conclusion"]) && intval(date('z')) % 5 == 0) {
+if (isset($options["conclusion"]) && (intval(date('z')) % 5 == 0 || $dryRun)) {
   $days = 5;
   $logs = array();
   foreach ($db->getRows("
@@ -26,9 +27,14 @@ if (isset($options["conclusion"]) && intval(date('z')) % 5 == 0) {
 
   $groups = Log::groupByType($logs);
   $groups = array_filter($groups, function($elem) { return $elem->showContent(); });
+
   if (count($groups) > 0) {
     $output = "In den letzten Tagen ist folgendes passiert:\n\n * ".implode("\n * ", $groups)."\n\nViel Spaß beim Stöbern";
-    new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/");
+    if ($dryRun) {
+      echo $output;
+    } else {
+      new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/");
+    }
   }
 }
 
@@ -58,8 +64,12 @@ if (isset($options["dates"])) {
     }
 
     $output = "Es wurde ein neuer Wettkampftermin hinzugefügt: \n\n".implode("\n", $hints)."\n";
-    $db->updateRow('dates', $date['id'], array('published' => 1), 'id', false);
-    new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/page/date-".$date['id'].".html");
+    if ($dryRun) {
+      echo $output;
+    } else {
+      $db->updateRow('dates', $date['id'], array('published' => 1), 'id', false);
+      new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/page/date-".$date['id'].".html");
+    }
   }
 }
 
@@ -88,12 +98,6 @@ if (isset($options["competitions"])) {
 
     if ($calculation->countSingleScores() && $competition['score_type']) {
       $hints[] = 'Mannschaftswertung: '.$competition['persons'].'/'.$competition['run'].'/'.$competition['score'];
-    }
-    if ($competition['la']) {
-      $hints[] = 'Löschangriff: '.FSS::laType($competition['la']);
-    }
-    if ($competition['fs']) {
-      $hints[] = '4x100m: '.FSS::fsType($competition['fs']);
     }
 
     if ($calculation->exists('hb')) {
@@ -126,7 +130,11 @@ if (isset($options["competitions"])) {
     }
 
     $output = "Es wurde ein neuer Wettkampf hinzugefügt: \n\n".implode("\n", $hints)."\n";
-    $db->updateRow('competitions', $competition['id'], array('published' => 2), 'id', false);
-    new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/page/competition-".$competition['id'].".html");
+    if ($dryRun) {
+      echo $output;
+    } else {
+      $db->updateRow('competitions', $competition['id'], array('published' => 2), 'id', false);
+      new FacebookPost($output, "http://www.feuerwehrsport-statistik.de/page/competition-".$competition['id'].".html");
+    }
   }
 }
