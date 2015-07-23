@@ -61,7 +61,7 @@ echo Bootstrap::row()
   ->col(
     Title::h2('Download', 'download').
     '<ul>'.
-      '<li><a href="/wettkampf-manager/wettkampf-manager-windows.zip">Windows</a></li>'.
+      '<li><a href="/wettkampf-manager/wettkampf-manager-windows.zip">Windows (64bit)</a></li>'.
     '</ul>'
   , 6)
   ->col(
@@ -91,5 +91,7 @@ echo Bootstrap::row()
       '<li>Automatisches Veröffentlichen auf gesonderter Seite</li>'.
       '<li>Online-Anmeldung im Vorfeld</li>'.
       '<li>Viele Verbesserungen bei der Bedienung</li>'.
+      '<li>Startnummern</li>'.
+      '<li>Losreihenfolge</li>'.
     '</ul>'
   , 6);
