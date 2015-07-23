@@ -12,5 +12,6 @@ foreach ($competitions as $competition) {
   echo $competition['event']." - ".$competition['place']." - ".gDate($competition['date']);
   if (!empty($competition['name'])) echo ' ('.$competition['name'].")";
   echo '<br/>';
-  echo "http://www.feuerwehrsport-statistik.de/page/competition-".$competition['id'].".html<br/>";
+  echo Link::competition($competition['id'], "http://www.feuerwehrsport-statistik.de/page/competition-".$competition['id'].".html");
+  echo '<br/>';
 }

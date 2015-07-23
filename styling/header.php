@@ -28,8 +28,8 @@
 <ul class="nav navbar-nav">
 <li><a href="/page/home.html">Startseite</a></li>
 <li><a href="/page/dates.html">Termine</a></li>
+<li><a href="/page/feuerwehrsport.html">Feuerwehrsport</a></li>
 <li><a href="/page/dcup-2015.html">D-Cup</a></li>
-<li><a href="/page/news.html">Neuigkeiten</a></li>
 <li><a href="/page/competitions.html">Wettkämpfe</a></li>
 <li><a href="/page/teams.html">Mannschaften</a></li>
 <li><a href="/page/persons.html">Personen</a></li>
@@ -41,6 +41,7 @@
 <li><a href="/page/years.html">Jahre</a></li>
 <li class="divider"></li>
 <li class="dropdown-header">Interessantes</li>
+<li><a href="/page/news.html">Neuigkeiten</a></li>
 <li><a href="/page/records.html">Rekorde</a></li>
 <li><a href="/page/best-of.html">100 Bestzeiten</a></li>
 <li><a href="/page/year-2015.html">Statistiken 2015</a></li>

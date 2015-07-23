@@ -124,9 +124,9 @@ class Link
         return self::page_a('date-'.$id, $name);
     }
 
-    public static function page_a($page, $name, $title = false) {
+    public static function page_a($page, $name, $title = false, $classes = array()) {
         global $config;
-        return self::a($config['url'].'page/'.$page.'.html', $name, $title);
+        return self::a($config['url'].'page/'.$page.'.html', $name, $title, $classes);
     }
 
     public static function dcup_single($year, $discipline, $sex, $under, $display = false, $title = false) {
@@ -149,9 +149,10 @@ class Link
         return self::a($config['url'].'?page=administration&admin='.$page, $name);        
     }
 
-    public static function a($url, $name, $title = false) {
+    public static function a($url, $name, $title = false, $classes = array()) {
         $html_title = (!$title)? '' : ' title="'.htmlspecialchars($title).'"';
-        return '<a href="'.htmlspecialchars($url).'"'.$html_title.'>'.htmlspecialchars($name).'</a>';
+        $html_classes = (!count($classes))? '' : ' class="'.implode(" ", $classes).'"';
+        return '<a href="'.htmlspecialchars($url).'"'.$html_title.$html_classes.'>'.htmlspecialchars($name).'</a>';
     }
 
   public static function linksForTeam($id) {

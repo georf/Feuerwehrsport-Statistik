@@ -1,4 +1,7 @@
 <?php
+
+TempDB::generate('x_full_competitions');
+
 Title::set('Überblick');
 echo Bootstrap::row()
   ->col('<img src="/styling/images/statistiken-logo.png" alt="Logo" />', 3)
@@ -13,6 +16,7 @@ echo Bootstrap::row()
     <a href="http://de.wikipedia.org/wiki/Löschangriff_Nass">Löschangriff Nass</a> (Frauen und Männer) ausgewertet.</p>
 ', 9)
   ->col(TableOfContents::get()
+    ->link('news', 'Neues')
     ->link('overview', 'Überblick')
     ->link('year2015', 'Jahr 2015', 'Super Leistungen vom Jahr 2015')
     ->link('mitmachen', 'Mitmachen')
@@ -20,6 +24,40 @@ echo Bootstrap::row()
     ->link('fehler', 'Fehler melden', 'Fehler in den Daten melden')
     ->link('kontakt', 'Kontakt', 'Kontakt aufnehmen')
   , 3);
+
+$news = $db->getRows("
+  SELECT *
+  FROM `news`
+  ORDER BY `date` DESC
+  LIMIT 2
+");
+$newsOutput = "";
+foreach ($news as $new) {
+  $newsOutput .=
+    '<h4>'.Link::news($new['id'], $new['title'], gDate($new['date'])).' <small>'.gDate($new['date']).'</small></h4>'.
+    '<p>'.htmlspecialchars(mb_substr(strip_tags($new['content']),0,190, 'UTF-8')).' '.Link::news($new['id'], '[...]', $new['title']).'</p>';
+}
+
+$competitions = $db->getRows("
+  SELECT *
+  FROM `x_full_competitions`
+  ORDER BY `id` DESC
+  LIMIT 8
+");
+$lastCompetitionsOutput = array();
+foreach ($competitions as $competition) {
+  $name = $competition['event']." - ".$competition['place']." - ".gDate($competition['date']);
+  if (!empty($competition['name'])) $name .= ' ('.$competition['name'].")";
+  $lastCompetitionsOutput[] = Link::competition($competition['id'], $name);
+  
+}
+
+echo Bootstrap::row()
+  ->col(Title::h3('Neuigkeiten', 'news').$newsOutput
+    .'<p class="pull-right"><a href="/page/news.html">Alle anzeigen</a></p>', 6)
+  ->col(Title::h3('Neu eingetragene Wettkämpfe').'<ul><li>'.implode("</li><li>", $lastCompetitionsOutput).'</li></ul>'
+    .'<p class="pull-right"><a href="/page/last-competitions.html">Alle anzeigen</a></p>', 6);
+
 
 echo Title::h2('Überblick', 'overview');
 
