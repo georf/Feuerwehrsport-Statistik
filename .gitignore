@@ -18,6 +18,8 @@ page/**
 chart/**
 excel/**
 
+wettkampf-manager/
+
 # generated from coffeescript
 js/**
 

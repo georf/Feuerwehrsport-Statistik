@@ -1,4 +1,40 @@
 <?php
+
+$versionsPath = $config['base']."wettkampf-manager/";
+$vz = opendir($versionsPath);
+$versions = array();
+while ($versionDir = readdir($vz)) {
+  if (is_dir($versionsPath.$versionDir) && $versionDir != "." && $versionDir != "..") {
+    $versions[$versionDir] = array();
+    $vzi = opendir($versionsPath.$versionDir);
+    while ($target = readdir($vzi)) {
+      if (is_file($versionsPath.$versionDir.'/'.$target)) {
+        $versions[$versionDir][] = $target;
+      }
+    }
+    sort($versions[$versionDir]);
+  }
+}
+krsort($versions);
+
+$first = true;
+$versionOutput = '<div class="list-group">';
+foreach($versions as $versionString => $targets) {
+  $version = preg_replace("|_(.*)$|", "", $versionString);
+  $date = preg_replace("|^(.*)_|", "", $versionString);
+  $versionOutput .=
+   '<a href="#" class="version-select list-group-item'.($first?' active':'').'" data-version="'.$version.'"><span class="badge">'.$date.'</span>'.$version.'</a>'.
+   '<div data-version="'.$version.'" class="list-group-item'.($first?'':' hide').'"><ul>';
+   
+  foreach ($targets as $target) {
+    $versionOutput .= '<li><a href="/wettkampf-manager/'.$versionString.'/'.$target.'">wettkampf-manager-'.$target.'</a></li>';
+  }
+  $versionOutput .= '</ul></div>';
+  $first = false;
+}
+$versionOutput .= '</div>';
+
+
 echo Bootstrap::row()
   ->col('<img src="/styling/images/wettkampf-manager.png" alt="" />', 3)
   ->col(Title::set('Wettkampf-Manager'), 9);
@@ -58,11 +94,15 @@ echo Bootstrap::row()
       '</li>'.
     '</ul>'
   , 6)
+
+// <ul>'.
+//       '<li><a href="/wettkampf-manager/wettkampf-manager-windows.zip">Windows (64bit)</a></li>'.
+//     '</ul>
+
   ->col(
     Title::h2('Download', 'download').
-    '<ul>'.
-      '<li><a href="/wettkampf-manager/wettkampf-manager-windows.zip">Windows (64bit)</a></li>'.
-    '</ul>'
+    Bootstrap::row()->col(
+    $versionOutput, 12)
   , 6)
   ->col(
     Title::h2('Hinweise zur Installation', 'hinweise').
