@@ -114,9 +114,16 @@ echo '<tr><td>'.FSS::dis2img('gs').'</td>'.
 echo '<tr><td>'.FSS::dis2img('hl').'</td>'.
   '<td>'.FSS::dis2name('hl').'<br/><small>(inoffiziell)</small></td>'.
   '<td>'.Link::person(17, 'full', 'Daßler', 'Annekathrin').'</td>'.
-  '<td>'.TeamLogo::get(11, $team2['logo']).'</td>'.
-  '<td>'.Link::team(2, 'Team Mecklenburg-Vorpommern').'</td>'.
+  '<td>'.TeamLogo::get(15, $team15['logo']).'</td>'.
+  '<td>'.Link::team(15, 'TSV Zeulenroda').'</td>'.
   '<td>8,48 s</td>'.
+  '<td>'.Link::competition(530, 'Euregio-Cup 2014- Zeulenroda').'</td></tr>';
+echo '<tr><td>'.FSS::dis2img('zk').'</td>'.
+  '<td>'.FSS::dis2name('zk').'<br/><small>(inoffiziell)</small></td>'.
+  '<td>'.Link::person(17, 'full', 'Daßler', 'Annekathrin').'</td>'.
+  '<td>'.TeamLogo::get(15, $team15['logo']).'</td>'.
+  '<td>'.Link::team(15, 'TSV Zeulenroda').'</td>'.
+  '<td>27,44 s</td>'.
   '<td>'.Link::competition(530, 'Euregio-Cup 2014- Zeulenroda').'</td></tr>';
 
 echo '</table>';
